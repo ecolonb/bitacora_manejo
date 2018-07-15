@@ -1,18 +1,40 @@
-<!--
-  Generated template for the LoginPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
-  <ion-navbar>
-    <ion-title>login</ion-title>
-  </ion-navbar>
-
+    <ion-navbar color="primary" hide-tabs>
+        <ion-title text-center><img src="assets/imgs/mcv6.png"></ion-title>
+    </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
+
+    <ion-slides pager>
+        <ion-slide>
+            <ion-list>
+                <h2 class="slide-title">Iniciar sesión</h2>
+                <ion-item>
+                    <ion-input type="text" id="usuario" [(ngModel)]="usuario" placeholder="Usuario"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                    <ion-input type="password" id="contrasenia" [(ngModel)]="contrasenia" (keyup.enter)="continuar()" placeholder="Contraseña"></ion-input>
+                </ion-item>
+            </ion-list>
+            <button ion-button block [disabled]="contrasenia.length < 3" (click)="continuar()">Iniciar sesión</button>
+        </ion-slide>
+        <!-- Ultimo Slide -->
+        <ion-slide>
+            <img src="assets/imgs/bienvenida.png" class="slide-image" />
+            <h2 class="slide-title">¿Listo para empezar?</h2>
+
+            <button ion-button large clear icon-right color="primary" (click)="ingresar()">
+          Continuar
+          <ion-icon name="arrow-forward"></ion-icon>
+        </button>
+
+        </ion-slide>
+        <!-- Fin del último slide -->
+
+    </ion-slides>
+
 
 </ion-content>

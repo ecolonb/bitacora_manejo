@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { PerfilConductorPage,DetalleViajePage,DatosUnidadPage,MensajesPage,LoginPage } from '../index-paginas';
+import { LoginProvider } from '../../providers/login/login';
+import { TabsPage } from '../tabs/tabs';
 /**
  * Generated class for the MenuPage page.
  *
@@ -14,12 +16,23 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'menu.html',
 })
 export class MenuPage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  PerfilConductorPage:any = PerfilConductorPage;
+  DetalleViajePage:any = DetalleViajePage;
+  DatosUnidadPage:any = DatosUnidadPage;
+  MensajesPage:any = MensajesPage;
+  constructor(public navCtrl: NavController, public navParams: NavParams,private LoginProvider: LoginProvider,public App_: App) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MenuPage');
   }
-
+  goToPage(Page_param:any){
+    this.navCtrl.push(Page_param);
+    console.log("In go to Page");
+  }
+  cerrarSesion(){
+    this.LoginProvider.setActivo(false);
+    //this.navCtrl.setRoot(LoginPage);
+    this.App_.getRootNav().setRoot(LoginPage);
+  }
 }
