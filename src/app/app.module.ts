@@ -10,6 +10,7 @@ import { HomePage,MenuPage, BitacoraPage,TabsPage, LoginPage,PerfilConductorPage
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { LoginProvider } from '../providers/login/login';
+import { BitacoraProvider } from '../providers/bitacora/bitacora';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { LoginProvider } from '../providers/login/login';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     LoginProvider,
-    LoadingController
+    LoadingController,
+    BitacoraProvider
   ]
 })
 export class AppModule {}
