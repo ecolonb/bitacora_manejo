@@ -1,14 +1,19 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 
+@IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: 'page-conduciendo',
+  templateUrl: 'conduciendo.html',
 })
-export class HomePage {
-  constructor(public navCtrl: NavController, private BitacoraProvider: BitacoraProvider) {
+export class ConduciendoPage {
 
+  constructor(public navCtrl: NavController, public navParams: NavParams, private BitacoraProvider: BitacoraProvider) {
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad ConduciendoPage');
   }
   guardarBitacora(){
     //Preparando la bitácora para guardarla en el servicio
@@ -27,4 +32,5 @@ export class HomePage {
     this.BitacoraProvider.setBitacora(objBitacora);
 
   }
+
 }

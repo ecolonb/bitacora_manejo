@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HomePage, BitacoraPage, MenuPage} from '../index-paginas';
+import { ConduciendoPage, DescansoPage, BitacoraPage, MenuPage, ServicioPage} from '../index-paginas';
 import { LoginProvider } from '../../providers/login/login';
 
 @Component({
@@ -7,9 +7,12 @@ import { LoginProvider } from '../../providers/login/login';
 })
 export class TabsPage {
 
-  tabHome = HomePage;
+  tabHome = ConduciendoPage;
   tabBitacoraPage= BitacoraPage;
   tabMenuPage = MenuPage;
+  tabConduciendoPage = ConduciendoPage;
+  tabDescansoPage = DescansoPage;
+  tabServicioPage = ServicioPage;
   public login_activo: boolean = false;
 
   constructor(private LoginProvider: LoginProvider) {

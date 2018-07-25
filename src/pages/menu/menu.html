@@ -1,20 +1,19 @@
-<!--
-  Generated template for the MenuPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-    <ion-navbar color="primary">
+    <ion-navbar color="copiloto">
         <ion-title text-center>Opciones</ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content padding>
     <ion-list>
         <ion-item-group>
+            <button ion-item (click)="goToPage(BitacoraPage)">
+                <ion-icon name="ios-list-box-outline" item-start></ion-icon>
+                    Bitácora
+                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
+            </button>
             <button ion-item (click)="goToPage(DetalleViajePage)">
                 <ion-icon name="md-clipboard" item-start></ion-icon>
-                Detalles del viaje
+                Viaje actual
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </button>
             <button ion-item (click)="goToPage(DatosUnidadPage)">
@@ -24,38 +23,22 @@
             </button>
             <button ion-item (click)="goToPage(PerfilConductorPage)">
                 <ion-icon name="ios-contact" item-start></ion-icon>
-                Perfil conductor
+                Datos del conductor
                 <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </button>
-            <button ion-item (click)="goToPage(MensajesPage)">
-              <ion-icon name="ios-mail" item-start></ion-icon>
-              Mensajes <span text-right>( 5 )</span>
-              <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-          </button>
             <button ion-item>
-              <ion-icon name="ios-map" item-start></ion-icon>
-              Abrir Googgle Maps
-          </button>
-        </ion-item-group>
-        <ion-item-group>
-            <button ion-item (click)="cerrarSesion()">
-                <ion-icon name="md-log-out" item-start></ion-icon>
-                Cerrar sesión
+                <ion-icon name="ios-list-box-outline" item-start></ion-icon>
+                    Excepción temporal
+                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
             </button>
         </ion-item-group>
+    </ion-list>
+    <ion-list>
         <ion-item-group>
-            <ion-item>
-                <button ion-button block color="danger">
-                  Activar panico
-                </button>
-            </ion-item>
-        </ion-item-group>
-        <ion-item-group>
-            <ion-item>
-                <button ion-button block color="copiloto">
-                   Terminar viaje
-                </button>
-            </ion-item>
+            <button ion-item (click)="cerrarSesion()">
+                <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
+               <span class="btnSesion">Cerrar sesión</span>
+            </button>
         </ion-item-group>
     </ion-list>
 </ion-content>

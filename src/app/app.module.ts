@@ -5,7 +5,7 @@ import { MyApp } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LoadingController } from 'ionic-angular';
 
-import { HomePage,MenuPage, BitacoraPage,TabsPage, LoginPage,PerfilConductorPage,DetalleViajePage,DatosUnidadPage,MensajesPage } from '../pages/index-paginas';
+import { HomePage,MenuPage, BitacoraPage,TabsPage, LoginPage,PerfilConductorPage,DetalleViajePage,DatosUnidadPage,MensajesPage,ConduciendoPage, DescansoPage, ServicioPage } from '../pages/index-paginas';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -23,7 +23,10 @@ import { BitacoraProvider } from '../providers/bitacora/bitacora';
     PerfilConductorPage,
     DetalleViajePage,
     DatosUnidadPage,
-    MensajesPage
+    MensajesPage,
+    ConduciendoPage,
+    DescansoPage,
+    ServicioPage
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,10 @@ import { BitacoraProvider } from '../providers/bitacora/bitacora';
     PerfilConductorPage,
     DetalleViajePage,
     DatosUnidadPage,
-    MensajesPage
+    MensajesPage,
+    ConduciendoPage,
+    DescansoPage,
+    ServicioPage
   ],
   providers: [
     StatusBar,

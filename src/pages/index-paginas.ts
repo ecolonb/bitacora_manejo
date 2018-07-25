@@ -1,3 +1,5 @@
+export { ServicioPage } from './servicio/servicio';
+export { DescansoPage } from './descanso/descanso';
 export { BitacoraPage } from './bitacora/bitacora';
 export { DatosUnidadPage } from './datos-unidad/datos-unidad';
 export { DetalleItemBitacoraPage } from './detalle-item-bitacora/detalle-item-bitacora';
@@ -8,3 +10,4 @@ export { MensajesPage } from './mensajes/mensajes';
 export { MenuPage } from './menu/menu';
 export { PerfilConductorPage } from './perfil-conductor/perfil-conductor';
 export { TabsPage } from './tabs/tabs';
+export { ConduciendoPage } from './conduciendo/conduciendo';

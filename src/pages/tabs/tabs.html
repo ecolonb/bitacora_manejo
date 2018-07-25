@@ -1,5 +1,6 @@
 <ion-tabs color="copiloto">
-    <ion-tab [root]="tabHome" tabTitle="Cronometro" tabIcon="md-alarm"></ion-tab>
-    <ion-tab [root]="tabBitacoraPage" tabTitle="Bitacora" tabIcon="ios-list-box-outline"></ion-tab>
-    <ion-tab [root]="tabMenuPage" tabTitle="Menú" tabIcon="md-menu"></ion-tab>
+    <ion-tab [root]="tabHome" tabTitle="Conduciendo" tabIcon="md-speedometer" (ionSelect)="this.title ='Conduciendo'"></ion-tab>
+    <ion-tab [root]="tabDescansoPage" tabTitle="Descanso" tabIcon="md-happy"></ion-tab>
+    <ion-tab [root]="tabServicioPage" tabTitle="Servicio" tabIcon="md-time"></ion-tab>
+    <ion-tab [root]="tabMenuPage" tabTitle="Opciones" tabIcon="menu"></ion-tab>
 </ion-tabs>
