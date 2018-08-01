@@ -1,40 +1,42 @@
 <ion-header>
-    <ion-navbar color="copiloto" hide-tabs>
-        <ion-title text-center><img src="assets/imgs/mcv6.png"></ion-title>
-    </ion-navbar>
+  <ion-navbar color="copiloto" hide-tabs>
+    <ion-title text-center>
+      <img src="assets/imgs/mcv6.png">
+    </ion-title>
+  </ion-navbar>
 </ion-header>
 
-
 <ion-content padding>
-
-    <ion-slides pager>
-        <ion-slide>
-            <ion-list>
-                <h2 class="slide-title">Iniciar sesión</h2>
-                <ion-item>
-                    <ion-input type="text" id="usuario" [(ngModel)]="usuario" placeholder="Usuario"></ion-input>
-                </ion-item>
-
-                <ion-item>
-                    <ion-input type="password" id="contrasenia" [(ngModel)]="contrasenia" (keyup.enter)="ingresar()" placeholder="Contraseña"></ion-input>
-                </ion-item>
-            </ion-list>
-            <button ion-button block [disabled]="contrasenia.length < 3" (click)="ingresar()">Iniciar sesión</button>
-        </ion-slide>
-        <!-- Ultimo Slide -->
-        <ion-slide>
-            <img src="assets/imgs/bienvenida.png" class="slide-image" />
-            <h2 class="slide-title">¿Listo para empezar?</h2>
-
-            <button ion-button large clear icon-right color="primary" (click)="ingresar()">
-          Continuar
-          <ion-icon name="arrow-forward"></ion-icon>
+  <ion-card>
+    <ion-card-header class="cardHeaderLogin">
+      <h2 text-center>Iniciar sesión</h2>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list no-lines>
+        <ion-item>
+          <ion-input type="text" id="usuario" [(ngModel)]="usuario" placeholder="Usuario"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="password" id="contrasenia" [(ngModel)]="contrasenia" (keyup.enter)="ingresar()" placeholder="Contraseña"></ion-input>
+        </ion-item>
+        <ion-item>
+          <button ion-button block [disabled]="contrasenia.length < 3" (click)="ingresar()" color="copiloto">Iniciar sesión</button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+    <ion-row>
+      <ion-col text-center>
+        <button ion-button icon-end clear small (click)="openConfigModal()">
+          <div>Configuración</div>
+          <ion-icon name="md-settings"></ion-icon>
         </button>
-
-        </ion-slide>
-        <!-- Fin del último slide -->
-
-    </ion-slides>
-
-
+      </ion-col>
+      <!-- <ion-col text-center>
+                <button ion-button outline icon-end>
+                  <div>Configuración</div>
+                  <ion-icon name="md-settings"></ion-icon>
+                </button>
+              </ion-col> -->
+    </ion-row>
+  </ion-card>
 </ion-content>

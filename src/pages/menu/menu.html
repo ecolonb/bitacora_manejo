@@ -1,44 +1,29 @@
-<ion-header>
-    <ion-navbar color="copiloto">
-        <ion-title text-center>Opciones</ion-title>
+<ion-menu [content]="content">
+  <ion-header>
+    <ion-navbar color="blue_menu">
+      <ion-title text-center>
+        Opciones
+      </ion-title>
     </ion-navbar>
-</ion-header>
-<ion-content padding>
-    <ion-list>
-        <ion-item-group>
-            <button ion-item (click)="goToPage(BitacoraPage)">
-                <ion-icon name="ios-list-box-outline" item-start></ion-icon>
-                    Bitácora
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </button>
-            <button ion-item (click)="goToPage(DetalleViajePage)">
-                <ion-icon name="md-clipboard" item-start></ion-icon>
-                Viaje actual
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </button>
-            <button ion-item (click)="goToPage(DatosUnidadPage)">
-                <ion-icon name="md-car" item-start></ion-icon>
-                Datos de la unidad
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </button>
-            <button ion-item (click)="goToPage(PerfilConductorPage)">
-                <ion-icon name="ios-contact" item-start></ion-icon>
-                Datos del conductor
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </button>
-            <button ion-item>
-                <ion-icon name="ios-list-box-outline" item-start></ion-icon>
-                    Excepción temporal
-                <ion-icon name="ios-arrow-forward" item-end></ion-icon>
-            </button>
-        </ion-item-group>
+  </ion-header>
+
+  <ion-content>
+    <ion-list no-lines>
+      <ion-item>
+        <button ion-item (click)="testFunction()">
+          <ion-icon name="ios-refresh" item-start></ion-icon>
+          Actualizar información
+        </button>
+      </ion-item>
+      <hr>
+      <ion-item>
+        <button ion-item (click)="cerrarSesion()">
+          <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
+          <span class="btnSesion">Cerrar sesión</span>
+        </button>
+      </ion-item>
     </ion-list>
-    <ion-list>
-        <ion-item-group>
-            <button ion-item (click)="cerrarSesion()">
-                <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
-               <span class="btnSesion">Cerrar sesión</span>
-            </button>
-        </ion-item-group>
-    </ion-list>
-</ion-content>
+  </ion-content>
+</ion-menu>
+
+<ion-nav #content [root]="rootPage" swipeBackEnabled="true"></ion-nav>

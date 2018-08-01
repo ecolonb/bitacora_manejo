@@ -1,17 +1,26 @@
-import { NgModule, ErrorHandler } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-import { MyApp } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ErrorHandler, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
+import { MyApp } from './app.component';
 
-import { HomePage,MenuPage, BitacoraPage,TabsPage, LoginPage,PerfilConductorPage,DetalleViajePage,DatosUnidadPage,MensajesPage,ConduciendoPage, DescansoPage, ServicioPage } from '../pages/index-paginas';
+import {
+  BitacoraPage,
+  ConfiguracionPage,
+  ExcepcionTemporalPage,
+  HomePage,
+  LoginPage,
+  MenuPage,
+  TabsPage
+} from '../pages/index-paginas';
 
-import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { LoginProvider } from '../providers/login/login';
+import { StatusBar } from '@ionic-native/status-bar';
 import { BitacoraProvider } from '../providers/bitacora/bitacora';
+import { LoginProvider } from '../providers/login/login';
 
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 @NgModule({
   declarations: [
     MyApp,
@@ -20,19 +29,10 @@ import { BitacoraProvider } from '../providers/bitacora/bitacora';
     MenuPage,
     BitacoraPage,
     LoginPage,
-    PerfilConductorPage,
-    DetalleViajePage,
-    DatosUnidadPage,
-    MensajesPage,
-    ConduciendoPage,
-    DescansoPage,
-    ServicioPage
+    ConfiguracionPage,
+    ExcepcionTemporalPage
   ],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp),
-    HttpClientModule
-  ],
+  imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpClientModule],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
@@ -41,21 +41,17 @@ import { BitacoraProvider } from '../providers/bitacora/bitacora';
     MenuPage,
     BitacoraPage,
     LoginPage,
-    PerfilConductorPage,
-    DetalleViajePage,
-    DatosUnidadPage,
-    MensajesPage,
-    ConduciendoPage,
-    DescansoPage,
-    ServicioPage
+    ConfiguracionPage,
+    ExcepcionTemporalPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     LoginProvider,
     LoadingController,
-    BitacoraProvider
+    BitacoraProvider,
+    ScreenOrientation
   ]
 })
 export class AppModule {}

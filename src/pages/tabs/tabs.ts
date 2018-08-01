@@ -1,29 +1,31 @@
 import { Component } from '@angular/core';
-import { ConduciendoPage, DescansoPage, BitacoraPage, MenuPage, ServicioPage} from '../index-paginas';
 import { LoginProvider } from '../../providers/login/login';
+import {
+  BitacoraPage,
+  ExcepcionTemporalPage,
+  HomePage,
+  MenuPage
+} from '../index-paginas';
 
 @Component({
   templateUrl: 'tabs.html'
 })
 export class TabsPage {
-
-  tabHome = ConduciendoPage;
-  tabBitacoraPage= BitacoraPage;
-  tabMenuPage = MenuPage;
-  tabConduciendoPage = ConduciendoPage;
-  tabDescansoPage = DescansoPage;
-  tabServicioPage = ServicioPage;
-  public login_activo: boolean = false;
+  public tabHome: any = HomePage;
+  public tabBitacoraPage: any = BitacoraPage;
+  public tabMenuPage: any = MenuPage;
+  public tabExcepcionTemporalPage: any = ExcepcionTemporalPage;
+  public loginActivo: boolean = false;
 
   constructor(private LoginProvider: LoginProvider) {
-    console.log("valor activo", this.login_activo);
-    console.log("valor this.LoginProvider.activo", this.login_activo);
-    this.login_activo = this.LoginProvider.activo;
-    console.log("Despues this.login_activo", this.login_activo);
-    console.log("DEspues valor this.LoginProvider.activo", this.login_activo);
+    console.log('valor activo', this.loginActivo);
+    console.log('valor this.LoginProvider.activo', this.loginActivo);
+    this.loginActivo = this.LoginProvider.activo;
+    console.log('Despues this.login_activo', this.loginActivo);
+    console.log('DEspues valor this.LoginProvider.activo', this.loginActivo);
   }
-  ionViewDidLoad() {
+  public ionViewDidLoad() {
     console.log('tabs loading -->>>');
-    console.log("Despues this.login_activo", this.login_activo);
+    console.log('Despues this.login_activo', this.loginActivo);
   }
 }

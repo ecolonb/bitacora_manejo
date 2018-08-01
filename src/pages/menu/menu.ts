@@ -1,38 +1,74 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
-import { PerfilConductorPage,DetalleViajePage,DatosUnidadPage,MensajesPage,LoginPage,BitacoraPage } from '../index-paginas';
+import { Component, ViewChild } from '@angular/core';
+import { App, IonicPage, Nav, NavController, NavParams } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-/**
- * Generated class for the MenuPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {
+  BitacoraPage,
+  ExcepcionTemporalPage,
+  HomePage,
+  LoginPage
+} from '../index-paginas';
+import { TabsPage } from './../tabs/tabs';
 
+export interface PageInterface {
+  title: string;
+  pageName: string;
+  tabComponent?: any;
+  index?: number;
+  icon: string;
+}
 @IonicPage()
 @Component({
   selector: 'page-menu',
-  templateUrl: 'menu.html',
+  templateUrl: 'menu.html'
 })
 export class MenuPage {
-  PerfilConductorPage: any = PerfilConductorPage;
-  DetalleViajePage: any = DetalleViajePage;
-  DatosUnidadPage: any = DatosUnidadPage;
-  MensajesPage: any = MensajesPage;
-  BitacoraPage: any = BitacoraPage;
-  constructor(public navCtrl: NavController, public navParams: NavParams,private LoginProvider: LoginProvider,public App_: App) {
-  }
+  public rootPage: any = TabsPage;
+  public BitacoraPage: any = BitacoraPage;
+  @ViewChild(Nav) public nav: Nav;
+  public pages: PageInterface[] = [
+    {
+      title: 'Status',
+      pageName: 'HomePage',
+      tabComponent: HomePage,
+      index: 0,
+      icon: 'home'
+    },
+    {
+      title: 'Bitácora',
+      pageName: 'BitacoraPage',
+      tabComponent: BitacoraPage,
+      index: 1,
+      icon: 'home'
+    },
+    {
+      title: 'ExcepcionTemporal',
+      pageName: 'ExcepcionTemporalPage',
+      tabComponent: ExcepcionTemporalPage,
+      index: 2,
+      icon: 'home'
+    }
+  ];
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private LoginProvider: LoginProvider,
+    public App: App
+  ) {}
 
-  ionViewDidLoad() {
+  public ionViewDidLoad() {
     console.log('ionViewDidLoad MenuPage');
   }
-  goToPage(Page_param:any){
-    this.navCtrl.push(Page_param);
-    console.log("In go to Page");
+  public goToPage(PageParam: any) {
+    this.navCtrl.push(PageParam);
+    console.log('In go to Page');
   }
-  cerrarSesion(){
+  public cerrarSesion() {
+    console.log('Cerrando session fn');
     this.LoginProvider.setActivo(false);
-    //this.navCtrl.setRoot(LoginPage);
-    this.App_.getRootNav().setRoot(LoginPage);
+    // this.navCtrl.setRoot(LoginPage);
+    this.App.getRootNav().setRoot(LoginPage);
+  }
+  public testFunction() {
+    console.log('testFunction');
   }
 }

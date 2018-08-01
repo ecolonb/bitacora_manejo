@@ -1,12 +1,148 @@
 <ion-header>
-
-    <ion-navbar color="copiloto">
-        <ion-title text-center>Bitacora horas de servicio</ion-title>
-    </ion-navbar>
-
+  <ion-navbar color="copiloto">
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      Bitácora
+    </ion-title>
+  </ion-navbar>
 </ion-header>
-
-
 <ion-content padding>
-    Bitacora its work!
+  <ion-card>
+    <ion-card-header text-center class="cardHeaderBitacora">
+      General
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Fecha</ion-col>
+        <ion-col col-6>{{ fechaBitacora | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Tipo de servicio</ion-col>
+        <ion-col col-6>Servicio de carga general</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Modalidad</ion-col>
+        <ion-col col-6>--</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Origen - Destino</ion-col>
+        <ion-col col-6>México - Queretaro</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Permisionario</ion-col>
+        <ion-col col-6>Victor Avila Teja</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Domicilio</ion-col>
+        <ion-col col-6>Carr. México-Toluca 5420, La Rosita, El Yaqui, 05320 Ciudad de México, CDMX</ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header text-center class="cardHeaderBitacora">
+      Conductor
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Nombre</ion-col>
+        <ion-col col-6>Rafael Diaz Estrada</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">N. Licencia</ion-col>
+        <ion-col col-6>23581321</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Vigencia</ion-col>
+        <ion-col col-6>{{ '2018-09-09T00:00:00' | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}</ion-col>
+      </ion-row>
+
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header text-center class="cardHeaderBitacora">
+      Unidad
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Marca</ion-col>
+        <ion-col col-6>Mercedez Benz</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Modelo</ion-col>
+        <ion-col col-6>1980 - PLUS</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-6 class="titleItemBitacoraInfo">Placas</ion-col>
+        <ion-col col-6>NAB-1982</ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header text-center class="cardHeaderBitacora">
+      Bitácora
+      <br>
+      <!-- {{birthday | date:'fullDate':'UTC-06':'es-mx' }} -->
+      {{birthday | date:'fullDate':'UTC':'es-mx' | uppercase }}
+    </ion-card-header>
+    <ion-card-header text-center class="headerTipoBitacora">
+      <span>Tiempo conduciendo</span>
+      <br>
+      <span>
+        02:05:00
+      </span>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha inicio</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha fin</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Tiempo</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4>16:10:05</ion-col>
+        <ion-col col-4>17:10:05</ion-col>
+        <ion-col col-4>01:00:00</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4>17:15:00</ion-col>
+        <ion-col col-4>18:20:05</ion-col>
+        <ion-col col-4>01:05:00</ion-col>
+      </ion-row>
+    </ion-card-content>
+    <ion-card-header text-center class="headerTipoBitacora">
+      <span> Tiempo descansando </span>
+      <br>
+      <span> 00:32:00 </span>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha inicio</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha fin</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Tiempo</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4>17:30:05</ion-col>
+        <ion-col col-4>18:02:00</ion-col>
+        <ion-col col-4>00:32:00</ion-col>
+      </ion-row>
+    </ion-card-content>
+    <ion-card-header text-center class="headerTipoBitacora">
+      <span>Tiempo en servicio</span>
+      <br>
+      <span> 01:15:00 </span>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha inicio</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Fecha fin</ion-col>
+        <ion-col col-4 class="titleItemBitacoraInfo">Tiempo</ion-col>
+      </ion-row>
+      <ion-row class="lineItemBitacoraInfo">
+        <ion-col col-4>12:00:05</ion-col>
+        <ion-col col-4>13:15:05</ion-col>
+        <ion-col col-4>01:15:00</ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

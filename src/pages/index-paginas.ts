@@ -1,13 +1,10 @@
-export { ServicioPage } from './servicio/servicio';
-export { DescansoPage } from './descanso/descanso';
+export { ExcepcionTemporalPage } from './excepcion-temporal/excepcion-temporal';
 export { BitacoraPage } from './bitacora/bitacora';
-export { DatosUnidadPage } from './datos-unidad/datos-unidad';
-export { DetalleItemBitacoraPage } from './detalle-item-bitacora/detalle-item-bitacora';
-export { DetalleViajePage } from './detalle-viaje/detalle-viaje';
+export {
+  DetalleItemBitacoraPage
+} from './detalle-item-bitacora/detalle-item-bitacora';
 export { HomePage } from './home/home';
 export { LoginPage } from './login/login';
-export { MensajesPage } from './mensajes/mensajes';
 export { MenuPage } from './menu/menu';
-export { PerfilConductorPage } from './perfil-conductor/perfil-conductor';
 export { TabsPage } from './tabs/tabs';
-export { ConduciendoPage } from './conduciendo/conduciendo';
+export { ConfiguracionPage } from './configuracion/configuracion';

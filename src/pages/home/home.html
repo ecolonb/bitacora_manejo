@@ -1,16 +1,231 @@
 <ion-header>
+  <ion-navbar color="copiloto">
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      Horas de servicio
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content class="container-graph">
+  <!-- <button ion-button block (click)="guardarBitacora()" color="copiloto">Set bitácora</button> -->
+  <div class="divider">
+    <ion-card>
+      <ion-card-header class="cardHeaderEvents">
+        Resumen
+      </ion-card-header>
 
-        <ion-navbar color="copiloto">
-            <ion-title text-center> 
-                Tiempo conduciendo
-                </ion-title>
-          
-         
-        </ion-navbar>
-      
-      </ion-header>
+      <ion-list>
+        <ion-item class="itemCardResumen">
+          Conduciendo
+          <span item-end>
+            <ion-icon name="timer"></ion-icon> &nbsp; 02:05:00
+          </span>
+        </ion-item>
+        <ion-item class="itemCardResumen">
+          Descansando
+          <span item-end>
+            <ion-icon name="timer"></ion-icon> &nbsp; 00:32:00
+          </span>
+        </ion-item>
+        <ion-item class="itemCardResumen">
+          Servicio
+          <span item-end>
+            <ion-icon name="timer"></ion-icon> &nbsp; 01:15:00
+          </span>
+        </ion-item>
+      </ion-list>
+      <span class="actualizadoFooter">Ultima actualización: 2018-07-30 16:20:21</span>
+    </ion-card>
+  </div>
+  <div class="divider">
+    <ion-slides pager>
+      <ion-slide>
+        <ion-card>
+          <!-- HEADERS TABLE-->
+          <ion-row>
+            <ion-col col-2 class="headerTable"></ion-col>
+            <ion-col col-1 class="headerTable">00</ion-col>
+            <ion-col col-1 class="headerTable">01</ion-col>
+            <ion-col col-1 class="headerTable">02</ion-col>
+            <ion-col col-1 class="headerTable">03</ion-col>
+            <ion-col col-1 class="headerTable">04</ion-col>
+            <ion-col col-1 class="headerTable">05</ion-col>
+            <ion-col col-1 class="headerTable">06</ion-col>
+            <ion-col col-1 class="headerTable">07</ion-col>
+            <ion-col col-2 class="headerTable"></ion-col>
+          </ion-row>
+          <!-- Conduciendo -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">C</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 02 hrs
+              <br>05 M</ion-col>
+          </ion-row>
+          <!-- Descansando -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">D</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 00 hrs
+              <br>32 M</ion-col>
+          </ion-row>
+          <!-- Servicio -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">S</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 01 hrs
+              <br>15 M
+            </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-slide>
 
-<ion-content padding>
-    <h2></h2>
-    <button ion-button block (click)="guardarBitacora()" color="copiloto">Set bitácora</button>
+      <ion-slide>
+        <ion-card>
+          <!-- HEADERS TABLE-->
+          <ion-row>
+            <ion-col col-2 class="headerTable"></ion-col>
+            <ion-col col-1 class="headerTable">08</ion-col>
+            <ion-col col-1 class="headerTable">09</ion-col>
+            <ion-col col-1 class="headerTable">10</ion-col>
+            <ion-col col-1 class="headerTable">11</ion-col>
+            <ion-col col-1 class="headerTable">12</ion-col>
+            <ion-col col-1 class="headerTable">13</ion-col>
+            <ion-col col-1 class="headerTable">14</ion-col>
+            <ion-col col-1 class="headerTable">15</ion-col>
+            <ion-col col-2 class="headerTable"></ion-col>
+          </ion-row>
+          <!-- Conduciendo -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">C</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 02 hrs
+              <br>05 M
+            </ion-col>
+          </ion-row>
+          <!-- Descansando -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">D</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 00 hrs
+              <br>32 M
+            </ion-col>
+          </ion-row>
+          <!-- Servicio -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">S</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 01 hrs
+              <br>15 M
+            </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-slide>
+      <ion-slide>
+        <ion-card>
+          <!-- HEADERS TABLE-->
+          <ion-row>
+            <ion-col col-2 class="headerTable"></ion-col>
+            <ion-col col-1 class="headerTable">16</ion-col>
+            <ion-col col-1 class="headerTable">17</ion-col>
+            <ion-col col-1 class="headerTable">18</ion-col>
+            <ion-col col-1 class="headerTable">19</ion-col>
+            <ion-col col-1 class="headerTable">20</ion-col>
+            <ion-col col-1 class="headerTable">21</ion-col>
+            <ion-col col-1 class="headerTable">22</ion-col>
+            <ion-col col-1 class="headerTable">23</ion-col>
+            <ion-col col-2 class="headerTable"></ion-col>
+          </ion-row>
+          <!-- Conduciendo -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">C</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 02 hrs
+              <br>05 M
+            </ion-col>
+          </ion-row>
+          <!-- Descansando -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">D</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 00 hrs
+              <br>32 M
+            </ion-col>
+          </ion-row>
+          <!-- Servicio -->
+          <ion-row>
+            <ion-col col-2 class="borderTable">S</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-2 class="textTiempo"> 01 hrs
+              <br>15 M
+            </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-slide>
+    </ion-slides>
+  </div>
 </ion-content>
