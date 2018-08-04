@@ -6,24 +6,21 @@
       </ion-title>
     </ion-navbar>
   </ion-header>
-
   <ion-content>
-    <ion-list no-lines>
-      <ion-item>
-        <button ion-item (click)="testFunction()">
-          <ion-icon name="ios-refresh" item-start></ion-icon>
-          Actualizar información
-        </button>
-      </ion-item>
-      <hr>
-      <ion-item>
-        <button ion-item (click)="cerrarSesion()">
-          <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
-          <span class="btnSesion">Cerrar sesión</span>
-        </button>
-      </ion-item>
+    <ion-list>
+      <button ion-item (click)="testFunction()">
+        <ion-icon name="ios-settings" item-start></ion-icon>
+        Cuenta
+      </button>
+      <button ion-item (click)="testFunction()">
+        <ion-icon name="md-refresh" item-start></ion-icon>
+        Actualizar información
+      </button>
+      <button ion-item (click)="cerrarSesion()">
+        <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
+        <span class="btnSesion">Cerrar sesión</span>
+      </button>
     </ion-list>
   </ion-content>
 </ion-menu>
-
 <ion-nav #content [root]="rootPage" swipeBackEnabled="true"></ion-nav>

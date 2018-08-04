@@ -47,7 +47,7 @@
     <ion-card-content>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Nombre</ion-col>
-        <ion-col col-6>Rafael Diaz Estrada</ion-col>
+        <ion-col col-6>{{ strNombreConductor }}</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">N. Licencia</ion-col>
@@ -82,9 +82,10 @@
   <ion-card>
     <ion-card-header text-center class="cardHeaderBitacora">
       Bitácora
-      <br>
-      <!-- {{birthday | date:'fullDate':'UTC-06':'es-mx' }} -->
-      {{birthday | date:'fullDate':'UTC':'es-mx' | uppercase }}
+    </ion-card-header>
+    <ion-card-header text-center class="headerTipoBitacora">
+      {{birthday | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}
+      <hr>
     </ion-card-header>
     <ion-card-header text-center class="headerTipoBitacora">
       <span>Tiempo conduciendo</span>

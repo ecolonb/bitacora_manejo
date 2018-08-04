@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar color="copiloto" hide-tabs>
     <ion-title text-center>
-      <img src="assets/imgs/mcv6.png">
+      <img style="margin-top: 12px;" src="assets/imgs/mcv6.png">
     </ion-title>
   </ion-navbar>
 </ion-header>
@@ -9,21 +9,24 @@
 <ion-content padding>
   <ion-card>
     <ion-card-header class="cardHeaderLogin">
-      <h2 text-center>Iniciar sesión</h2>
+      <h2 text-center style="color: #ffffff;font-size: 1.2em;font-weight: bold; word-spacing: 5px;letter-spacing: 2px;">Iniciar sesión</h2>
     </ion-card-header>
     <ion-card-content>
-      <ion-list no-lines>
-        <ion-item>
-          <ion-input type="text" id="usuario" [(ngModel)]="usuario" placeholder="Usuario"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input type="password" id="contrasenia" [(ngModel)]="contrasenia" (keyup.enter)="ingresar()" placeholder="Contraseña"></ion-input>
-        </ion-item>
-        <ion-item>
-          <button ion-button block [disabled]="contrasenia.length < 3" (click)="ingresar()" color="copiloto">Iniciar sesión</button>
-        </ion-item>
-      </ion-list>
+      <form #formLogin (submit)="continuar(formLogin)">
+        <ion-list no-lines>
+          <ion-item>
+            <ion-input type="text" id="usuario" name="usuario" placeholder="Usuario"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input type="password" id="contrasenia" name="contrasenia" placeholder="Contraseña"></ion-input>
+          </ion-item>
+          <ion-item>
+            <button ion-button block color="copiloto">Iniciar sesión</button>
+          </ion-item>
+        </ion-list>
+      </form>
     </ion-card-content>
+
     <ion-row>
       <ion-col text-center>
         <button ion-button icon-end clear small (click)="openConfigModal()">
@@ -32,11 +35,11 @@
         </button>
       </ion-col>
       <!-- <ion-col text-center>
-                <button ion-button outline icon-end>
-                  <div>Configuración</div>
-                  <ion-icon name="md-settings"></ion-icon>
-                </button>
-              </ion-col> -->
+                      <button ion-button outline icon-end>
+                        <div>Configuración</div>
+                        <ion-icon name="md-settings"></ion-icon>
+                      </button>
+                    </ion-col> -->
     </ion-row>
   </ion-card>
 </ion-content>

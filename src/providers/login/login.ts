@@ -1,80 +1,144 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
+import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
-
+import { UsuarioModel } from '../../models/usuario.model';
+import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
+import { UsuarioProvider } from './../usuario/usuario';
 @Injectable()
 export class LoginProvider {
   // Declaracion de variables globales
-  public activo: boolean = false;
-  private ObjResultado: any;
-  private URL_ = 'http://pruebaunne01.cloudapp.net/dev5/api_rest/api/Login';
   public objPermisos: any;
 
-  public razonSocial: string;
-  public nombreUsuario: string;
-  public urlImagen: string;
-  public idUsuario: number;
-  public idCliente: number;
+  public serverEndPoint: string = 's5';
 
-  constructor(private httpW: HttpClient) {
-    console.log('Hello LoginProvider Provider');
-  }
+  // Variables de usuarioLogin
+  public objSesionRespuesta: UsuarioModel;
+
+  // Propiedades privadas
+  private sesionOk: boolean = false;
+  private URL_ = 'http://dev1.copiloto.com.mx/lab/rest/api/Login';
+
+  // Constructor de clase
+  constructor(
+    private httpClient: HttpClient,
+    private storage: Storage,
+    private platform: Platform,
+    private appConfiguracionProvider: AppConfiguracionProvider,
+    private usuarioProvider: UsuarioProvider
+  ) {}
+
+  // Funcion para validar sesion retorna un Obervable  -> cambiar metodo Implementar una promesa
   public validarSesion(
     userToSend: string,
     passToSend: string
   ): Observable<any> {
     userToSend = userToSend.toLowerCase();
-    console.log(userToSend, passToSend);
-    console.log(this.URL_);
-    // Preparando los datos a enviar y las cabeceras
-    // const DataSend = 'email=' + userToSend + '&pass=' + passToSend;
-    // console.log('DataSend string', DataSend);
     const HEADERS = {
       headers: { 'Content-Type': 'application/json; charset=utf-8' }
     };
-    const dataSendform = { user: userToSend, password: btoa(passToSend) };
-    console.log('dataSendform', dataSendform);
-    return this.httpW.post<Observable<any>>(this.URL_, dataSendform, HEADERS);
+    // Obj datos que recibe el ApiRestFul LoginIbutton
+    const dataSendform = {
+      id_ibutton: this.appConfiguracionProvider.getIdIbutton(),
+      server_endpoint: this.appConfiguracionProvider.getServerEndPoint()
+    };
+    return this.httpClient.post<Observable<any>>(
+      this.URL_,
+      dataSendform,
+      HEADERS
+    );
   }
 
+  // Obtiene si está activa la sesion
   public getActivo(): boolean {
-    return this.activo;
+    return this.sesionOk;
   }
+
+  // Cambia el estado de la sesion
   public setActivo(valor: boolean) {
-    // this.activo= valor;
+    this.sesionOk = valor;
+    this.guardarStorage();
+    return;
   }
+
+  // Guarda los datos de la sesion si el Login es correcto
   public guardarServicio(ObjSesion: any) {
-    console.log('Guardar sesion', ObjSesion);
-    this.ObjResultado = ObjSesion;
-    if (this.ObjResultado.error === false) {
-      this.activo = true;
-      this.razonSocial = this.ObjResultado.razonSocial;
-      this.nombreUsuario = this.ObjResultado.nombreUsuario;
-      this.urlImagen = this.ObjResultado.urlImagen;
-      this.idUsuario = this.ObjResultado.idUsuario;
-      this.idCliente = this.ObjResultado.idCliente;
-      this.objPermisos = this.ObjResultado.permisos;
-      console.log(
-        'Datos correctos, usar Interfaz para recibir los datos->',
-        this.razonSocial
-      );
-      console.log('ID USUARIO', this.idUsuario);
-      console.log('nombreUsuario', this.nombreUsuario);
-      console.log('Impresion del this.objPermisos', this.objPermisos);
-      // this.guardarStorage();
+    this.objSesionRespuesta = ObjSesion;
+    if (this.objSesionRespuesta._error === false) {
+      this.sesionOk = true;
+      this.usuarioProvider
+        .guardarUsuarioInfo(this.objSesionRespuesta)
+        .then(() => {
+          // Guardando variable de SesionActivo <-> LoginActivo
+          this.guardarStorage();
+        });
     }
   }
-}
 
-// Entra a la funcion PostValue
-// Convirtiendo el password: Y2xhdWRpYTEw
-// Antes de validar sesion: kexGhek23qho/pThu6z09Q==
-// ANTES DE VALIDAR PASSWORD: admin_rutas
-// ----->> En funcion validando sesion
-// ----->> Obteniendo string connection
-// ----->> Abriendo la conexion
-// ----->> Ejecurando el querie ->  SELECT *  FROM  USUARIOS U left join PERMISOS_UI UI on U.ID_USUARIO = Ui.ID_USUARIO_UI  WHERE U.USUARIO = 'admin_rutas' AND U.CONTRASEÑA = 'kexGhek23qho/pThu6z09Q=='
-// ----->> ANTES DEL WHILE usuari0: admin_rutas password: kexGhek23qho/pThu6z09Q==
-// ----->> Antes de cerrar la conexion
-// ----->> Cerrando conexion
-// Despues de validar PASSWORD: kexGhek23qho/pThu6z09Q==
+  // Carga datos de la sesion desde el LocalStorage
+  public cargarStorage() {
+    const storagePromise = new Promise((resolve, reject) => {
+      if (this.platform.is('cordova')) {
+        this.storage.ready().then(() => {
+          // Get items from Storage
+          this.storage.get('sesionOk').then((sesionOkStorage) => {
+            this.sesionOk = Boolean(sesionOkStorage);
+            resolve();
+          });
+        });
+      } else {
+        this.sesionOk = Boolean(localStorage.getItem('sesionOk'));
+        resolve();
+      }
+    });
+    return storagePromise;
+  }
+
+  // Cerrar sesion y guardar estado actual en LocalStorage
+  public cerrarSesion(): Promise<any> {
+    const cerrarSesionPromise = new Promise((resolve, reject) => {
+      if (this.platform.is('cordova')) {
+        // Dispositivo
+        try {
+          this.storage.remove('sesionOk');
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
+        resolve();
+      } else {
+        // Desktop webBrowser
+        try {
+          localStorage.removeItem('sesionOk');
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
+        resolve();
+      }
+    });
+    return cerrarSesionPromise;
+  }
+
+  // ************* METODOS PRIVADOS *****************  //
+
+  // Guarda datos de la sesion en LocalStorage
+  private guardarStorage() {
+    const savePromise = new Promise((resolve, reject) => {
+      if (this.platform.is('cordova')) {
+        // Dispositivo
+        this.storage.set('sesionOk', String(this.sesionOk));
+        resolve();
+      } else {
+        // Desktop webBrowser
+        if (this.sesionOk) {
+          localStorage.setItem('sesionOk', String(this.sesionOk));
+        } else {
+          // localStorage.removeItem('sesionOk');
+          localStorage.setItem('sesionOk', 'false');
+        }
+        resolve();
+      }
+    });
+    return savePromise;
+  }
+}

@@ -22,7 +22,7 @@ export class LoginPage {
   public myModal = this.ModalController.create(this.ConfiguracionPage);
   public usuario: string = '';
   public contrasenia: string = '';
-
+  public strLoginOkProvider: string = 'false';
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -30,53 +30,51 @@ export class LoginPage {
     private loadingCtrl: LoadingController,
     public LoginProvider: LoginProvider,
     private ModalController: ModalController
-  ) {}
+  ) {
+    this.strLoginOkProvider = String(this.LoginProvider.getActivo());
+  }
   public ingresar() {
     // Validar que el la propiedad privada Logged=True; si no mostrar login
-    this.navCtrl.setRoot(MenuPage);
+    if (this.LoginProvider.getActivo()) {
+      this.navCtrl.setRoot(MenuPage);
+    }
   }
-  public continuar() {
+  public continuar(formData: any) {
+    this.usuario = formData.usuario.value;
+    this.contrasenia = formData.contrasenia.value;
     let ObjMEnsaje: any;
     const loading = this.loadingCtrl.create({
       content: 'Iniciando la aplicación. Favor de esperar...'
     });
-    loading.present();
+    if (this.usuario === '' || this.contrasenia === '') {
+      const alert = this.alertCtrl.create({
+        title: 'Error',
+        subTitle: '¡Favor de ingresar Usuario y Contraseña!',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'ok',
+            handler: () => {
+              this.LoginProvider.setActivo(false);
+            }
+          }
+        ]
+      });
+      alert.present();
+      return false;
+    } else {
+      loading.present();
+    }
 
     this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
       (DATARCV) => {
         if (DATARCV) {
-          console.log('DATARCV-->', DATARCV);
           ObjMEnsaje = DATARCV;
-          console.log('Respuesa-->', ObjMEnsaje);
-          if (ObjMEnsaje.error === false) {
+          if (ObjMEnsaje._error === false) {
             loading.dismiss();
-            const alert = this.alertCtrl.create({
-              subTitle: 'HAs inciado como admin',
-              title: 'OK',
-              buttons: [
-                {
-                  handler: () => {
-                    console.log('Cancelar');
-                  },
-                  role: 'cancel',
-                  text: 'NO'
-                },
-                {
-                  handler: () => {
-                    // Guardar en el storage
-                    this.LoginProvider.guardarServicio(DATARCV);
-                    this.LoginProvider.setActivo(true);
-                    console.log('boton OK');
-                    // this.slides.lockSwipes(false);
-                    // this.slides.slideNext();
-                    // this.slides.lockSwipes(true);
-                  },
-                  role: 'si',
-                  text: 'SI'
-                }
-              ]
-            });
-            alert.present();
+            this.LoginProvider.guardarServicio(DATARCV);
+            this.LoginProvider.setActivo(true);
+            this.ingresar();
           } else {
             loading.dismiss();
             const alert = this.alertCtrl.create({
@@ -87,7 +85,6 @@ export class LoginPage {
                   text: 'Ok',
                   role: 'ok',
                   handler: () => {
-                    console.log('boton OK');
                     this.LoginProvider.setActivo(false);
                   }
                 }
@@ -96,12 +93,10 @@ export class LoginPage {
             alert.present();
           }
         } else {
-          console.log('no hay datos');
           this.LoginProvider.setActivo(false);
         }
       },
       (error) => {
-        console.log('Error', error);
         loading.dismiss();
         const alert = this.alertCtrl.create({
           title: 'Error',
@@ -111,7 +106,6 @@ export class LoginPage {
               text: 'Ok',
               role: 'ok',
               handler: () => {
-                console.log('boton OK');
                 this.LoginProvider.setActivo(false);
               }
             }
@@ -120,6 +114,7 @@ export class LoginPage {
         alert.present();
       }
     );
+    return false;
   }
   public ngAfterViewInit() {
     // this.slides.lockSwipes(true);
@@ -130,9 +125,6 @@ export class LoginPage {
     this.myModal.present();
   }
 
-  public ionViewDidLoad() {
-    console.log('LOGIN PAGE OPEN-->>>');
-  }
   public dismissModal() {
     this.myModal.dismiss();
   }

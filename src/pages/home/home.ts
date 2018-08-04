@@ -11,14 +11,18 @@ import { LoginPage } from '../login/login';
 export class HomePage {
   public LoginPage: any = LoginPage;
   public strPosition: string = '';
-
+  public LoginOkProvider: boolean = false;
+  public strLoginOkProvider: string = 'false';
   // Constructor
   constructor(
     public navCtrl: NavController,
     private BitacoraProvider: BitacoraProvider,
-    private LoginProvider: LoginProvider,
+    private loginProvider: LoginProvider,
     public App: App
-  ) {}
+  ) {
+    this.LoginOkProvider = this.loginProvider.getActivo();
+    this.strLoginOkProvider = String(this.LoginOkProvider);
+  }
   public guardarBitacora() {
     // Preparando la bitácora para guardarla en el servicio
     const objBitacora = {
@@ -31,17 +35,9 @@ export class HomePage {
       tiempo_hhmmss: '09:08:21',
       tiempo_segundos: 19192
     };
-
-    console.log('Guardando bitacora from Timer', objBitacora);
     this.BitacoraProvider.setBitacora(objBitacora);
   }
   public goToPage(PageParam: any) {
     this.navCtrl.push(PageParam);
-    console.log('In go to Page');
-  }
-  public cerrarSesion() {
-    this.LoginProvider.setActivo(false);
-    // this.navCtrl.setRoot(LoginPage);
-    this.App.getRootNav().setRoot(LoginPage);
   }
 }

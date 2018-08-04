@@ -1,10 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { IonicStorageModule } from '@ionic/storage';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
-import { MyApp } from './app.component';
-
 import {
   BitacoraPage,
   ConfiguracionPage,
@@ -14,13 +13,14 @@ import {
   MenuPage,
   TabsPage
 } from '../pages/index-paginas';
+import { MyApp } from './app.component';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { AppConfiguracionProvider } from '../providers/app-configuracion/app-configuracion';
 import { BitacoraProvider } from '../providers/bitacora/bitacora';
 import { LoginProvider } from '../providers/login/login';
-
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { UsuarioProvider } from '../providers/usuario/usuario';
 @NgModule({
   declarations: [
     MyApp,
@@ -32,7 +32,12 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
     ConfiguracionPage,
     ExcepcionTemporalPage
   ],
-  imports: [BrowserModule, IonicModule.forRoot(MyApp), HttpClientModule],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(MyApp),
+    HttpClientModule,
+    IonicStorageModule.forRoot()
+  ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
@@ -51,7 +56,8 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
     LoginProvider,
     LoadingController,
     BitacoraProvider,
-    ScreenOrientation
+    AppConfiguracionProvider,
+    UsuarioProvider
   ]
 })
 export class AppModule {}
