@@ -4,16 +4,12 @@ page-excepcion-temporal {
   margin: 0;
   padding: 0;
 }
-#contenedor {
-  margin: 10px auto;
-  width: 540px;
-  height: 115px;
-}
 .reloj {
   float: left;
-  font-size: 80px;
+  font-size: 5em;
   font-family: Courier, sans-serif;
   color: #363431;
+  text-align: center;
 }
 .boton {
   outline: none;
@@ -33,4 +29,12 @@ page-excepcion-temporal {
 }
 .boton:hover {
   box-shadow: 0px 0px 14px #3aad02;
+}
+
+@media only screen and (min-width: 0px) and (max-width: 400px) {
+  .reloj {
+    float: left;
+    font-size: 4em;
+    text-align: center;
+  }
 }

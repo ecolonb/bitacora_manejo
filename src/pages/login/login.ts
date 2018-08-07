@@ -10,6 +10,7 @@ import {
 } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
 import { ConfiguracionPage, MenuPage, TabsPage } from '../index-paginas';
+import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 
 @IonicPage()
 @Component({
@@ -18,6 +19,9 @@ import { ConfiguracionPage, MenuPage, TabsPage } from '../index-paginas';
 })
 export class LoginPage {
   // @ViewChild(Slides) slides: Slides;
+  public loading: any = this.loadingCtrl.create({
+    content: 'Iniciando la aplicación. Favor de esperar...'
+  });
   public ConfiguracionPage: any = ConfiguracionPage;
   public myModal = this.ModalController.create(this.ConfiguracionPage);
   public usuario: string = '';
@@ -29,13 +33,15 @@ export class LoginPage {
     public alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     public LoginProvider: LoginProvider,
-    private ModalController: ModalController
+    private ModalController: ModalController,
+    private bitacoraProvider: BitacoraProvider
   ) {
     this.strLoginOkProvider = String(this.LoginProvider.getActivo());
   }
   public ingresar() {
     // Validar que el la propiedad privada Logged=True; si no mostrar login
     if (this.LoginProvider.getActivo()) {
+      this.loading.dismiss();
       this.navCtrl.setRoot(MenuPage);
     }
   }
@@ -43,7 +49,7 @@ export class LoginPage {
     this.usuario = formData.usuario.value;
     this.contrasenia = formData.contrasenia.value;
     let ObjMEnsaje: any;
-    const loading = this.loadingCtrl.create({
+    this.loading = this.loadingCtrl.create({
       content: 'Iniciando la aplicación. Favor de esperar...'
     });
     if (this.usuario === '' || this.contrasenia === '') {
@@ -63,7 +69,7 @@ export class LoginPage {
       alert.present();
       return false;
     } else {
-      loading.present();
+      this.loading.present();
     }
 
     this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
@@ -71,12 +77,16 @@ export class LoginPage {
         if (DATARCV) {
           ObjMEnsaje = DATARCV;
           if (ObjMEnsaje._error === false) {
-            loading.dismiss();
             this.LoginProvider.guardarServicio(DATARCV);
             this.LoginProvider.setActivo(true);
-            this.ingresar();
+            // PRomise cargar bitacora y luego ingresar
+
+            this.bitacoraProvider.getBitacoraServer().then(() => {
+              this.bitacoraProvider.getHHmmss();
+              this.ingresar();
+            });
           } else {
-            loading.dismiss();
+            this.loading.dismiss();
             const alert = this.alertCtrl.create({
               title: 'Error',
               subTitle: ObjMEnsaje.mensaje,
@@ -97,7 +107,7 @@ export class LoginPage {
         }
       },
       (error) => {
-        loading.dismiss();
+        this.loading.dismiss();
         const alert = this.alertCtrl.create({
           title: 'Error',
           subTitle: error.message,

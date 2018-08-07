@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { UsuarioModel } from '../../models/usuario.model';
 import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
 import { UsuarioProvider } from './../usuario/usuario';
+// import { filter, map, switchMap } from 'rxjs/operators';
 @Injectable()
 export class LoginProvider {
   // Declaracion de variables globales

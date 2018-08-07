@@ -13,15 +13,19 @@ export class HomePage {
   public strPosition: string = '';
   public LoginOkProvider: boolean = false;
   public strLoginOkProvider: string = 'false';
+  public strTiempoManejo: string;
+  public strTiempoServicio: string;
   // Constructor
   constructor(
     public navCtrl: NavController,
-    private BitacoraProvider: BitacoraProvider,
+    public bitacoraProvider: BitacoraProvider,
     private loginProvider: LoginProvider,
     public App: App
   ) {
     this.LoginOkProvider = this.loginProvider.getActivo();
     this.strLoginOkProvider = String(this.LoginOkProvider);
+    this.strTiempoManejo = this.bitacoraProvider.getTimeForBitacora(1);
+    this.strTiempoServicio = this.bitacoraProvider.getTimeForBitacora(2);
   }
   public guardarBitacora() {
     // Preparando la bitácora para guardarla en el servicio
@@ -35,7 +39,7 @@ export class HomePage {
       tiempo_hhmmss: '09:08:21',
       tiempo_segundos: 19192
     };
-    this.BitacoraProvider.setBitacora(objBitacora);
+    this.bitacoraProvider.setBitacora(objBitacora);
   }
   public goToPage(PageParam: any) {
     this.navCtrl.push(PageParam);

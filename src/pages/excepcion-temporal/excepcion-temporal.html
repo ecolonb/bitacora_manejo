@@ -8,15 +8,14 @@
     </ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content padding>
-  <div id="contenedor">
-    <div class="reloj">{{ strHoras }}</div>
-    <div class="reloj">{{ strMinutos}}</div>
-    <div class="reloj">{{ strSegundos }}</div>
-    <div class="reloj">{{ strCentesimas }}</div>
-    <input type="button" class="boton" id="inicio" value="Start &#9658;" (click)="inicio()">
-    <input type="button" class="boton" id="parar" value="Stop &#8718;" onclick="parar();" disabled>
-    <input type="button" class="boton" id="continuar" value="Resume &#8634;" onclick="inicio();" disabled>
-    <input type="button" class="boton" id="reinicio" value="Reset &#8635;" onclick="reinicio();" disabled>
-  </div>
+<ion-content padding class="timerExTmp">
+  <span class="reloj">{{ strHoras }}</span>
+  <span class="reloj">{{ strMinutos}}</span>
+  <span class="reloj">{{ strSegundos }}</span>
+  <ion-item no-lines>
+    <input type="button" id="inicio" ion-button value="&#9658;" round (click)="inicio()">
+    <input type="button" id="parar" ion-button value="&#8718;" round (click)="parar()" disabled>
+    <input type="button" id="continuar" ion-button value="&#8634;" round (click)="inicio()" disabled>
+    <input type="button" id="reinicio" ion-button value="&#8635;" round disabled>
+  </ion-item>
 </ion-content>

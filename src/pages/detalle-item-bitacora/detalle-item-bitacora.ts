@@ -11,15 +11,12 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 @IonicPage()
 @Component({
   selector: 'page-detalle-item-bitacora',
-  templateUrl: 'detalle-item-bitacora.html',
+  templateUrl: 'detalle-item-bitacora.html'
 })
 export class DetalleItemBitacoraPage {
+  constructor(public navCtrl: NavController, public navParams: NavParams) {}
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
-
-  ionViewDidLoad() {
+  public ionViewDidLoad() {
     console.log('ionViewDidLoad DetalleItemBitacoraPage');
   }
-
 }
