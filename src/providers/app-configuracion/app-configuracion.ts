@@ -1,10 +1,16 @@
+import { DatePipe, registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import es from '@angular/common/locales/es';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Platform } from 'ionic-angular';
 import { AppConfiguracionModel } from '../../models/app-configuracion.model';
+registerLocaleData(es);
 /**
  * Este servicio administra la información de configuración de la App
+ * Server endpoind
+ * Formato de fecha
+ * **** se guardaria el idioma V2 ***
  */
 
 @Injectable()
@@ -26,7 +32,7 @@ export class AppConfiguracionProvider {
     });
   }
 
-  // Guarda la configuracion en LocalStorage
+  // Guarda la configuracion(serverid: 1,ibutton: 0) en LocalStorage retorna promesa
   public guardarConfigServer(ServerId: number, Ibutton: string): Promise<any> {
     const guardaConfigServerPromise = new Promise((resolve, reject) => {
       // Asignacion de nuevos valores al objeto config actual
@@ -85,7 +91,7 @@ export class AppConfiguracionProvider {
       if (this.platform.is('cordova')) {
         // Dispositivo
         this.platform.ready().then(() => {
-          this.storage.get('objConfigServer').then((objConfigServerStorage) => {
+          this.storage.get('objConfigServer').then(objConfigServerStorage => {
             this.objConfigServer = JSON.parse(objConfigServerStorage);
           });
           resolve();

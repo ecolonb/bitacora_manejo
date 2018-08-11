@@ -86,7 +86,7 @@
       Bitácora
     </ion-card-header>
     <ion-card-header text-center class="headerTipoBitacora">
-      {{birthday | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}
+      {{ '2018-10-10T10:21:55' | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}
       <hr>
     </ion-card-header>
     <ion-card-header text-center class="headerTipoBitacora">
@@ -146,6 +146,18 @@
         <ion-col col-4>13:15:05</ion-col>
         <ion-col col-4>01:15:00</ion-col>
       </ion-row>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header text-center color="copiloto">
+      -- Logs from RestFul... SP --
+    </ion-card-header>
+    <ion-card-content>
+      <div *ngFor="let itemBitacora of ObjItemsBitacora">
+        <ion-list>
+          <ion-item (click)="goToDetalles(itemBitacora)"> {{itemBitacora.FECHA_HORA_LOCAL | date:'medium':'GMT+00000':'es-mx' | uppercase}}</ion-item>
+        </ion-list>
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>

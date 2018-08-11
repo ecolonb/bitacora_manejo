@@ -13,9 +13,9 @@
   <span class="reloj">{{ strMinutos}}</span>
   <span class="reloj">{{ strSegundos }}</span>
   <ion-item no-lines>
-    <input type="button" id="inicio" ion-button value="&#9658;" round (click)="inicio()">
-    <input type="button" id="parar" ion-button value="&#8718;" round (click)="parar()" disabled>
-    <input type="button" id="continuar" ion-button value="&#8634;" round (click)="inicio()" disabled>
-    <input type="button" id="reinicio" ion-button value="&#8635;" round disabled>
+    <input type="button" id="inicio" ion-button value="&#9658;" (click)="inicio()">
+    <input type="button" id="parar" ion-button value="&#8718;" (click)="parar()" disabled>
+    <input type="button" id="continuar" ion-button value="&#8634;" (click)="inicio()" disabled>
+    <input type="button" id="reinicio" ion-button value="&#8635;" disabled>
   </ion-item>
 </ion-content>

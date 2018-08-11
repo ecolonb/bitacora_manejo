@@ -9,14 +9,18 @@
   <ion-content>
     <ion-list>
       <button ion-item (click)="testFunction()">
+        <ion-icon name="md-cloud-upload" item-start></ion-icon>
+        Guardar información
+      </button>
+
+      <button ion-item (click)="testFunction()">
         <ion-icon name="ios-settings" item-start></ion-icon>
         Cuenta
       </button>
-      <button ion-item (click)="testFunction()">
-        <ion-icon name="md-refresh" item-start></ion-icon>
-        Actualizar información
-      </button>
-      <button ion-item (click)="cerrarSesion()">
+      <ion-item no-lines>
+
+      </ion-item>
+      <button ion-item no-lines (click)="cerrarSesion()">
         <ion-icon name="md-log-out" item-start class="btnSesion"></ion-icon>
         <span class="btnSesion">Cerrar sesión</span>
       </button>

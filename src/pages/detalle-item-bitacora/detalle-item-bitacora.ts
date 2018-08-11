@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the DetalleItemBitacoraPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { BitacoraServerModel } from '../../models/bitacora-server.model';
 
 @IonicPage()
 @Component({
@@ -14,7 +8,13 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'detalle-item-bitacora.html'
 })
 export class DetalleItemBitacoraPage {
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  public objItemBitacora: BitacoraServerModel;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
+    // se reciben los parametros que se envian
+    console.log('navParams', this.navParams);
+    this.objItemBitacora = this.navParams.get('itemBitacora');
+  }
 
   public ionViewDidLoad() {
     console.log('ionViewDidLoad DetalleItemBitacoraPage');

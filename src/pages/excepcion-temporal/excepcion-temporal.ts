@@ -23,55 +23,49 @@ export class ExcepcionTemporalPage {
   private stInProgress: boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
-    // code test
-    const dateTest1 = this.convertUTCDateToLocalDate(
-      new Date('2018-08-06T03:14:56')
-    );
-    console.log('2018-08-06 03:14:56 <-> ', dateTest1);
-    this.testDatetTiime(
-      'Servicio : ',
-      '2018-08-06T03:14:56',
-      '2018-08-05T02:58:44'
-    );
-    this.testDatetTiime(
-      'Manejo : ',
-
-      '2018-08-06T03:14:53',
-      '2018-08-05T22:08:20'
-    );
-
-    const dateDiff_ = 701 * 60;
-    console.log('dateDiff: Segundos transcurridos: ->', dateDiff_);
-    const horas_: any = Math.floor(dateDiff_ / 3600);
-    const minutos_: any = Math.floor((dateDiff_ - horas_ * 3600) / 60);
-    const segundos_: any = Math.round(
-      dateDiff_ - horas_ * 3600 - minutos_ * 60
-    );
-    console.log(
-      ' TIEMPO CONSTRUCTOR: [ ' +
-        horas_ +
-        ':' +
-        minutos_ +
-        ':' +
-        segundos_ +
-        ' ]'
-    );
+    // Conversion Ok sin aumentar o disminuir Horas
+    // const dateDiff_ = 701 * 60;
+    // console.log('dateDiff: Segundos transcurridos: ->', dateDiff_);
+    // const horas_: any = Math.floor(dateDiff_ / 3600);
+    // const minutos_: any = Math.floor((dateDiff_ - horas_ * 3600) / 60);
+    // const segundos_: any = Math.round(
+    //   dateDiff_ - horas_ * 3600 - minutos_ * 60
+    // );
+    // console.log(
+    //   ' TIEMPO CONSTRUCTOR: [ ' +
+    //     horas_ +
+    //     ':' +
+    //     minutos_ +
+    //     ':' +
+    //     segundos_ +
+    //     ' ]'
+    // );
   }
-
+  // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio() {
     console.log('Funcion inicio Load');
-    setInterval(() => {
-      if (!this.stInProgress) {
-        this.stInProgress = true;
-        this.date1 = new Date();
-      }
-      this.cronometro(this);
-    }, 200);
+    if (!this.stInProgress) {
+      this.stInProgress = true;
+      this.date1 = new Date();
+      this.control = setInterval(() => {
+        this.cronometro(this);
+      }, 1000);
+    }
     (document.getElementById('inicio') as HTMLInputElement).disabled = true;
     (document.getElementById('parar') as HTMLInputElement).disabled = false;
     (document.getElementById('continuar') as HTMLInputElement).disabled = true;
     (document.getElementById('reinicio') as HTMLInputElement).disabled = true;
   }
+
+  // Funcion detiene el vento debe guardarse en localStorage
+  public parar() {
+    console.log('Funcion parar');
+    clearInterval(this.control);
+    this.stInProgress = false;
+    (document.getElementById('parar') as HTMLInputElement).disabled = true;
+    (document.getElementById('continuar') as HTMLInputElement).disabled = false;
+  }
+  // Obtiene el tiempo transcurrido entre la fecha que inicio el evento y la fecha actual (Se ejecuta cada segundo)
   public cronometro(that) {
     that.date2 = new Date();
     console.log(that.date1 + ' <-> ' + that.date2);
@@ -100,22 +94,17 @@ export class ExcepcionTemporalPage {
 
     console.log('Time: ', horas + ':' + minutos + ':' + segundos);
   }
-  public parar() {
-    console.log('Parar');
-    // Deshabilitar boton
-    (document.getElementById('parar') as HTMLInputElement).disabled = true;
-    // Habilitar boton
-    (document.getElementById('continuar') as HTMLInputElement).disabled = false;
-  }
+
   public testDatetTiime(Title: string, Date1: any, Date2: any) {
     console.log('In TestDateTime');
     const date1Test: any = new Date(Date1);
     const date2Test: Date = new Date(Date2);
+    console.log(Date1 + ' <-----------> ' + Date2);
     console.log(date1Test + ' <-> ' + date2Test);
-    let dateDiff = date1Test.valueOf() - date2Test.valueOf();
+    let dateDiff = Math.abs(date1Test.valueOf() - date2Test.valueOf());
 
     dateDiff /= 1000;
-
+    console.log('Segundos transcurridos: ', dateDiff);
     const horas: any = Math.floor(dateDiff / 3600);
     const minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
     const segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
@@ -130,19 +119,8 @@ export class ExcepcionTemporalPage {
         ' ]'
     );
   }
-  public convertUTCDateToLocalDate(date) {
-    console.log('In convertUTCDateToLocalDate', date);
-    const newDate = new Date(
-      date.getTime() + date.getTimezoneOffset() * 60 * 1000
-    );
 
-    const offset = date.getTimezoneOffset() / 60;
-    const hours = date.getHours();
-
-    newDate.setHours(hours - 6);
-    console.log(' newDate', newDate);
-    return newDate;
-  }
+  // Esta función no se utiliza, Lleba el control del cronometro en Memoria RAM (Si se suspende el dispositivo o computadora se pierde el Conteo)
   public cronometroManual(that) {
     that.segundos++;
     console.log('In fn cronometro', that.segundos, that.minutos, that.horas);

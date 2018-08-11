@@ -28,14 +28,24 @@ export class MyApp {
         if (this.loginProvider.getActivo()) {
           // Cargar Info Usuario from Storage
           this.usuarioProvider.cargarStorage().then(() => {
-            // Información del usuario cargada redirect al Home
+            // Información del usuario cargada Validar Sesion Status -> Redirect
 
-            this.bitacoraProvider.getBitacoraServer().then(() => {
-              this.bitacoraProvider.getHHmmss();
-              this.rootPage = MenuPage;
-              statusBar.styleDefault();
-              splashScreen.hide();
-            });
+            this.bitacoraProvider
+              .getBitacoraServer()
+              .then(() => {
+                // se obtiene la información desde el Server
+                // this.bitacoraProvider.getHHmmss();
+                this.rootPage = MenuPage;
+                statusBar.styleDefault();
+                splashScreen.hide();
+              })
+              .catch((err) => {
+                // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
+                this.rootPage = MenuPage;
+                statusBar.styleDefault();
+                splashScreen.hide();
+                console.log('Error', err);
+              });
             // Realizar peticion con datos la ultima actualizacion
           });
         } else {

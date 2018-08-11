@@ -17,10 +17,12 @@ import { MyApp } from './app.component';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
+import { DetalleItemBitacoraPage } from '../pages/detalle-item-bitacora/detalle-item-bitacora';
 import { AppConfiguracionProvider } from '../providers/app-configuracion/app-configuracion';
 import { BitacoraProvider } from '../providers/bitacora/bitacora';
 import { LoginProvider } from '../providers/login/login';
 import { UsuarioProvider } from '../providers/usuario/usuario';
+import { UtilidadesProvider } from '../providers/utilidades/utilidades';
 @NgModule({
   declarations: [
     MyApp,
@@ -30,7 +32,8 @@ import { UsuarioProvider } from '../providers/usuario/usuario';
     BitacoraPage,
     LoginPage,
     ConfiguracionPage,
-    ExcepcionTemporalPage
+    ExcepcionTemporalPage,
+    DetalleItemBitacoraPage
   ],
   imports: [
     BrowserModule,
@@ -47,7 +50,8 @@ import { UsuarioProvider } from '../providers/usuario/usuario';
     BitacoraPage,
     LoginPage,
     ConfiguracionPage,
-    ExcepcionTemporalPage
+    ExcepcionTemporalPage,
+    DetalleItemBitacoraPage
   ],
   providers: [
     StatusBar,
@@ -57,7 +61,8 @@ import { UsuarioProvider } from '../providers/usuario/usuario';
     LoadingController,
     BitacoraProvider,
     AppConfiguracionProvider,
-    UsuarioProvider
+    UsuarioProvider,
+    UtilidadesProvider
   ]
 })
 export class AppModule {}

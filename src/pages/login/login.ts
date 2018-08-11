@@ -82,7 +82,7 @@ export class LoginPage {
             // PRomise cargar bitacora y luego ingresar
 
             this.bitacoraProvider.getBitacoraServer().then(() => {
-              this.bitacoraProvider.getHHmmss();
+              // this.bitacoraProvider.getHHmmss();
               this.ingresar();
             });
           } else {

@@ -2,8 +2,10 @@ import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { BitacoraServerModel } from '../../models/bitacora-server.model';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { UsuarioProvider } from './../../providers/usuario/usuario';
+import { DetalleItemBitacoraPage } from './../index-paginas';
 registerLocaleData(es);
 
 @IonicPage()
@@ -12,22 +14,34 @@ registerLocaleData(es);
   templateUrl: 'bitacora.html'
 })
 export class BitacoraPage {
-  public birthday = new Date('2018-07-30T20:00:00');
   // Las fechas se deben guardar de esta forma para evitar errores en Safari-iOS "2018-08-02T19:19:20"
 
-  // ******* Metodos publicos
+  // ******* Propiedades públicas
   public fechaBitacora = new Date();
   public strNombreConductor: string;
   public strTiempoManejo: string;
   public strTiempoServicio: string;
+  public ObjItemsBitacora: BitacoraServerModel[];
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private bitacoraProvider: BitacoraProvider,
     public usuarioProvider: UsuarioProvider
   ) {
+    // Obteniendo informacion principal de la bitacora
     this.strNombreConductor = this.usuarioProvider.getNombreConductor();
-    this.strTiempoManejo = this.bitacoraProvider.getTimeForBitacora(1);
-    this.strTiempoServicio = this.bitacoraProvider.getTimeForBitacora(2);
+    // this.strTiempoManejo = this.bitacoraProvider.getTimeForBitacora(1)
+    // this.bitacoraProvider.getTimeForBitacora(2)
+    this.strTiempoManejo = '05:00:10';
+    this.strTiempoServicio = '08:20:21';
+    // Obteniendo los items de la bitácora en localStorage
+    this.ObjItemsBitacora = this.bitacoraProvider.getBitacoraDataStorage();
+    // console.log('From Bitacora PAGE', this.ObjItemsBitacora);
+  }
+
+  // Abre otra pagina con parametros
+  public goToDetalles(itemBitacora: BitacoraServerModel) {
+    console.log('goToDetalles', itemBitacora);
+    this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
   }
 }

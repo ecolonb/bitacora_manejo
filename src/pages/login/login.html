@@ -1,18 +1,18 @@
 <ion-header>
   <ion-navbar color="copiloto" hide-tabs>
-    <ion-title text-center>
-      <img style="margin-top: 12px;" src="assets/imgs/mcv6.png">
+    <ion-title text-center style="padding-top: 15px; padding-bottom: 15px;">
+      <img src="assets/imgs/mcv6.png">
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-card>
+  <ion-card class="cardLogin">
     <ion-card-header class="cardHeaderLogin">
       <h2 text-center style="color: #ffffff;font-size: 1.2em;font-weight: bold; word-spacing: 5px;letter-spacing: 2px;">Iniciar sesión</h2>
     </ion-card-header>
     <ion-card-content>
-      <form #formLogin (submit)="continuar(formLogin)">
+      <form #formLogin (submit)="continuar(formLogin)" method="POST">
         <ion-list no-lines>
           <ion-item>
             <ion-input type="text" id="usuario" name="usuario" placeholder="Usuario"></ion-input>

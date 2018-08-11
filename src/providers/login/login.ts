@@ -135,7 +135,7 @@ export class LoginProvider {
           localStorage.setItem('sesionOk', String(this.sesionOk));
         } else {
           // localStorage.removeItem('sesionOk');
-          localStorage.setItem('sesionOk', 'false');
+          localStorage.removeItem('sesionOk');
         }
         resolve();
       }

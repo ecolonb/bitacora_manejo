@@ -6,6 +6,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { BitacoraServerModel } from '../../models/bitacora-server.model';
 import { BitacoraModel } from '../../models/bitacora.model';
 import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
+import { UtilidadesProvider } from '../utilidades/utilidades';
 /**
  * Este servicio administra la información de las Bitácoras
  */
@@ -22,21 +23,71 @@ export class BitacoraProvider {
 
   // Array Tipeado con el formato de la bitácora
   private BitacoraDataServer: BitacoraServerModel[] = [];
+  private BitacoraDataStorage: BitacoraServerModel[] = [
+    {
+      ID_HISTORICO_BITACORA: 213455,
+      NUID: 21345589144,
+      ULTIMO_INICIO_SERVICIO: new Date(),
+      ULTIMO_FIN_SERVICIO: new Date(),
+      ULTIMO_INICIO_MANEJO: new Date(),
+      ULTIMO_FIN_MANEJO: new Date(),
+      MINUTOS_MANEJO_DIA_ACUMULADOS: 120,
+      MINUTOS_SERVICIO_DIA_ACUMULADOS: 200,
+      FECHA_HORA_LOCAL: new Date()
+    },
+    {
+      ID_HISTORICO_BITACORA: 213456,
+      NUID: 21345589144,
+      ULTIMO_INICIO_SERVICIO: new Date(),
+      ULTIMO_FIN_SERVICIO: new Date(),
+      ULTIMO_INICIO_MANEJO: new Date(),
+      ULTIMO_FIN_MANEJO: new Date(),
+      MINUTOS_MANEJO_DIA_ACUMULADOS: 120,
+      MINUTOS_SERVICIO_DIA_ACUMULADOS: 200,
+      FECHA_HORA_LOCAL: new Date()
+    },
+    {
+      ID_HISTORICO_BITACORA: 213457,
+      NUID: 21345589144,
+      ULTIMO_INICIO_SERVICIO: new Date(),
+      ULTIMO_FIN_SERVICIO: new Date(),
+      ULTIMO_INICIO_MANEJO: new Date(),
+      ULTIMO_FIN_MANEJO: new Date(),
+      MINUTOS_MANEJO_DIA_ACUMULADOS: 120,
+      MINUTOS_SERVICIO_DIA_ACUMULADOS: 200,
+      FECHA_HORA_LOCAL: new Date()
+    }
+  ];
 
   constructor(
     public http: HttpClient,
-    private appConfiguracionProvider: AppConfiguracionProvider
+    private appConfiguracionProvider: AppConfiguracionProvider,
+    private utilidadesProvider: UtilidadesProvider
   ) {
     // Realizar diferencias de fechas bitacora:
+    console.log(
+      'Provider Bitácora en localStorage: ',
+      this.BitacoraDataStorage
+    );
+
+    // // TEST conversion de fecha local a UTC.
+    // const strNowUTCSQLServer: string = this.utilidadesProvider.isoStringToSQLServerFormat(
+    //   new Date()
+    //     .toISOString()
+    //     .toString()
+    //     .toUpperCase()
+    // );
+    // console.log('SERVER TIME UTC: ', strNowUTCSQLServer);
   }
+
   public setBitacora(objDatos: any) {
     // Modelando la data y guardandola en el array de items bitácora
     const data = new BitacoraModel(objDatos);
     this.BitacoraData.unshift(data);
-    console.log(
-      'Se ha guardado un elemento en this.BitacoraData --> ',
-      this.BitacoraData
-    );
+    // console.log(
+    //   'Se ha guardado un elemento en this.BitacoraData --> ',
+    //   this.BitacoraData
+    // );
   }
   public getBitacora() {
     return this.BitacoraData;
@@ -55,11 +106,14 @@ export class BitacoraProvider {
       date2: '2018-08-06',
       serverId: this.appConfiguracionProvider.getServerEndPoint()
     };
+    console.log('UrlEndPoint', this.UrlEndPoint);
+    console.log('dataSendform', dataSendform);
+
     return this.http
       .post(this.UrlEndPoint, dataSendform, HEADERS)
       .toPromise()
       .then((RESULTDATA: BitacoraServerModel[]) => {
-        console.log('In new peomise-->');
+        console.log('RESULTDATA getBitacoraServer', RESULTDATA);
         this.BitacoraDataServer = RESULTDATA;
         this.BitacoraDataServerNow = this.BitacoraDataServer[0];
         this.BitacoraDataServerBack = this.BitacoraDataServer[1];
@@ -70,56 +124,32 @@ export class BitacoraProvider {
     // return bitacoraPromise;
   }
 
-  public getHHmmss() {
-    console.log('this.BitacoraDataServerNow', this.BitacoraDataServerNow);
-    this.strTiempoManejo = this.getTimeHHmmss(
-      this.BitacoraDataServerNow.ULTIMO_INICIO_MANEJO,
-      this.BitacoraDataServerNow.ULTIMO_FIN_MANEJO
-    );
+  // public getHHmmss() {
+  //   console.log('Se ejecuta esto despues del error');
 
-    this.strTiempoServicio = this.getTimeHHmmss(
-      this.BitacoraDataServerNow.ULTIMO_INICIO_SERVICIO,
-      this.BitacoraDataServerNow.ULTIMO_FIN_SERVICIO
-    );
+  //   this.strTiempoManejo = this.getTimeHHmmss(
+  //     this.BitacoraDataServerNow.ULTIMO_INICIO_MANEJO,
+  //     this.BitacoraDataServerNow.ULTIMO_FIN_MANEJO
+  //   );
+
+  //   this.strTiempoServicio = this.getTimeHHmmss(
+  //     this.BitacoraDataServerNow.ULTIMO_INICIO_SERVICIO,
+  //     this.BitacoraDataServerNow.ULTIMO_FIN_SERVICIO
+  //   );
+  //   console.log('this.BitacoraDataServerNow', this.BitacoraDataServerNow);
+  // }
+
+  // Obtiene la bitacora del localStorage
+  public getBitacoraDataStorage(): BitacoraServerModel[] {
+    return this.BitacoraDataStorage;
   }
-
-  // Función obtiene la diferenfia entre dos fechas Return String HH:mm:ss
-  public getTimeHHmmss(Fecha1, Fecha2): string {
-    const fecha1date = new Date(Fecha1);
-    const fecha2date = new Date(Fecha2);
-    console.log('fecha1date', fecha1date);
-    console.log('fecha2date', fecha2date);
-    let strTiempoHHmmss = '';
-    let dateDiff = Math.abs(fecha1date.valueOf() - fecha2date.valueOf());
-
-    dateDiff /= 1000;
-    let horas: any = Math.floor(dateDiff / 3600);
-    let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
-    let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
-
-    if (horas < 10) {
-      horas = '0' + horas;
-    }
-
-    if (minutos < 10) {
-      minutos = '0' + minutos;
-    }
-
-    if (segundos < 10) {
-      segundos = '0' + segundos;
-    }
-    strTiempoHHmmss = horas + ':' + minutos + ':' + segundos;
-    console.log('Tiempo transcurrido: ', strTiempoHHmmss);
-    return strTiempoHHmmss;
-  }
-
   // Obtiene el tiempo total por evento String(Conduciendo, Servicio, Descanso)
   public getTimeForBitacora(idTiempo: number): string {
     let strtiempohhmmss: string = '';
     if (idTiempo === 1) {
-      strtiempohhmmss = this.strTiempoManejo;
+      strtiempohhmmss = '01:20:21';
     } else if (idTiempo === 2) {
-      strtiempohhmmss = this.strTiempoServicio;
+      strtiempohhmmss = '02:20:21';
     }
 
     return strtiempohhmmss;

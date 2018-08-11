@@ -1,4 +1,5 @@
 export class BitacoraServerModel {
+  public FECHA_HORA_LOCAL: Date;
   public ID_HISTORICO_BITACORA: number;
   public NUID: number;
   public ULTIMO_INICIO_SERVICIO: Date;

@@ -3,11 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { BitacoraPage } from './bitacora';
 
 @NgModule({
-  declarations: [
-    BitacoraPage,
-  ],
-  imports: [
-    IonicPageModule.forChild(BitacoraPage),
-  ],
+  declarations: [BitacoraPage],
+  imports: [IonicPageModule.forChild(BitacoraPage)]
 })
 export class BitacoraPageModule {}
