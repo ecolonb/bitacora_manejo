@@ -1,18 +1,83 @@
-<!--
-  Generated template for the ActividadesPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
-  <ion-navbar>
-    <ion-title>actividades</ion-title>
+  <ion-navbar color="copiloto">
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      Registro de actvidad
+    </ion-title>
   </ion-navbar>
-
 </ion-header>
+<ion-content class="timerExTmp">
 
+  <ion-card>
+    <div>
+      <ion-item style="background-color: #4DAEDA;">
+        <ion-label style="color:white;">Registrar</ion-label>
+        <ion-select class="slcActividad" (ionChange)="onChangeSelectActividad()" [(ngModel)]="actividadActual" style="background-color: #4DAEDA;color: white; max-width: 100% !important;">
+          <ion-option value="S">Servicio</ion-option>
+          <ion-option value="C">Conduciendo</ion-option>
+          <ion-option value="D">Descanso</ion-option>
+          <ion-option value="ET">Excepción temporal</ion-option>
+          <ion-option value="FS">Fuera de servicio</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <h1 text-center style="color: #21425f;">{{ actividadActual }}</h1>
+      </ion-item>
+      <div style="margin-left: auto;margin-right: auto;text-align: center;">
 
-<ion-content padding>
+        <span class="reloj">{{ strHoras }}</span>
+        <span class="reloj">{{ strMinutos}}</span>
+        <span class="reloj">{{ strSegundos }}</span>
+      </div>
+      <ion-item no-lines style="margin-left: auto;margin-right: auto;text-align: center;padding: 0;">
+        <button id="inicio" ion-button icon-start (click)="inicio()" color="md_tq">
+          <ion-icon name="play"></ion-icon>
+          <span>Iniciar</span>
+        </button>
+        <button id="eliminar" ion-button icon-start (click)="eliminar()" color="md_tq" disabled>
+          <ion-icon name="trash"></ion-icon>
+          <span>Eliminar</span>
+        </button>
+        <button id="guardar" ion-button icon-start (click)="guardar()" color="md_tq" disabled>
+          <ion-icon name="md-checkbox-outline"></ion-icon>
+          <span>Guardar</span>
+        </button>
+      </ion-item>
+      <hr>
+    </div>
+    <span>
+      &nbsp;
+    </span>
+    <ion-card *ngIf="haveElements">
+      <ion-title text-center style="margin-bottom: 7px;">
+        <span style="font-size: 0.9em;font-weight: normal;color:#21425F;">Registros</span>
+      </ion-title>
+      <ion-list>
+        <ion-item-sliding *ngFor="let itemBitacora of BitacoraData" style="border-bottom:solid 1px rgb(214, 214, 218); color:#21425F;"
+          detail-push>
+          <ion-item>
+            <span style="color:#21425F;">{{ itemBitacora.Actvidad | actividadTitle }}</span>
+            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : strHoras + strMinutos+strSegundos }}</span>
+            <span item-end style="color: #21425F">
+              <ion-icon style="margin-top: 4px;" name="ios-arrow-forward"></ion-icon>
+            </span>
+          </ion-item>
+          <ion-item-options side="right">
+            <button ion-button outline color="md_tq" style="text-transform: capitalize">
+              Eliminar
+              <ion-icon name="md-trash"></ion-icon>
+            </button>
+            <button ion-button outline color="md_tq" style="text-transform: capitalize">
+              Editar
+              <ion-icon name="md-create"></ion-icon>
+            </button>
+          </ion-item-options>
 
+        </ion-item-sliding>
+
+      </ion-list>
+    </ion-card>
+  </ion-card>
 </ion-content>

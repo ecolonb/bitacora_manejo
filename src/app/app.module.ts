@@ -5,14 +5,15 @@ import { IonicStorageModule } from '@ionic/storage';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import {
+  ActividadesPage,
   BitacoraPage,
   ConfiguracionPage,
-  ExcepcionTemporalPage,
   HomePage,
   LoginPage,
   MenuPage,
   TabsPage
 } from '../pages/index-paginas';
+import { ActividadTitlePipe } from './../pipes/actividad-title/actividad-title';
 import { MyApp } from './app.component';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -32,8 +33,9 @@ import { UtilidadesProvider } from '../providers/utilidades/utilidades';
     BitacoraPage,
     LoginPage,
     ConfiguracionPage,
-    ExcepcionTemporalPage,
-    DetalleItemBitacoraPage
+    DetalleItemBitacoraPage,
+    ActividadesPage,
+    ActividadTitlePipe
   ],
   imports: [
     BrowserModule,
@@ -50,8 +52,8 @@ import { UtilidadesProvider } from '../providers/utilidades/utilidades';
     BitacoraPage,
     LoginPage,
     ConfiguracionPage,
-    ExcepcionTemporalPage,
-    DetalleItemBitacoraPage
+    DetalleItemBitacoraPage,
+    ActividadesPage
   ],
   providers: [
     StatusBar,

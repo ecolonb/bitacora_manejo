@@ -31,7 +31,7 @@ export class MyApp {
             // Información del usuario cargada Validar Sesion Status -> Redirect
 
             this.bitacoraProvider
-              .getBitacoraServer()
+              .getBitacoraStorage()
               .then(() => {
                 // se obtiene la información desde el Server
                 // this.bitacoraProvider.getHHmmss();

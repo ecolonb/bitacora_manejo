@@ -1,12 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { App, IonicPage, Nav, NavController, NavParams } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-import {
-  BitacoraPage,
-  ExcepcionTemporalPage,
-  HomePage,
-  LoginPage
-} from '../index-paginas';
+import { BitacoraPage, HomePage, LoginPage } from '../index-paginas';
 import { TabsPage } from './../tabs/tabs';
 
 @IonicPage()
@@ -17,7 +12,8 @@ import { TabsPage } from './../tabs/tabs';
 export class MenuPage {
   public rootPage: any = TabsPage;
   public BitacoraPage: any = BitacoraPage;
-  @ViewChild(Nav) public nav: Nav;
+  @ViewChild(Nav)
+  public nav: Nav;
 
   constructor(
     public navCtrl: NavController,

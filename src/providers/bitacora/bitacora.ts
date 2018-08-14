@@ -92,37 +92,49 @@ export class BitacoraProvider {
   public getBitacora() {
     return this.BitacoraData;
   }
-  public getBitacoraServer(): Promise<any> {
-    // const bitacoraPromise = new Promise((resolve, reject) => {
-    // console.log('Bitacora provider');
-    // Realizar petición Http obtener bitacora
-    const HEADERS = {
-      headers: { 'Content-Type': 'application/json; charset=utf-8' }
-    };
+  public getBitacoraStorage(): Promise<any> {
     // Obj datos que recibe el ApiRestFul LoginIbutton
-    const dataSendform = {
-      ibutton: Number(this.appConfiguracionProvider.getIdIbutton()),
-      date1: '2018-08-05',
-      date2: '2018-08-06',
-      serverId: this.appConfiguracionProvider.getServerEndPoint()
-    };
-    console.log('UrlEndPoint', this.UrlEndPoint);
-    console.log('dataSendform', dataSendform);
 
-    return this.http
-      .post(this.UrlEndPoint, dataSendform, HEADERS)
-      .toPromise()
-      .then((RESULTDATA: BitacoraServerModel[]) => {
-        console.log('RESULTDATA getBitacoraServer', RESULTDATA);
-        this.BitacoraDataServer = RESULTDATA;
-        this.BitacoraDataServerNow = this.BitacoraDataServer[0];
-        this.BitacoraDataServerBack = this.BitacoraDataServer[1];
-        // resolve();
-      });
+    const getBitacoraStoragePromise = new Promise((resolve, reject) => {
+      console.log('Se carga bitacora from localStorage');
+      resolve(this.BitacoraData);
+    });
+    return getBitacoraStoragePromise;
     // });
 
     // return bitacoraPromise;
   }
+  // public getBitacoraServer(): Promise<any> {
+  //   // const bitacoraPromise = new Promise((resolve, reject) => {
+  //   // console.log('Bitacora provider');
+  //   // Realizar petición Http obtener bitacora
+  //   const HEADERS = {
+  //     headers: { 'Content-Type': 'application/json; charset=utf-8' }
+  //   };
+  //   // Obj datos que recibe el ApiRestFul LoginIbutton
+  //   const dataSendform = {
+  //     ibutton: Number(this.appConfiguracionProvider.getIdIbutton()),
+  //     date1: '2018-08-05',
+  //     date2: '2018-08-06',
+  //     serverId: this.appConfiguracionProvider.getServerEndPoint()
+  //   };
+  //   console.log('UrlEndPoint', this.UrlEndPoint);
+  //   console.log('dataSendform', dataSendform);
+
+  //   return this.http
+  //     .post(this.UrlEndPoint, dataSendform, HEADERS)
+  //     .toPromise()
+  //     .then((RESULTDATA: BitacoraServerModel[]) => {
+  //       console.log('RESULTDATA getBitacoraServer', RESULTDATA);
+  //       this.BitacoraDataServer = RESULTDATA;
+  //       this.BitacoraDataServerNow = this.BitacoraDataServer[0];
+  //       this.BitacoraDataServerBack = this.BitacoraDataServer[1];
+  //       // resolve();
+  //     });
+  //   // });
+
+  //   // return bitacoraPromise;
+  // }
 
   // public getHHmmss() {
   //   console.log('Se ejecuta esto despues del error');

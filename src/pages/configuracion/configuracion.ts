@@ -72,15 +72,10 @@ export class ConfiguracionPage {
     this.serverId = serverId;
   }
   public validateIbutton(Evento: any) {
-    console.log('Evento: ', Evento.key);
     // Validando caracteres validos
     const strCaracteresValidos: string = '1234567890';
-    console.log('IndexOf', strCaracteresValidos.indexOf(Evento.key));
     if (strCaracteresValidos.indexOf(Evento.key) < 0) {
-      console.log('validarion < 0');
       return false;
-    } else {
-      console.log('validarion > 0');
     }
   }
 }

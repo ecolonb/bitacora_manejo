@@ -81,10 +81,13 @@ export class LoginPage {
             this.LoginProvider.setActivo(true);
             // PRomise cargar bitacora y luego ingresar
 
-            this.bitacoraProvider.getBitacoraServer().then(() => {
-              // this.bitacoraProvider.getHHmmss();
-              this.ingresar();
-            });
+            this.bitacoraProvider
+              .getBitacoraStorage()
+              .then((ResultBitacoraStorage) => {
+                // this.bitacoraProvider.getHHmmss();
+                console.log('ResultBitacoraStorage', ResultBitacoraStorage);
+                this.ingresar();
+              });
           } else {
             this.loading.dismiss();
             const alert = this.alertCtrl.create({
@@ -117,6 +120,9 @@ export class LoginPage {
               role: 'ok',
               handler: () => {
                 this.LoginProvider.setActivo(false);
+                // Borrar las dos lineas de abajo
+                this.LoginProvider.setActivo(true);
+                this.ingresar();
               }
             }
           ]

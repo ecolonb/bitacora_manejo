@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { LoginProvider } from '../../providers/login/login';
 import {
+  ActividadesPage,
   BitacoraPage,
-  ExcepcionTemporalPage,
   HomePage,
   MenuPage
 } from '../index-paginas';
@@ -14,7 +14,7 @@ export class TabsPage {
   public tabHome: any = HomePage;
   public tabBitacoraPage: any = BitacoraPage;
   public tabMenuPage: any = MenuPage;
-  public tabExcepcionTemporalPage: any = ExcepcionTemporalPage;
+  public tabActividades: any = ActividadesPage;
   public loginActivo: boolean = false;
 
   constructor(private LoginProvider: LoginProvider) {

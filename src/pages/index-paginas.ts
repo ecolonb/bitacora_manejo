@@ -1,4 +1,4 @@
-export { ExcepcionTemporalPage } from './excepcion-temporal/excepcion-temporal';
+export { ActividadesPage } from './actividades/actividades';
 export { BitacoraPage } from './bitacora/bitacora';
 export {
   DetalleItemBitacoraPage

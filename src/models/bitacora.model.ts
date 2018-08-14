@@ -1,20 +1,49 @@
 export class BitacoraModel {
-  public fecha_inicio: Date;
-  public fecha_fin: Date;
-  public inicio_x: number;
-  public incio_y: number;
-  public fin_x: number;
-  public fin_y: number;
-  public tiempo_hhmmss: string;
-  public tiempo_segundos: number;
+  public IdViaje: number;
+  public HashBitacora: number;
+  public FechaHoraInicio: string;
+  public FechaHoraFinal: string;
+  public SegundosTotal: number;
+  public TiempoHhmmss: string;
+  public Transicion: number;
+  public TransicionHhmmss: string;
+  public Actvidad: string;
+  public Descripcion: string;
+  public Terminado: boolean;
+  public InicioActividadX: number;
+  public InicioActividadY: number;
+  public FinActividaX: number;
+  public FinActividadY: number;
+  public GuardadoServer: boolean;
+  public Nota: string;
+
   constructor(objDatos: any) {
-    this.fecha_inicio = objDatos.fecha_inicio;
-    this.fecha_fin = objDatos.fecha_fin;
-    this.inicio_x = objDatos.inicio_x;
-    this.incio_y = objDatos.incio_y;
-    this.fin_x = objDatos.fin_x;
-    this.fin_y = objDatos.fin_y;
-    this.tiempo_hhmmss = objDatos.tiempo_hhmmss;
-    this.tiempo_segundos = objDatos.tiempo_segundos;
+    this.IdViaje = objDatos.IdViaje;
+    this.HashBitacora = objDatos.HashBitacora;
+    this.FechaHoraInicio = objDatos.FechaHoraInicio;
+    this.FechaHoraFinal = objDatos.FechaHoraFinal;
+    this.SegundosTotal = objDatos.SegundosTotal;
+    this.TiempoHhmmss = objDatos.TiempoHhmmss;
+    this.Actvidad = objDatos.Actvidad;
+    this.InicioActividadX = objDatos.InicioActividadX;
+    this.InicioActividadY = objDatos.InicioActividadY;
+    this.FinActividaX = objDatos.FinActividaX;
+    this.FinActividadY = objDatos.FinActividadY;
+    this.Descripcion = objDatos.Descripcion;
+    this.GuardadoServer = objDatos.GuardadoServer;
+    this.Nota = objDatos.Nota;
+    this.Transicion = objDatos.Transicion;
+    this.TransicionHhmmss = objDatos.TransicionHhmmss;
+    this.Terminado = objDatos.Terminado;
   }
+
+  /**
+   * Con los datos que se crea la bitacora:
+   * IdViaje = Puede tener o no un viaje asignado.
+   * HashBitacora = se crea apartir de la fecha hora UTC + Token
+   * FechaHoraInicio = Es la fecha que se registra cuando el usuario inicia una Actividad
+   * InicioActividadX = Punto Latitud
+   * InicioActividadY = Punto longitud
+   *
+   */
 }
