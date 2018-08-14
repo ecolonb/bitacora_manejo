@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BitacoraServerModel } from '../../models/bitacora-server.model';
+import { BitacoraModel } from '../../models/bitacora.model';
 
 @IonicPage()
 @Component({
@@ -8,7 +8,7 @@ import { BitacoraServerModel } from '../../models/bitacora-server.model';
   templateUrl: 'detalle-item-bitacora.html'
 })
 export class DetalleItemBitacoraPage {
-  public objItemBitacora: BitacoraServerModel;
+  public objItemBitacora: BitacoraModel;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     // se reciben los parametros que se envian

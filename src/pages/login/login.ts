@@ -79,10 +79,9 @@ export class LoginPage {
           if (ObjMEnsaje._error === false) {
             this.LoginProvider.guardarServicio(DATARCV);
             this.LoginProvider.setActivo(true);
-            // PRomise cargar bitacora y luego ingresar
-
+            // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
             this.bitacoraProvider
-              .getBitacoraStorage()
+              .getBitacoraFromStorage()
               .then((ResultBitacoraStorage) => {
                 // this.bitacoraProvider.getHHmmss();
                 console.log('ResultBitacoraStorage', ResultBitacoraStorage);
@@ -121,8 +120,8 @@ export class LoginPage {
               handler: () => {
                 this.LoginProvider.setActivo(false);
                 // Borrar las dos lineas de abajo
-                this.LoginProvider.setActivo(true);
-                this.ingresar();
+                // this.LoginProvider.setActivo(true);
+                // this.ingresar();
               }
             }
           ]

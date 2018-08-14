@@ -15,7 +15,7 @@ export class UtilidadesProvider {
     fechaSqlServerFormat = fechaSqlServerFormat.trim();
     return fechaSqlServerFormat;
   }
-  // Este metodo nos devuelve un nmerto entero no repetido (id_bitacora)
+  // Este metodo nos devuelve un numero entero no repetido (id_bitacora)
   public hashCode(stringToConvert: string) {
     let hash: number = 0;
     if (stringToConvert.length === 0) {
@@ -23,10 +23,11 @@ export class UtilidadesProvider {
     }
     for (let i = 0; i < stringToConvert.length; i++) {
       const char = stringToConvert.charCodeAt(i);
+      // tslint:disable-next-line:no-bitwise
       hash = (hash << 5) - hash + char;
+      // tslint:disable-next-line:no-bitwise
       hash = Math.round(Math.abs(hash & hash)); // Convert to 32bit integer
     }
-    // console.log('hash', hash);
     return hash;
   }
   // Funcion para convertir fecha local a UTC
@@ -42,8 +43,13 @@ export class UtilidadesProvider {
 
     return date2;
   }
+  // Funcion para convertir String Fecha(SQLServer) a Datetime
+  public convertSqlToDate(FechaSql: string): Date {
+    FechaSql = FechaSql.replace(' ', 'T');
+    return new Date(FechaSql);
+  }
   // Función obtiene la diferenfia entre dos fechas Return String HH:mm:ss
-  public getTimeHHmmss(Fecha1: string, Fecha2: string): any {
+  public getTimeHHmmss(Fecha1: string, Fecha2: string) {
     const objRespuesta = {
       segundosDiferencia: 0,
       segundosHhmmss: '00:00:00'
@@ -57,10 +63,13 @@ export class UtilidadesProvider {
     // Asignando segundos transcurridos
     objRespuesta.segundosDiferencia = dateDiff;
 
-    let horas: any = Math.floor(dateDiff / 3600);
-    let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
-    let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
+    const horas: number = Math.floor(dateDiff / 3600);
+    let minutos: number = Math.floor((dateDiff - horas * 3600) / 60);
+    let segundos: number = Math.round(dateDiff - horas * 3600 - minutos * 60);
 
+    let strHoras: string = '';
+    let strMinutos: string = '';
+    let strSegundos: string = '';
     if (segundos === 60) {
       segundos = 0;
 
@@ -69,16 +78,24 @@ export class UtilidadesProvider {
       }
     }
     if (segundos < 10) {
-      segundos = '0' + segundos;
+      strSegundos = '0' + String(segundos);
+    } else {
+      strSegundos = String(segundos);
     }
     if (minutos < 10) {
-      minutos = '0' + minutos;
+      strMinutos = '0' + String(minutos);
+    } else {
+      strMinutos = String(minutos);
     }
     if (horas < 10) {
-      horas = '0' + horas;
+      strHoras = '0' + String(horas);
+    } else {
+      strHoras = String(horas);
     }
     // Asignado segundosHhmmss
-    const strTiempoHHmmss = horas + ':' + minutos + ':' + segundos;
+    const strTiempoHHmmss: string =
+      strHoras + ':' + strMinutos + ':' + strSegundos;
+
     objRespuesta.segundosHhmmss = strTiempoHHmmss;
     return objRespuesta;
   }

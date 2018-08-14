@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Geolocation } from '@ionic-native/geolocation';
 import {
   AlertController,
   IonicPage,
@@ -7,7 +8,10 @@ import {
 } from 'ionic-angular';
 import { BitacoraModel } from '../../models/bitacora.model';
 import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
+import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
+import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item-bitacora';
+
 /**
  * En esta pagina se gestionan las actividades, se lleva el control de los tiempos
  */
@@ -18,7 +22,12 @@ import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
   templateUrl: 'actividades.html'
 })
 export class ActividadesPage {
+  public DetalleItemBitacoraPage: any = DetalleItemBitacoraPage;
   public actividadTitle: any = ActividadTitlePipe;
+  public InicioActividadX: number;
+  public InicioActividadY: number;
+  public FinActividaX: number;
+  public FinActividadY: number;
   // PAra mantener el ambito de las variables
   public BitacoraData: BitacoraModel[] = [];
   public currentItemBitacora: BitacoraModel;
@@ -35,6 +44,7 @@ export class ActividadesPage {
   public actividadActual: string = 'S';
   public actividaActualTtl: string = 'S';
   public boolServicio: boolean = false;
+  public boolReinicio: boolean = false;
   // public boolSelectActividad: boolean = false;
 
   private centesimas: number = 0;
@@ -48,27 +58,43 @@ export class ActividadesPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private alertCtrl: AlertController,
-    private utilidadesProvider: UtilidadesProvider
-  ) {
-    // Conversion Ok sin aumentar o disminuir Horas
-    // const dateDiff_ = 701 * 60;
-    // console.log('dateDiff: Segundos transcurridos: ->', dateDiff_);
-    // const horas_: any = Math.floor(dateDiff_ / 3600);
-    // const minutos_: any = Math.floor((dateDiff_ - horas_ * 3600) / 60);
-    // const segundos_: any = Math.round(
-    //   dateDiff_ - horas_ * 3600 - minutos_ * 60
-    // );
-    // console.log(
-    //   ' TIEMPO CONSTRUCTOR: [ ' +
-    //     horas_ +
-    //     ':' +
-    //     minutos_ +
-    //     ':' +
-    //     segundos_ +
-    //     ' ]'
-    // );
-  }
+    private utilidadesProvider: UtilidadesProvider,
+    private bitacoraProvider: BitacoraProvider,
+    private geolocation: Geolocation
+  ) {}
 
+  public ionViewDidLoad() {
+    try {
+      console.log('Página completamente cargada y activa --->>>>>>>>>>>>>>>');
+      this.BitacoraData = this.bitacoraProvider.getBitacoraDataStorage();
+      console.log(
+        'Datos cargados del storage mostrando ITEMS------>' +
+          JSON.stringify(this.BitacoraData)
+      );
+      if (this.BitacoraData[0]) {
+        if (this.BitacoraData.length > 0) {
+          this.haveElements = true;
+          if (this.BitacoraData[0].Terminado === false) {
+            // reinicio
+            this.boolReinicio = true;
+            (document.getElementById(
+              'inicio'
+            ) as HTMLInputElement).disabled = true;
+            (document.getElementById(
+              'eliminar'
+            ) as HTMLInputElement).disabled = false;
+            (document.getElementById(
+              'guardar'
+            ) as HTMLInputElement).disabled = false;
+            this.inicio();
+          }
+        }
+      }
+    } catch (error) {
+      console.log('Error: --->>>>' + JSON.stringify(error));
+    }
+  }
+  // Función que se ejecuta cuando se ha cambiado la actividad actual
   public onChangeSelectActividad() {
     // se cambia el titulo en el Array de Items bitácora
     if (this.BitacoraData.length >= 1) {
@@ -79,30 +105,90 @@ export class ActividadesPage {
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio() {
+    (document.getElementById('inicio') as HTMLInputElement).disabled = true;
+    console.log('Error: inicio 1');
     if (!this.stInProgress) {
+      console.log('Error: inicio 2');
       this.stInProgress = true;
-      const dtSart: Date = new Date();
-      //
-      this.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
-        dtSart
-      );
-      console.log('this.dtFechaInicio', this.dtFechaInicio);
-      this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
-        new Date()
-      );
-      console.log('this.dtFechaFin', this.dtFechaFin);
-      this.dtCurrentDT = new Date();
-      console.log('this.dtCurrentDT', this.dtCurrentDT);
+      let dtSart: Date;
+      if (!this.boolReinicio) {
+        // Obteniendo las coordenadas
+        this.geolocation
+          .getCurrentPosition()
+          .then((resp) => {
+            // resp.coords.latitude
+            // resp.coords.longitude
+            console.log(resp.coords.latitude);
+            console.log(resp.coords.longitude);
+            this.InicioActividadX = Number(resp.coords.latitude);
+            this.InicioActividadY = Number(resp.coords.longitude);
+            console.log('this.InicioActividadX: ', this.InicioActividadX);
+            console.log('this.InicioActividadY: ', this.InicioActividadY);
+            this.newItemBitacora(dtSart);
+            (document.getElementById(
+              'inicio'
+            ) as HTMLInputElement).disabled = true;
+            (document.getElementById(
+              'eliminar'
+            ) as HTMLInputElement).disabled = false;
+            (document.getElementById(
+              'guardar'
+            ) as HTMLInputElement).disabled = false;
+          })
+          .catch((error) => {
+            console.log('Error getting location', error);
+            this.InicioActividadX = -2786;
+            this.InicioActividadY = -2786;
+            this.newItemBitacora(dtSart);
+            (document.getElementById(
+              'inicio'
+            ) as HTMLInputElement).disabled = true;
+            (document.getElementById(
+              'eliminar'
+            ) as HTMLInputElement).disabled = false;
+            (document.getElementById(
+              'guardar'
+            ) as HTMLInputElement).disabled = false;
+          });
+        console.log('Error: inicio 3');
+        dtSart = new Date();
+        //
+        this.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
+          dtSart
+        );
+        console.log('Error: inicio 4');
+        this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
+          new Date()
+        );
+        console.log('Error: inicio 5');
+        this.dtCurrentDT = new Date();
+        console.log('Error: inicio 6');
+
+        console.log('dtSart-->', dtSart);
+        console.log('Error: inicio 7');
+      } else {
+        this.boolReinicio = false;
+        dtSart = this.utilidadesProvider.convertSqlToDate(
+          this.BitacoraData[0].FechaHoraInicio
+        );
+        // this.dtFechaFin
+        this.dtFechaInicio = this.utilidadesProvider.convertSqlToDate(
+          this.BitacoraData[0].FechaHoraInicio
+        );
+        this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
+          new Date()
+        );
+        this.dtCurrentDT = new Date();
+      }
+      console.log('dtSart: ', dtSart);
+      console.log(' this.dtFechaInicio: ', this.dtFechaInicio);
+      console.log('this.dtFechaFin: ', this.dtFechaFin);
       this.control = setInterval(() => {
         this.cronometro(this);
       }, 1000);
       // Guardar item bitacora
-      this.newItemBitacora(dtSart);
     }
-    // this.boolSelectActividad = true;
-    (document.getElementById('inicio') as HTMLInputElement).disabled = true;
-    (document.getElementById('eliminar') as HTMLInputElement).disabled = false;
-    (document.getElementById('guardar') as HTMLInputElement).disabled = false;
+
     // this.changeTitlteLarge(this.actividaActualTtl);
   }
 
@@ -110,12 +196,14 @@ export class ActividadesPage {
   public newItemBitacora(dtSart: Date) {
     // this.currentItemBitacora.IdViaje = 1368;
     // Obtener un hash de la bitacora
+    console.log('In new item Bitacora dtSart: ', dtSart);
     const dtSQLStartNewItem: string = this.utilidadesProvider.isoStringToSQLServerFormat(
       dtSart
         .toISOString()
         .toString()
         .toUpperCase()
     );
+    console.log('In new item Bitacora dtSQLStartNewItem: ', dtSQLStartNewItem);
     const objNewItem: any = {
       IdViaje: 1368,
       HashBitacora: this.utilidadesProvider.hashCode(
@@ -126,8 +214,8 @@ export class ActividadesPage {
       SegundosTotal: 0,
       TiempoHhmmss: null,
       Actvidad: this.actividadActual,
-      InicioActividadX: null,
-      InicioActividadY: null,
+      InicioActividadX: this.InicioActividadX,
+      InicioActividadY: this.InicioActividadY,
       FinActividaX: null,
       FinActividadY: null,
       Descripcion: null,
@@ -137,19 +225,33 @@ export class ActividadesPage {
       TransicionHhmmss: '00:00:00',
       Terminado: false
     };
-
-    if (this.BitacoraData.length >= 1) {
-      // Obtener transciocion segundos y segundos HH:mm:ss
-      const objTransicion: any = this.utilidadesProvider.getTimeHHmmss(
-        this.BitacoraData[0].FechaHoraFinal,
-        dtSQLStartNewItem
+    console.log('VALIDANDO', this.BitacoraData);
+    if (this.BitacoraData !== [] && this.BitacoraData !== null) {
+      console.log(
+        'Calculando transicion this.BitacoraData.length:',
+        this.BitacoraData.length
       );
-      objNewItem.Transicion = objTransicion.segundosDiferencia;
-      objNewItem.TransicionHhmmss = objTransicion.segundosHhmmss;
+      if (this.BitacoraData[0]) {
+        // Obtener transciocion segundos y segundos HH:mm:ss
+        try {
+          console.log('Calulando transicion_______________>>>');
+          const objTransicion: any = this.utilidadesProvider.getTimeHHmmss(
+            this.BitacoraData[0].FechaHoraFinal,
+            dtSQLStartNewItem
+          );
+          objNewItem.Transicion = objTransicion.segundosDiferencia;
+          objNewItem.TransicionHhmmss = objTransicion.segundosHhmmss;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } else {
+      this.BitacoraData = [];
     }
     this.currentItemBitacora = new BitacoraModel(objNewItem);
     this.BitacoraData.unshift(this.currentItemBitacora);
-    console.log('FN newItemBitacora -> Aqui guardar Bitacora en LocalStorage');
+    // Guardar en LocalStorage ObjBitacora
+    this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
     // Boolean para saber si hay elementos en la bitacora
     this.haveElements = true;
     console.log('this.BitacoraData after UNSHIFT', this.BitacoraData);
@@ -194,12 +296,19 @@ export class ActividadesPage {
             this.strSegundos = ':00';
             this.strMinutos = ':00';
             this.strHoras = '00';
-            this.BitacoraData.splice(0, 1);
-            console.log('FN eliminar -> Aqui guardar Bitacora en LocalStorage');
-            if (this.BitacoraData.length >= 1) {
-              this.haveElements = true;
-            } else {
-              this.haveElements = false;
+            try {
+              this.BitacoraData.splice(0, 1);
+              // Al eliminar un elemento se actualiza el LocalStorage
+              this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
+              if (this.BitacoraData !== []) {
+                if (this.BitacoraData.length >= 1) {
+                  this.haveElements = true;
+                } else {
+                  this.haveElements = false;
+                }
+              }
+            } catch (error) {
+              console.log('Error in Eliminar');
             }
           }
         }
@@ -232,7 +341,8 @@ export class ActividadesPage {
     this.strMinutos = ':00';
     this.strHoras = '00';
     this.stInProgress = false;
-    console.log('FN guardar -> Aqui guardar Bitacora en LocalStorage');
+    // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
+    this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
   }
   // Obtiene el tiempo transcurrido entre la fecha que inicio el evento y la fecha actual (Se ejecuta cada segundo)
   public cronometro(that) {
@@ -362,6 +472,8 @@ export class ActividadesPage {
     console.log('In change title', this.BitacoraData);
     if (this.BitacoraData.length >= 1) {
       this.BitacoraData[0].Actvidad = Actividad;
+      // Cuando se cambia de actividad tambien se actualiza LocalStorage
+      this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
     }
   }
   public changeTitlteLarge(Actividad: string) {
@@ -391,5 +503,9 @@ export class ActividadesPage {
         break;
       }
     }
+  }
+  public goToDetallesItem(itemBitacora: BitacoraModel) {
+    console.log('goToDetalles', itemBitacora);
+    this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
   }
 }

@@ -57,11 +57,11 @@
       <ion-list>
         <ion-item-sliding *ngFor="let itemBitacora of BitacoraData" style="border-bottom:solid 1px rgb(214, 214, 218); color:#21425F;"
           detail-push>
-          <ion-item>
+          <ion-item (click)="goToDetallesItem(itemBitacora)">
             <span style="color:#21425F;">{{ itemBitacora.Actvidad | actividadTitle }}</span>
             <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : strHoras + strMinutos+strSegundos }}</span>
             <span item-end style="color: #21425F">
-              <ion-icon style="margin-top: 4px;" name="ios-arrow-forward"></ion-icon>
+              <ion-icon style="margin-top: 2px;" name="ios-arrow-forward"></ion-icon>
             </span>
           </ion-item>
           <ion-item-options side="right">

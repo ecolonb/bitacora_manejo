@@ -31,17 +31,17 @@ export class MyApp {
             // Información del usuario cargada Validar Sesion Status -> Redirect
 
             this.bitacoraProvider
-              .getBitacoraStorage()
+              .getBitacoraFromStorage()
               .then(() => {
-                // se obtiene la información desde el Server
-                // this.bitacoraProvider.getHHmmss();
+                // se obtiene la información desde el localStorage
+                console.log('Cargo storage redirectHome');
                 this.rootPage = MenuPage;
                 statusBar.styleDefault();
                 splashScreen.hide();
               })
               .catch((err) => {
                 // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
-                this.rootPage = MenuPage;
+                this.rootPage = LoginPage;
                 statusBar.styleDefault();
                 splashScreen.hide();
                 console.log('Error', err);

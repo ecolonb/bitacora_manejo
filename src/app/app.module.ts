@@ -16,6 +16,7 @@ import {
 import { ActividadTitlePipe } from './../pipes/actividad-title/actividad-title';
 import { MyApp } from './app.component';
 
+import { Geolocation } from '@ionic-native/geolocation';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { DetalleItemBitacoraPage } from '../pages/detalle-item-bitacora/detalle-item-bitacora';
@@ -64,7 +65,8 @@ import { UtilidadesProvider } from '../providers/utilidades/utilidades';
     BitacoraProvider,
     AppConfiguracionProvider,
     UsuarioProvider,
-    UtilidadesProvider
+    UtilidadesProvider,
+    Geolocation
   ]
 })
 export class AppModule {}

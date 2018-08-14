@@ -11,10 +11,11 @@
   <h1>
     Detalle de item bitácora
   </h1>
-  <p>NUID: {{ objItemBitacora.NUID}}</p>
-  <p>FECHA_HORA_LOCAL: {{objItemBitacora.FECHA_HORA_LOCAL | date:'medium':'GMT+00000':'es-mx' | uppercase}}</p>
-  <p>ULTIMO_INICIO_MANEJO: {{ objItemBitacora.ULTIMO_INICIO_MANEJO | date:'medium':'GMT+00000':'es-mx' | uppercase}}</p>
-  <p>ULTIMO_FIN_MANEJO: {{ objItemBitacora.ULTIMO_FIN_MANEJO| date:'medium':'GMT+00000':'es-mx' | uppercase}}</p>
-  <p>ULTIMO_INICIO_SERVICIO: {{ objItemBitacora.ULTIMO_INICIO_SERVICIO| date:'medium':'GMT+00000':'es-mx' | uppercase}}</p>
-  <p>ULTIMO_FIN_SERVICIO: {{ objItemBitacora.ULTIMO_FIN_SERVICIO| date:'medium':'GMT+00000':'es-mx' | uppercase}}</p>
+  <p>NUID: {{ objItemBitacora.HashBitacora}}</p>
+  <p>INICIO ACTIVIDAD: {{ objItemBitacora.FechaHoraInicio }}</p>
+  <p>FIN_ACTIVIDAD: {{ objItemBitacora.FechaHoraFinal? (objItemBitacora.FechaHoraFinal) : 'En progreso' }}</p>
+  <p>InicioActividadX: {{ objItemBitacora.InicioActividadX }}</p>
+  <p>InicioActividadY: {{ objItemBitacora.InicioActividadY }}</p>
+  <h3>Actividad: {{ objItemBitacora.Actvidad | actividadTitle }}</h3>
+  <h2>Tiempo: {{ objItemBitacora.TiempoHhmmss }}</h2>
 </ion-content>

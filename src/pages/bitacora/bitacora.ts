@@ -2,8 +2,8 @@ import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BitacoraServerModel } from '../../models/bitacora-server.model';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
+import { BitacoraModel } from './../../models/bitacora.model';
 import { UsuarioProvider } from './../../providers/usuario/usuario';
 import { DetalleItemBitacoraPage } from './../index-paginas';
 registerLocaleData(es);
@@ -21,7 +21,7 @@ export class BitacoraPage {
   public strNombreConductor: string;
   public strTiempoManejo: string;
   public strTiempoServicio: string;
-  public ObjItemsBitacora: BitacoraServerModel[];
+  public ObjItemsBitacora: BitacoraModel[];
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -40,7 +40,7 @@ export class BitacoraPage {
   }
 
   // Abre otra pagina con parametros
-  public goToDetalles(itemBitacora: BitacoraServerModel) {
+  public goToDetalles(itemBitacora: BitacoraModel) {
     console.log('goToDetalles', itemBitacora);
     this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
   }
