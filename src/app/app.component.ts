@@ -24,7 +24,7 @@ export class MyApp {
     private bitacoraProvider: BitacoraProvider,
     private utilidadesProvider: UtilidadesProvider
   ) {
-    console.log('************ TEST Add TimeZone ***********');
+    // ************ TEST Add TimeZone ((horas en -> muinutos) + or - )***********
     const dateTest1: Date = new Date();
     console.log('dateTest1', dateTest1);
     console.log('dateTest1.getTimezoneOffset', dateTest1.getTimezoneOffset());
@@ -48,13 +48,12 @@ export class MyApp {
             this.bitacoraProvider
               .getBitacoraFromStorage()
               .then(() => {
-                // se obtiene la información desde el localStorage
-                console.log('Cargo storage redirectHome');
+                // se obtiene la información de la Bitácora desde el localStorage
                 this.rootPage = MenuPage;
                 statusBar.styleDefault();
                 splashScreen.hide();
               })
-              .catch((err) => {
+              .catch(err => {
                 // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
                 this.rootPage = LoginPage;
                 statusBar.styleDefault();
@@ -72,3 +71,8 @@ export class MyApp {
     });
   }
 }
+/**
+ * Validar si ya esta configurado un viaje si no configurar un viaje.
+ * En caso de estar en una actividad(conduciendo, descanso) Mostrar contador hasta la fecha actual
+ * -> pagina Home => Actividades
+ */

@@ -54,6 +54,11 @@ export class ActividadesPage {
   public boolReinicio: boolean = false;
   // public boolSelectActividad: boolean = false;
 
+  // Control de la actividad actual
+  public Conduciendo: boolean = false;
+  public Descanso: boolean = false;
+  public ExcepcionTemporal: boolean = false;
+
   private centesimas: number = 0;
   private segundos: number = 0;
   private minutos: number = 0;
@@ -74,11 +79,11 @@ export class ActividadesPage {
 
   public ionViewDidLoad() {
     if (this.platform.is('cordova')) {
-      this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
+      this.diagnostic.getLocationAuthorizationStatus().then(DATA => {
         console.log('DATA' + JSON.stringify(DATA));
         this.strTatusLocation = JSON.stringify(DATA);
       });
-      this.diagnostic.getLocationMode().then((DATA) => {
+      this.diagnostic.getLocationMode().then(DATA => {
         console.log('DATA----------->>>' + JSON.stringify(DATA));
         console.log('DATA----------->>>crudo' + DATA);
         if (String(DATA) !== 'location_off') {
@@ -87,7 +92,7 @@ export class ActividadesPage {
           this.strTatusLocationMode = 'Disabled <-> ' + DATA;
         }
       });
-      this.diagnostic.isLocationEnabled().then((Respuesta) => {
+      this.diagnostic.isLocationEnabled().then(Respuesta => {
         if (Respuesta) {
           this.strTatusLocation = 'Location Activated';
         } else {
@@ -138,16 +143,14 @@ export class ActividadesPage {
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio() {
     (document.getElementById('inicio') as HTMLInputElement).disabled = true;
-    console.log('Error: inicio 1');
     if (!this.stInProgress) {
-      console.log('Error: inicio 2');
       this.stInProgress = true;
       let dtSart: Date;
       if (!this.boolReinicio) {
         // Obteniendo las coordenadas
         this.geolocation
           .getCurrentPosition()
-          .then((resp) => {
+          .then(resp => {
             // resp.coords.latitude
             // resp.coords.longitude
             console.log(resp.coords.latitude);
@@ -167,7 +170,7 @@ export class ActividadesPage {
               'guardar'
             ) as HTMLInputElement).disabled = false;
           })
-          .catch((error) => {
+          .catch(error => {
             console.log('Error getting location', error);
             this.InicioActividadX = -2786;
             this.InicioActividadY = -2786;
@@ -182,19 +185,15 @@ export class ActividadesPage {
               'guardar'
             ) as HTMLInputElement).disabled = false;
           });
-        console.log('Error: inicio 3');
         dtSart = new Date();
         //
         this.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
           dtSart
         );
-        console.log('Error: inicio 4');
         this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
           new Date()
         );
-        console.log('Error: inicio 5');
         this.dtCurrentDT = new Date();
-        console.log('Error: inicio 6');
 
         console.log('dtSart-->', dtSart);
         console.log('Error: inicio 7');
@@ -215,6 +214,7 @@ export class ActividadesPage {
       console.log('dtSart: ', dtSart);
       console.log(' this.dtFechaInicio: ', this.dtFechaInicio);
       console.log('this.dtFechaFin: ', this.dtFechaFin);
+      this.Conduciendo = true;
       this.control = setInterval(() => {
         this.cronometro(this);
       }, 1000);
@@ -373,6 +373,7 @@ export class ActividadesPage {
     this.strMinutos = ':00';
     this.strHoras = '00';
     this.stInProgress = false;
+    this.Conduciendo = false;
     // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
     this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
   }
@@ -511,13 +512,13 @@ export class ActividadesPage {
   public changeTitlteLarge(Actividad: string) {
     switch (Actividad) {
     case 'S': {
-      this.actividaActualTtl = 'Servicio';
-      break;
-    }
+        this.actividaActualTtl = 'Servicio';
+        break;
+      }
     case 'C': {
-      this.actividaActualTtl = 'Conduciendo';
-      break;
-    }
+        this.actividaActualTtl = 'Conduciendo';
+        break;
+      }
     case 'D': {
       this.actividaActualTtl = 'Descanso';
       break;
