@@ -25,6 +25,10 @@ import { BitacoraProvider } from '../providers/bitacora/bitacora';
 import { LoginProvider } from '../providers/login/login';
 import { UsuarioProvider } from '../providers/usuario/usuario';
 import { UtilidadesProvider } from '../providers/utilidades/utilidades';
+
+// *********** PLUGINS **********
+import { Diagnostic } from '@ionic-native/diagnostic';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -66,7 +70,8 @@ import { UtilidadesProvider } from '../providers/utilidades/utilidades';
     AppConfiguracionProvider,
     UsuarioProvider,
     UtilidadesProvider,
-    Geolocation
+    Geolocation,
+    Diagnostic
   ]
 })
 export class AppModule {}

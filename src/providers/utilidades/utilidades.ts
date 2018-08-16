@@ -99,4 +99,40 @@ export class UtilidadesProvider {
     objRespuesta.segundosHhmmss = strTiempoHHmmss;
     return objRespuesta;
   }
+  public convertSecondToHhhmmss(Segundos: number) {
+    console.log('in convert function');
+    const horas: number = Math.floor(Segundos / 3600);
+    let minutos: number = Math.floor((Segundos - horas * 3600) / 60);
+    let segundos: number = Math.round(Segundos - horas * 3600 - minutos * 60);
+
+    let strHoras: string = '';
+    let strMinutos: string = '';
+    let strSegundos: string = '';
+    if (segundos === 60) {
+      segundos = 0;
+
+      if (minutos === 60) {
+        minutos = 0;
+      }
+    }
+    if (segundos < 10) {
+      strSegundos = '0' + String(segundos);
+    } else {
+      strSegundos = String(segundos);
+    }
+    if (minutos < 10) {
+      strMinutos = '0' + String(minutos);
+    } else {
+      strMinutos = String(minutos);
+    }
+    if (horas < 10) {
+      strHoras = '0' + String(horas);
+    } else {
+      strHoras = String(horas);
+    }
+    // Formating segundosHhmmss
+    const Respuesta = strHoras + ':' + strMinutos + ':' + strSegundos;
+    console.log('Respuesta: ', Respuesta);
+    return Respuesta;
+  }
 }

@@ -4,13 +4,17 @@ import {
   AlertController,
   IonicPage,
   NavController,
-  NavParams
+  NavParams,
+  Platform
 } from 'ionic-angular';
 import { BitacoraModel } from '../../models/bitacora.model';
 import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
 import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item-bitacora';
+
+// *********** PLUGINS *************
+import { Diagnostic } from '@ionic-native/diagnostic';
 
 /**
  * En esta pagina se gestionan las actividades, se lleva el control de los tiempos
@@ -22,6 +26,9 @@ import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item
   templateUrl: 'actividades.html'
 })
 export class ActividadesPage {
+  // Delete
+  public strTatusLocation: string = '';
+  public strTatusLocationMode: string = '';
   public DetalleItemBitacoraPage: any = DetalleItemBitacoraPage;
   public actividadTitle: any = ActividadTitlePipe;
   public InicioActividadX: number;
@@ -60,17 +67,42 @@ export class ActividadesPage {
     private alertCtrl: AlertController,
     private utilidadesProvider: UtilidadesProvider,
     private bitacoraProvider: BitacoraProvider,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    private diagnostic: Diagnostic,
+    private platform: Platform
   ) {}
 
   public ionViewDidLoad() {
+    if (this.platform.is('cordova')) {
+      this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
+        console.log('DATA' + JSON.stringify(DATA));
+        this.strTatusLocation = JSON.stringify(DATA);
+      });
+      this.diagnostic.getLocationMode().then((DATA) => {
+        console.log('DATA----------->>>' + JSON.stringify(DATA));
+        console.log('DATA----------->>>crudo' + DATA);
+        if (String(DATA) !== 'location_off') {
+          this.strTatusLocationMode = 'Activated <-> ' + DATA;
+        } else {
+          this.strTatusLocationMode = 'Disabled <-> ' + DATA;
+        }
+      });
+      this.diagnostic.isLocationEnabled().then((Respuesta) => {
+        if (Respuesta) {
+          this.strTatusLocation = 'Location Activated';
+        } else {
+          this.strTatusLocation = 'Location Desactivated';
+        }
+
+        console.log('Diagnostic');
+      });
+    } else {
+      console.log('Else Here');
+      this.strTatusLocation = 'Desktop';
+      this.strTatusLocationMode = 'Desktop';
+    }
     try {
-      console.log('Página completamente cargada y activa --->>>>>>>>>>>>>>>');
       this.BitacoraData = this.bitacoraProvider.getBitacoraDataStorage();
-      console.log(
-        'Datos cargados del storage mostrando ITEMS------>' +
-          JSON.stringify(this.BitacoraData)
-      );
       if (this.BitacoraData[0]) {
         if (this.BitacoraData.length > 0) {
           this.haveElements = true;
@@ -479,29 +511,29 @@ export class ActividadesPage {
   public changeTitlteLarge(Actividad: string) {
     switch (Actividad) {
     case 'S': {
-        this.actividaActualTtl = 'Servicio';
-        break;
-      }
+      this.actividaActualTtl = 'Servicio';
+      break;
+    }
     case 'C': {
-        this.actividaActualTtl = 'Conduciendo';
-        break;
-      }
+      this.actividaActualTtl = 'Conduciendo';
+      break;
+    }
     case 'D': {
-        this.actividaActualTtl = 'Descanso';
-        break;
-      }
+      this.actividaActualTtl = 'Descanso';
+      break;
+    }
     case 'FS': {
-        this.actividaActualTtl = 'Fuera de servicio';
-        break;
-      }
+      this.actividaActualTtl = 'Fuera de servicio';
+      break;
+    }
     case 'ET': {
-        this.actividaActualTtl = 'Excepción temporal';
-        break;
-      }
+      this.actividaActualTtl = 'Excepción temporal';
+      break;
+    }
     default: {
-        this.actividaActualTtl = '--';
-        break;
-      }
+      this.actividaActualTtl = '--';
+      break;
+    }
     }
   }
   public goToDetallesItem(itemBitacora: BitacoraModel) {

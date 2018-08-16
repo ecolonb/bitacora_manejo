@@ -4,6 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { Platform } from 'ionic-angular';
 import { BitacoraProvider } from './../providers/bitacora/bitacora';
 import { UsuarioProvider } from './../providers/usuario/usuario';
+import { UtilidadesProvider } from './../providers/utilidades/utilidades';
 
 import { LoginPage } from '../pages/index-paginas';
 import { MenuPage } from '../pages/menu/menu';
@@ -20,8 +21,22 @@ export class MyApp {
     splashScreen: SplashScreen,
     private loginProvider: LoginProvider,
     private usuarioProvider: UsuarioProvider,
-    private bitacoraProvider: BitacoraProvider
+    private bitacoraProvider: BitacoraProvider,
+    private utilidadesProvider: UtilidadesProvider
   ) {
+    console.log('************ TEST Add TimeZone ***********');
+    const dateTest1: Date = new Date();
+    console.log('dateTest1', dateTest1);
+    console.log('dateTest1.getTimezoneOffset', dateTest1.getTimezoneOffset());
+    this.utilidadesProvider.convertSecondToHhhmmss(
+      dateTest1.getTimezoneOffset() * 60
+    );
+
+    dateTest1.setMinutes(
+      dateTest1.getMinutes() + dateTest1.getTimezoneOffset()
+    );
+    console.log('dateTest1 converted:', dateTest1);
+    console.log('dateTest1 + UTC: ');
     platform.ready().then(() => {
       // Aqui la plataforma esta lista -> Todos los plugins cargados
       this.loginProvider.cargarStorage().then(() => {
