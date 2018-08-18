@@ -1,3 +1,6 @@
+export {
+  ConfiguracionServicioPage
+} from './configuracion-servicio/configuracion-servicio';
 export { ActividadesPage } from './actividades/actividades';
 export { BitacoraPage } from './bitacora/bitacora';
 export {

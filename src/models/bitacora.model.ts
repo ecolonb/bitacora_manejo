@@ -7,7 +7,7 @@ export class BitacoraModel {
   public TiempoHhmmss: string;
   public Transicion: number;
   public TransicionHhmmss: string;
-  public Actvidad: string;
+  public Actividad: string;
   public Descripcion: string;
   public Terminado: boolean;
   public InicioActividadX: number;
@@ -24,7 +24,7 @@ export class BitacoraModel {
     this.FechaHoraFinal = objDatos.FechaHoraFinal;
     this.SegundosTotal = objDatos.SegundosTotal;
     this.TiempoHhmmss = objDatos.TiempoHhmmss;
-    this.Actvidad = objDatos.Actvidad;
+    this.Actividad = objDatos.Actividad;
     this.InicioActividadX = objDatos.InicioActividadX;
     this.InicioActividadY = objDatos.InicioActividadY;
     this.FinActividaX = objDatos.FinActividaX;

@@ -18,7 +18,7 @@ export class ActividadTitlePipe implements PipeTransform {
     if (value === 'S') {
       strTitle = 'Servicio';
     } else if (value === 'C') {
-      strTitle = 'Conduciendo';
+      strTitle = 'Conducción';
     } else if (value === 'D') {
       strTitle = 'Descanso';
     } else if (value === 'ET') {

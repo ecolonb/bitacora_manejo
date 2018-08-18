@@ -16,6 +16,8 @@ import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item
 // *********** PLUGINS *************
 import { Diagnostic } from '@ionic-native/diagnostic';
 
+// Alertas Modals
+import { ActionSheetController } from 'ionic-angular';
 /**
  * En esta pagina se gestionan las actividades, se lleva el control de los tiempos
  */
@@ -58,6 +60,9 @@ export class ActividadesPage {
   public Conduciendo: boolean = false;
   public Descanso: boolean = false;
   public ExcepcionTemporal: boolean = false;
+  public dsConduciendo: boolean = false;
+  public dsDescanso: boolean = false;
+  public dsExcepcionTemporal: boolean = false;
 
   private centesimas: number = 0;
   private segundos: number = 0;
@@ -74,16 +79,17 @@ export class ActividadesPage {
     private bitacoraProvider: BitacoraProvider,
     private geolocation: Geolocation,
     private diagnostic: Diagnostic,
-    private platform: Platform
+    private platform: Platform,
+    private actionSheetCtrl: ActionSheetController
   ) {}
 
   public ionViewDidLoad() {
     if (this.platform.is('cordova')) {
-      this.diagnostic.getLocationAuthorizationStatus().then(DATA => {
+      this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
         console.log('DATA' + JSON.stringify(DATA));
         this.strTatusLocation = JSON.stringify(DATA);
       });
-      this.diagnostic.getLocationMode().then(DATA => {
+      this.diagnostic.getLocationMode().then((DATA) => {
         console.log('DATA----------->>>' + JSON.stringify(DATA));
         console.log('DATA----------->>>crudo' + DATA);
         if (String(DATA) !== 'location_off') {
@@ -92,7 +98,7 @@ export class ActividadesPage {
           this.strTatusLocationMode = 'Disabled <-> ' + DATA;
         }
       });
-      this.diagnostic.isLocationEnabled().then(Respuesta => {
+      this.diagnostic.isLocationEnabled().then((Respuesta) => {
         if (Respuesta) {
           this.strTatusLocation = 'Location Activated';
         } else {
@@ -114,16 +120,24 @@ export class ActividadesPage {
           if (this.BitacoraData[0].Terminado === false) {
             // reinicio
             this.boolReinicio = true;
-            (document.getElementById(
-              'inicio'
-            ) as HTMLInputElement).disabled = true;
-            (document.getElementById(
-              'eliminar'
-            ) as HTMLInputElement).disabled = false;
-            (document.getElementById(
-              'guardar'
-            ) as HTMLInputElement).disabled = false;
-            this.inicio();
+            console.log(
+              'this.BitacoraData[0].Actividad',
+              this.BitacoraData[0].Actividad
+            );
+
+            if (this.BitacoraData[0].Actividad === 'C') {
+              this.Conduciendo = true;
+              this.dsDescanso = true;
+              this.dsConduciendo = false;
+              this.dsExcepcionTemporal = true;
+            }
+            if (this.BitacoraData[0].Actividad === 'D') {
+              this.Descanso = true;
+            }
+            if (this.BitacoraData[0].Actividad === 'ET') {
+              this.ExcepcionTemporal = true;
+            }
+            this.inicio(this.BitacoraData[0].Actividad);
           }
         }
       }
@@ -141,16 +155,52 @@ export class ActividadesPage {
     }
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
-  public inicio() {
-    (document.getElementById('inicio') as HTMLInputElement).disabled = true;
+  public inicio(ActividadParam: string) {
+    if (ActividadParam === 'S') {
+      this.actividadActual = 'S';
+      this.actividaActualTtl = 'S';
+      console.log('Servicio cancelado');
+      return;
+    }
+    if (ActividadParam === 'C') {
+      this.actividadActual = 'C';
+      this.actividaActualTtl = 'C';
+      this.Conduciendo = true;
+      this.dsDescanso = true;
+      this.dsExcepcionTemporal = true;
+      if (!this.boolReinicio) {
+        this.dsConduciendo = true;
+      }
+    }
+    if (ActividadParam === 'D') {
+      this.actividadActual = 'D';
+      this.actividaActualTtl = 'D';
+      this.Descanso = true;
+      this.dsConduciendo = true;
+      this.dsExcepcionTemporal = true;
+      if (!this.boolReinicio) {
+        this.dsDescanso = true;
+      }
+    }
+    if (ActividadParam === 'ET') {
+      this.actividadActual = 'ET';
+      this.actividaActualTtl = 'ET';
+      this.ExcepcionTemporal = true;
+      this.dsConduciendo = true;
+      this.dsDescanso = true;
+      if (!this.boolReinicio) {
+        this.dsExcepcionTemporal = true;
+      }
+    }
     if (!this.stInProgress) {
       this.stInProgress = true;
       let dtSart: Date;
+
       if (!this.boolReinicio) {
         // Obteniendo las coordenadas
         this.geolocation
           .getCurrentPosition()
-          .then(resp => {
+          .then((resp) => {
             // resp.coords.latitude
             // resp.coords.longitude
             console.log(resp.coords.latitude);
@@ -160,30 +210,45 @@ export class ActividadesPage {
             console.log('this.InicioActividadX: ', this.InicioActividadX);
             console.log('this.InicioActividadY: ', this.InicioActividadY);
             this.newItemBitacora(dtSart);
-            (document.getElementById(
-              'inicio'
-            ) as HTMLInputElement).disabled = true;
-            (document.getElementById(
-              'eliminar'
-            ) as HTMLInputElement).disabled = false;
-            (document.getElementById(
-              'guardar'
-            ) as HTMLInputElement).disabled = false;
+
+            // si se obtiene la ubicación actual habilitar boton parar actividad
+            if (ActividadParam === 'S') {
+              this.actividadActual = 'S';
+              this.actividaActualTtl = 'S';
+              console.log('Servicio cancelado');
+              return;
+            }
+            if (ActividadParam === 'C') {
+              this.dsConduciendo = false;
+            }
+            if (ActividadParam === 'D') {
+              this.dsDescanso = false;
+            }
+            if (ActividadParam === 'ET') {
+              this.dsExcepcionTemporal = false;
+            }
           })
-          .catch(error => {
+          .catch((error) => {
             console.log('Error getting location', error);
             this.InicioActividadX = -2786;
             this.InicioActividadY = -2786;
             this.newItemBitacora(dtSart);
-            (document.getElementById(
-              'inicio'
-            ) as HTMLInputElement).disabled = true;
-            (document.getElementById(
-              'eliminar'
-            ) as HTMLInputElement).disabled = false;
-            (document.getElementById(
-              'guardar'
-            ) as HTMLInputElement).disabled = false;
+            // si se obtiene la ubicación actual habilitar boton parar actividad
+            if (ActividadParam === 'S') {
+              this.actividadActual = 'S';
+              this.actividaActualTtl = 'S';
+              console.log('Servicio cancelado');
+              return;
+            }
+            if (ActividadParam === 'C') {
+              this.dsConduciendo = false;
+            }
+            if (ActividadParam === 'D') {
+              this.dsDescanso = false;
+            }
+            if (ActividadParam === 'ET') {
+              this.dsExcepcionTemporal = false;
+            }
           });
         dtSart = new Date();
         //
@@ -194,9 +259,6 @@ export class ActividadesPage {
           new Date()
         );
         this.dtCurrentDT = new Date();
-
-        console.log('dtSart-->', dtSart);
-        console.log('Error: inicio 7');
       } else {
         this.boolReinicio = false;
         dtSart = this.utilidadesProvider.convertSqlToDate(
@@ -211,14 +273,12 @@ export class ActividadesPage {
         );
         this.dtCurrentDT = new Date();
       }
-      console.log('dtSart: ', dtSart);
-      console.log(' this.dtFechaInicio: ', this.dtFechaInicio);
-      console.log('this.dtFechaFin: ', this.dtFechaFin);
-      this.Conduciendo = true;
       this.control = setInterval(() => {
         this.cronometro(this);
       }, 1000);
       // Guardar item bitacora
+    } else {
+      this.guardar();
     }
 
     // this.changeTitlteLarge(this.actividaActualTtl);
@@ -226,6 +286,12 @@ export class ActividadesPage {
 
   // Crear Item bitacora
   public newItemBitacora(dtSart: Date) {
+    if (this.actividadActual === 'S') {
+      this.actividadActual = 'S';
+      this.actividaActualTtl = 'S';
+      console.log('Servicio cancelado');
+      return;
+    }
     // this.currentItemBitacora.IdViaje = 1368;
     // Obtener un hash de la bitacora
     console.log('In new item Bitacora dtSart: ', dtSart);
@@ -245,7 +311,7 @@ export class ActividadesPage {
       FechaHoraFinal: null,
       SegundosTotal: 0,
       TiempoHhmmss: null,
-      Actvidad: this.actividadActual,
+      Actividad: this.actividadActual,
       InicioActividadX: this.InicioActividadX,
       InicioActividadY: this.InicioActividadY,
       FinActividaX: null,
@@ -366,14 +432,20 @@ export class ActividadesPage {
     this.BitacoraData[0].SegundosTotal =
       objTiempoTranscurrido.segundosDiferencia;
     this.BitacoraData[0].TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
-    (document.getElementById('guardar') as HTMLInputElement).disabled = true;
-    (document.getElementById('eliminar') as HTMLInputElement).disabled = true;
-    (document.getElementById('inicio') as HTMLInputElement).disabled = false;
+    // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
     this.strSegundos = ':00';
     this.strMinutos = ':00';
     this.strHoras = '00';
     this.stInProgress = false;
+    // Validar en que estado estába y terminarlo
     this.Conduciendo = false;
+    this.Descanso = false;
+    this.ExcepcionTemporal = false;
+    this.dsConduciendo = false;
+    this.dsDescanso = false;
+    this.dsExcepcionTemporal = false;
+    this.actividaActualTtl = 'S';
+    this.actividadActual = 'S';
     // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
     this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
   }
@@ -504,41 +576,59 @@ export class ActividadesPage {
   public changeTitlte(Actividad: string) {
     console.log('In change title', this.BitacoraData);
     if (this.BitacoraData.length >= 1) {
-      this.BitacoraData[0].Actvidad = Actividad;
+      this.BitacoraData[0].Actividad = Actividad;
       // Cuando se cambia de actividad tambien se actualiza LocalStorage
       this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
     }
   }
   public changeTitlteLarge(Actividad: string) {
-    switch (Actividad) {
-    case 'S': {
-        this.actividaActualTtl = 'Servicio';
-        break;
-      }
-    case 'C': {
-        this.actividaActualTtl = 'Conduciendo';
-        break;
-      }
-    case 'D': {
+    if (Actividad === 'S') {
+      this.actividaActualTtl = 'Servicio';
+    } else if (Actividad === 'C') {
+      this.actividaActualTtl = 'Conduciendo';
+    } else if (Actividad === 'D') {
       this.actividaActualTtl = 'Descanso';
-      break;
-    }
-    case 'FS': {
+    } else if (Actividad === 'FS') {
       this.actividaActualTtl = 'Fuera de servicio';
-      break;
-    }
-    case 'ET': {
+    } else if (Actividad === 'ET') {
       this.actividaActualTtl = 'Excepción temporal';
-      break;
-    }
-    default: {
+    } else {
       this.actividaActualTtl = '--';
-      break;
-    }
     }
   }
   public goToDetallesItem(itemBitacora: BitacoraModel) {
     console.log('goToDetalles', itemBitacora);
     this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
+  }
+  // Muestra las opciones para la actividad actual
+  public optionsActionSheet() {
+    const actionSheet = this.actionSheetCtrl.create({
+      buttons: [
+        {
+          text: 'Eliminar',
+          icon: 'trash',
+          role: 'destructive',
+          handler: () => {
+            console.log('Delete clicked');
+          }
+        },
+        {
+          text: 'Editar',
+          icon: 'md-create',
+          handler: () => {
+            console.log('Edit clicked');
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: 'md-close',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
   }
 }

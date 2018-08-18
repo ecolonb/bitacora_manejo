@@ -1,0 +1,81 @@
+page-configuracion-servicio {
+  .toolbar-background {
+    background: #fff;
+    border-color: transparent;
+  }
+  .slide-zoom {
+    height: 91%;
+  }
+  .ionSlide {
+    padding: 10px;
+    height: 100%;
+    overflow-y: scroll;
+  }
+  .slide-title {
+    margin-top: 2.8rem;
+  }
+
+  .slide-image {
+    max-height: 50%;
+    max-width: 60%;
+    margin: 18px 0;
+  }
+  .listResults {
+    position: fixed;
+    z-index: 1000;
+    width: 98% !important;
+    max-width: 100%;
+    margin: auto;
+    height: auto;
+    box-shadow: 1px;
+    -webkit-box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
+    box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
+  }
+  b {
+    font-weight: 500;
+  }
+
+  p {
+    padding: 0 40px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #60646b;
+
+    b {
+      color: #000000;
+    }
+  }
+  .scroll-content {
+    margin-bottom: 0px !important;
+    padding-bottom: 0px !important;
+  }
+  ::-webkit-input-placeholder {
+    text-align: center;
+  }
+
+  ::-webkit-input-placeholder::before {
+    content: '\1F50D ';
+  }
+
+  :-moz-placeholder {
+    /* Firefox 18- */
+    text-align: center;
+  }
+  // ion-searchbar {
+
+  // }
+  @media only screen and (min-width: 321px) and (max-width: 838px) {
+    .listResults {
+      width: 93% !important;
+      margin: auto;
+      margin-left: 1%;
+    }
+  }
+  @media only screen and (min-width: 0px) and (max-width: 321px) {
+    .listResults {
+      width: 92% !important;
+      margin-left: auto;
+    }
+  }
+}

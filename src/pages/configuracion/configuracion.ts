@@ -75,7 +75,7 @@ export class ConfiguracionPage {
     // Validando caracteres validos
     const strCaracteresValidos: string = '1234567890';
     if (strCaracteresValidos.indexOf(Evento.key) < 0) {
-      return false;
+      //      return false;
     }
   }
 }

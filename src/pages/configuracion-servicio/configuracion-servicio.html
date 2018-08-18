@@ -1,0 +1,85 @@
+<ion-header>
+
+  <ion-navbar color="copiloto">
+    <ion-title text-center>Configuración del servicio</ion-title>
+    <ion-buttons end>
+      <button ion-button color="md_tq" (click)="showOptionsToLogInApp()" outline>
+        <ion-icon style="color:md_tq;" name="md-close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-slides pager slider="swiper.data.slider">
+    <ion-slide class="ionSlide">
+      <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¡Hola {{ NombreConductor }}, bienvenido!</h1>
+      <span style="font-size: 0.9em;color:#335D82;margin:0;padding:0;">Porfavor ingresa la siguiente informacion.</span>
+      <p style="height: 10px;"></p>
+      <span style="width: 100%;font-size: 1.1em; color: #21425F;">
+        Unidad:
+      </span>
+      <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()" [showCancelButton]="shouldShowCancel" (ionCancel)="onCancel($event)"
+        placeholder="Filtrar" style="max-width: 100% !important; width: 100%;  text-align: center !important;">
+      </ion-searchbar>
+      <ion-list *ngIf="itemsSr" class="listResults">
+        <ion-item (click)="setUnidad(search)" *ngFor="let search of itemsSr">
+          {{ search.title }}
+        </ion-item>
+      </ion-list>
+      <ion-item no-lines style="width: 100%;text-align: center;height: 100px;padding:0px;">
+        <ion-label style="width: 100%; position: absolute; top:0; font-size: 1.2em; color: #21425F;">Tipo de servicio</ion-label>
+        <ion-select style="max-width: 100% !important;width: 100%;position: absolute; top:40px;color: rgb(70, 69, 69);padding:10px;padding-bottom:7px;margin: 0;border-bottom: solid 1px #c6c6ce;font-size: 1.1em;margin-left: 8px;"
+          [(ngModel)]="tipoDeServicio">
+          <ion-option disabled value="default">Elige un tipo</ion-option>
+          <ion-option value="deCarga">De carga</ion-option>
+          <ion-option value="deCargaGeneral">De carga general</ion-option>
+          <ion-option value="deCargaEspecializada">De carga especializada</ion-option>
+          <ion-option value="turismo">Turismo</ion-option>
+          <ion-option value="pasajeros">Pasajeros</ion-option>
+          <ion-option value="privado">Privado</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item no-lines style="width: 100%;text-align: center;height: 100px;padding:0px;">
+        <ion-label style="width: 100%; position: absolute; top:0; font-size: 1.2em; color: #21425F;">Modalidad</ion-label>
+        <ion-select style="max-width: 100% !important;width: 100%;position: absolute; top:40px;color: rgb(70, 69, 69);padding:10px;padding-bottom:7px;margin: 0;border-bottom: solid 1px #c6c6ce;font-size: 1.1em;margin-left: 8px;"
+          [(ngModel)]="modalidadDeServicio">
+          <ion-option disabled value="default">Elige un tipo</ion-option>
+          <ion-option value="deLujo">De lujo</ion-option>
+          <ion-option value="ejecutivo">Ejecutivo</ion-option>
+          <ion-option value="primera">Primera</ion-option>
+          <ion-option value="economico">Económico</ion-option>
+          <ion-option value="mixto">Mixto</ion-option>
+          <ion-option value="turistico">Turístico</ion-option>
+          <ion-option value="turisticoDeLujo">Turístico de lujo</ion-option>
+          <ion-option value="excursion">Excursión</ion-option>
+          <ion-option value="choferGuia">Chofer-guía</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Origen:</ion-label>
+        <ion-input type="text" placeholder="-"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Destino:</ion-label>
+        <ion-input type="text" placeholder="-"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Descripción de la ruta:</ion-label>
+        <ion-input type="text" placeholder="-"></ion-input>
+      </ion-item>
+      <p style="height: 10px;"></p>
+      <button ion-button style="margin:auto; width: 95% !important;margin-bottom:30px;" color="copiloto" (click)="nextSlideConfirmacion()">Siguiente
+      </button>
+    </ion-slide>
+    <ion-slide class="ionSlide">
+      <h3> Confirma los datos del servicio</h3>
+      <p>Tipo de servicio</p>
+      <p>Modalidad</p>
+      <button ion-button style="margin:auto; width: 95% !important;" color="copiloto" (click)="iniciarServicio()">Iniciar
+        servicio </button>
+    </ion-slide>
+  </ion-slides>
+</ion-content>

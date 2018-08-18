@@ -9,7 +9,12 @@ import {
   Slides
 } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-import { ConfiguracionPage, MenuPage, TabsPage } from '../index-paginas';
+import {
+  ConfiguracionPage,
+  ConfiguracionServicioPage,
+  MenuPage,
+  TabsPage
+} from '../index-paginas';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 
 @IonicPage()
@@ -27,6 +32,7 @@ export class LoginPage {
   public usuario: string = '';
   public contrasenia: string = '';
   public strLoginOkProvider: string = 'false';
+  public configuracionServicioPage: any = ConfiguracionServicioPage;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -41,8 +47,11 @@ export class LoginPage {
   public ingresar() {
     // Validar que el la propiedad privada Logged=True; si no mostrar login
     if (this.LoginProvider.getActivo()) {
+      // ****** Validar si esta en Servicio y en alguna actividad
       this.loading.dismiss();
-      this.navCtrl.setRoot(MenuPage);
+      // Si no esta configurado el servicio solicitar configuracion:
+      console.log('Error here --> 1');
+      this.navCtrl.setRoot(this.configuracionServicioPage);
     }
   }
   public continuar(formData: any) {
@@ -121,7 +130,16 @@ export class LoginPage {
                 this.LoginProvider.setActivo(false);
                 // Borrar las dos lineas de abajo
                 // this.LoginProvider.setActivo(true);
-                // this.ingresar();
+                // console.log('Error here --> 2');
+                // // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
+                // this.bitacoraProvider
+                //   .getBitacoraFromStorage()
+                //   .then((ResultBitacoraStorage) => {
+                //     console.log('Error here --> 3');
+                //     // this.bitacoraProvider.getHHmmss();
+                //     console.log('ResultBitacoraStorage', ResultBitacoraStorage);
+                //     this.ingresar();
+                //   });
               }
             }
           ]

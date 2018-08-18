@@ -1,13 +1,16 @@
+// MODULOS
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicStorageModule } from '@ionic/storage';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { LoadingController } from 'ionic-angular';
+
+// ************ PAGES ************
 import {
   ActividadesPage,
   BitacoraPage,
   ConfiguracionPage,
+  ConfiguracionServicioPage,
+  DetalleItemBitacoraPage,
   HomePage,
   LoginPage,
   MenuPage,
@@ -16,10 +19,8 @@ import {
 import { ActividadTitlePipe } from './../pipes/actividad-title/actividad-title';
 import { MyApp } from './app.component';
 
-import { Geolocation } from '@ionic-native/geolocation';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { DetalleItemBitacoraPage } from '../pages/detalle-item-bitacora/detalle-item-bitacora';
+// *********** PROVIDERS **************
+
 import { AppConfiguracionProvider } from '../providers/app-configuracion/app-configuracion';
 import { BitacoraProvider } from '../providers/bitacora/bitacora';
 import { LoginProvider } from '../providers/login/login';
@@ -28,6 +29,15 @@ import { UtilidadesProvider } from '../providers/utilidades/utilidades';
 
 // *********** PLUGINS **********
 import { Diagnostic } from '@ionic-native/diagnostic';
+import { Geolocation } from '@ionic-native/geolocation';
+import { IonicStorageModule } from '@ionic/storage';
+
+// Alertas Modals
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
+import { ActionSheetController } from 'ionic-angular';
+import { App } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
 
 @NgModule({
   declarations: [
@@ -40,11 +50,14 @@ import { Diagnostic } from '@ionic-native/diagnostic';
     ConfiguracionPage,
     DetalleItemBitacoraPage,
     ActividadesPage,
-    ActividadTitlePipe
+    ActividadTitlePipe,
+    ConfiguracionServicioPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      scrollAssist: false
+    }),
     HttpClientModule,
     IonicStorageModule.forRoot()
   ],
@@ -58,7 +71,8 @@ import { Diagnostic } from '@ionic-native/diagnostic';
     LoginPage,
     ConfiguracionPage,
     DetalleItemBitacoraPage,
-    ActividadesPage
+    ActividadesPage,
+    ConfiguracionServicioPage
   ],
   providers: [
     StatusBar,
@@ -71,7 +85,9 @@ import { Diagnostic } from '@ionic-native/diagnostic';
     UsuarioProvider,
     UtilidadesProvider,
     Geolocation,
-    Diagnostic
+    Diagnostic,
+    ActionSheetController,
+    App
   ]
 })
 export class AppModule {}

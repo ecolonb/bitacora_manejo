@@ -152,6 +152,10 @@ export class BitacoraProvider {
   public getBitacoraDataStorage(): BitacoraModel[] {
     return this.BitacoraDataStorage;
   }
+  public deleteBitacoraDataStorage() {
+    // this.BitacoraDataStorage = ;
+    this.guardarBitacoraInStorage([]);
+  }
   // Obtiene el tiempo total por evento String(Conduciendo, Servicio, Descanso)
   public getTimeForBitacora(idTiempo: number): string {
     let strtiempohhmmss: string = '';

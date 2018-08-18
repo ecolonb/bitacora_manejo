@@ -8,14 +8,22 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <button ion-item (click)="testFunction()">
+      <button ion-item (click)="closeSideMenu()">
         <ion-icon name="md-cloud-upload" item-start></ion-icon>
         Sincronizar información
       </button>
 
-      <button ion-item (click)="testFunction()">
+      <button ion-item (click)="closeSideMenu()">
         <ion-icon name="ios-settings" item-start></ion-icon>
         Cuenta
+      </button>
+      <button ion-item (click)="borrarBitacora()">
+        <ion-icon name="md-trash" item-start></ion-icon>
+        Borrar bitácora
+      </button>
+      <button style="color: #DF1C2D;" ion-item (click)="closeSideMenu()">
+        <ion-icon name="ios-log-in" item-start></ion-icon>
+        Terminar servicio
       </button>
       <ion-item no-lines>
 

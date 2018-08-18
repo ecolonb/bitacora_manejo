@@ -1,73 +1,81 @@
 page-home {
-}
-.borderTable {
-  border: 1px solid #0051a0;
-  color: #0051a0;
-  vertical-align: text-bottom;
-  text-align: center;
-}
-.textTiempo {
-  border: 1px solid #0051a0;
-  color: #0051a0;
-  vertical-align: text-bottom;
-  text-align: center;
-  color: red;
-}
-.container-graph {
-  position: absolute;
-}
-.divider {
-  height: 50%;
-}
-.headerTable {
-  font-size: 0.8em;
-  color: #0051a0;
-}
-.cardHeaderEvents {
-  border-bottom: 1px solid #f5f5f0;
-  background-color: #4daeda;
-  color: #f1f1eb;
-  font-weight: bold;
-  font-size: 1.3em;
-}
-
-.cardHeaderEvents > .iconRight {
-  position: relative;
-}
-
-.itemCardResumen {
-  border-bottom: 1px solid #f5f5f0;
-  color: #525250;
-  font-size: 1em;
-}
-// .tiempoTranscurrido{
-//     padding: 30px;
-//     font-size: 1.5em;
-// }
-.btnCardOps {
-  background-color: #4daeda;
-}
-.actualizadoFooter {
-  display: block;
-  color: #ebebe2;
-  font-size: 1em;
-  text-align: center;
-  background-color: #4daeda;
-  width: 100%;
-  padding: 4px;
-}
-@media screen and (min-width: 10px) and (max-width: 400px) {
+  .borderTable {
+    border: 1px solid #0051a0;
+    color: #0051a0;
+    vertical-align: text-bottom;
+    text-align: center;
+  }
   .textTiempo {
-    font-size: 0.8em;
+    border: 1px solid #0051a0;
+    color: #0051a0;
+    vertical-align: text-bottom;
+    text-align: center;
+    color: red;
   }
-  .headerTable {
-    font-size: 0.6em;
-  }
-}
-@media only screen and (min-height: 10px) and (orientation: landscape) {
-  .divider {
+  .containerGraph {
+    position: absolute;
     height: 100%;
   }
+  .divider {
+    height: 50%;
+  }
+  .headerTable {
+    font-size: 0.8em;
+    color: #0051a0;
+  }
+  .cardHeaderEvents {
+    border-bottom: 1px solid #f5f5f0;
+    background-color: #4daeda;
+    color: #f1f1eb;
+    font-weight: bold;
+    font-size: 1.3em;
+  }
+
+  .cardHeaderEvents > .iconRight {
+    position: relative;
+  }
+
+  .itemCardResumen {
+    border-bottom: 1px solid #f5f5f0;
+    color: #525250;
+    font-size: 1em;
+  }
+  // .tiempoTranscurrido{
+  //     padding: 30px;
+  //     font-size: 1.5em;
+  // }
+  .btnCardOps {
+    background-color: #4daeda;
+  }
+  .actualizadoFooter {
+    display: block;
+    color: #ebebe2;
+    font-size: 1em;
+    text-align: center;
+    background-color: #4daeda;
+    width: 100%;
+    padding: 4px;
+  }
+  @media screen and (min-width: 10px) and (max-width: 400px) {
+    .textTiempo {
+      font-size: 0.8em;
+    }
+    .headerTable {
+      font-size: 0.6em;
+    }
+  }
+  @media screen and (min-height: 0px) and (max-height: 500px) {
+    .divider {
+      height: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  @media only screen and (orientation: landscape) {
+    .divider {
+      height: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  // ios-build-outline
+  // ios-construct ios-more  ios-options  ios-settings
 }
-// ios-build-outline
-// ios-construct ios-more  ios-options  ios-settings

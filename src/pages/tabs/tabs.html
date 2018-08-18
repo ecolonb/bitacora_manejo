@@ -1,5 +1,5 @@
-<ion-tabs color="copiloto">
+<ion-tabs color="copiloto" [selectedIndex]="tabIndexVal">
   <ion-tab [root]="tabHome" tabTitle="Status" tabIcon="md-stats"></ion-tab>
   <ion-tab [root]="tabActividades" tabTitle="Actividades" tabIcon="md-stopwatch"></ion-tab>
-  <ion-tab [root]="tabBitacoraPage" tabTitle="Bitácora" tabIcon="md-clipboard"></ion-tab>
+  <ion-tab [root]="tabBitacoraPage" tabTitle="Bitácora" active tabIcon="md-clipboard"></ion-tab>
 </ion-tabs>

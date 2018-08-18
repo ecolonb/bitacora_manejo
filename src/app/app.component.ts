@@ -6,8 +6,11 @@ import { BitacoraProvider } from './../providers/bitacora/bitacora';
 import { UsuarioProvider } from './../providers/usuario/usuario';
 import { UtilidadesProvider } from './../providers/utilidades/utilidades';
 
-import { LoginPage } from '../pages/index-paginas';
-import { MenuPage } from '../pages/menu/menu';
+import {
+  ConfiguracionServicioPage,
+  LoginPage,
+  MenuPage
+} from '../pages/index-paginas';
 import { LoginProvider } from '../providers/login/login';
 
 @Component({
@@ -15,6 +18,7 @@ import { LoginProvider } from '../providers/login/login';
 })
 export class MyApp {
   public rootPage: any;
+  public configuracionServicioPage: any = ConfiguracionServicioPage;
   constructor(
     platform: Platform,
     statusBar: StatusBar,
@@ -49,11 +53,13 @@ export class MyApp {
               .getBitacoraFromStorage()
               .then(() => {
                 // se obtiene la información de la Bitácora desde el localStorage
-                this.rootPage = MenuPage;
+                // ****** si no esta en servicio o configuración de ultimo servicio solicitar configuracion
+                // this.rootPage = MenuPage;
+                this.rootPage = this.configuracionServicioPage;
                 statusBar.styleDefault();
                 splashScreen.hide();
               })
-              .catch(err => {
+              .catch((err) => {
                 // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
                 this.rootPage = LoginPage;
                 statusBar.styleDefault();
