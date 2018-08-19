@@ -7,7 +7,9 @@ import {
   NavParams,
   Slides
 } from 'ionic-angular';
+import { UnidadModel } from './../../models/unidad.model';
 import { LoginPage, MenuPage } from './../index-paginas';
+
 /**
  * En esta página se configura el servicio los datos que solicita la norma de la SCT.
  */
@@ -23,13 +25,22 @@ export class ConfiguracionServicioPage {
   public tipoDeServicio: string = 'default';
   public modalidadDeServicio: string = 'default';
   public NombreConductor: string = 'Edd';
+  public origenServicio: string;
+  public destinoServicio: string;
+  public descripcionRutaASeguir: string;
+  public nombreUnidad: string = '';
+  public confirmacionConfSer: boolean = false;
+  public objUnidadSeleccionada: UnidadModel;
 
   public searchQuery: string = '';
   public items: string[];
-
+  public objUnidades: UnidadModel[];
   public itemsS2: any;
   public searchTerm: string = '';
   public itemsSr: any;
+
+  public tipoServicioDescLong: string = '';
+  public modalidadServicioDescLong: string = '';
 
   // ******** variables Globales *********
   private menuPage: any = MenuPage;
@@ -41,18 +52,33 @@ export class ConfiguracionServicioPage {
     private alertCtrl: AlertController,
     private app: App
   ) {
-    this.itemsS2 = [
-      { title: 'one' },
-      { title: 'two' },
-      { title: 'three' },
-      { title: 'four' },
-      { title: 'five' },
-      { title: 'six' }
+    /**
+     */
+    this.objUnidades = [
+      {
+        Nuid: 191929,
+        Marca: 'Mercedes bens',
+        Modelo: '2019',
+        Anio: '2021'
+      },
+      {
+        Nuid: 283283,
+        Marca: 'Volvo',
+        Modelo: '2000 AirLine',
+        Anio: '2015'
+      },
+      {
+        Nuid: 7776977,
+        Marca: 'BMW Bigger',
+        Modelo: '2019',
+        Anio: '2021'
+      }
     ];
   }
   public setFilteredItems() {
     if (this.searchTerm !== '') {
       this.itemsSr = this.filterItems(this.searchTerm);
+      // Validar cuantos elelementos se encuentran: console.log('this.itemsSr', this.itemsSr.length);
     } else {
       delete this.itemsSr;
     }
@@ -67,11 +93,86 @@ export class ConfiguracionServicioPage {
     console.log('ionViewDidLoad ConfiguracionServicioPage');
   }
   public nextSlideConfirmacion() {
-    console.log('Slide confirmation');
-    this.slides.lockSwipes(false);
-    this.slides.slideNext();
-    this.slides.lockSwipes(true);
+    console.log('Slide confirmation Guardar Capturados');
+    let error: boolean = false;
+    // Despues de entrar en esta funcion debe guardar los datos que se capturan
+    let liErrores: string = '';
+    console.log('Validando los datos de entrada');
+
+    if (
+      this.objUnidadSeleccionada == null ||
+      this.objUnidadSeleccionada === undefined
+    ) {
+      error = true;
+      liErrores += '<li style="float:left;">Debes elegir una unidad</li>';
+    }
+    if (this.tipoDeServicio === 'default') {
+      error = true;
+      liErrores +=
+        '<li style="float:left;">Debes elegir un tipo de servicio</li>';
+    }
+    if (error) {
+      // En caso de error en los datos capturados se dispara la alerta
+      const alert = this.alertCtrl.create({
+        title: 'Error',
+        subTitle: '<ul>' + liErrores + '</ul>',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'ok',
+            handler: () => {
+              console.log('Despues de ok');
+            }
+          }
+        ]
+      });
+      alert.present();
+    } else {
+      // Esto se ejecuta si no hay errores al validar
+      this.confirmacionConfSer = true;
+
+      if (this.tipoDeServicio === 'deCarga') {
+        this.tipoServicioDescLong = 'De carga';
+      } else if (this.tipoDeServicio === 'deCargaGeneral') {
+        this.tipoServicioDescLong = 'De carga general';
+      } else if (this.tipoDeServicio === 'deCargaEspecializada') {
+        this.tipoServicioDescLong = 'De carga especializada';
+      } else if (this.tipoDeServicio === 'turismo') {
+        this.tipoServicioDescLong = 'Turismo';
+      } else if (this.tipoDeServicio === 'pasajeros') {
+        this.tipoServicioDescLong = 'Pasajeros';
+      } else if (this.tipoDeServicio === 'privado') {
+        this.tipoServicioDescLong = 'Privado';
+      }
+
+      if (this.modalidadDeServicio === 'default') {
+        this.modalidadServicioDescLong = 'Sin modalidad';
+      } else if (this.modalidadDeServicio === 'deLujo') {
+        this.modalidadServicioDescLong = 'De lujo';
+      } else if (this.modalidadDeServicio === 'ejecutivo') {
+        this.modalidadServicioDescLong = 'Ejecutivo';
+      } else if (this.modalidadDeServicio === 'primera') {
+        this.modalidadServicioDescLong = 'Primera';
+      } else if (this.modalidadDeServicio === 'economico') {
+        this.modalidadServicioDescLong = 'Economico';
+      } else if (this.modalidadDeServicio === 'mixto') {
+        this.modalidadServicioDescLong = 'Mixto';
+      } else if (this.modalidadDeServicio === 'turistico') {
+        this.modalidadServicioDescLong = 'Turístico';
+      } else if (this.modalidadDeServicio === 'turisticoDeLujo') {
+        this.modalidadServicioDescLong = 'Turístico de lujo';
+      } else if (this.modalidadDeServicio === 'excursion') {
+        this.modalidadServicioDescLong = 'Excursión';
+      } else if (this.modalidadDeServicio === 'choferGuia') {
+        this.modalidadServicioDescLong = 'Chofer - Guía';
+      }
+
+      this.slides.lockSwipes(false);
+      this.slides.slideNext();
+      this.slides.lockSwipes(true);
+    }
   }
+
   public showOptionsToLogInApp() {
     const alertOpion = this.alertCtrl.create({
       title: 'Elige una opción',
@@ -106,38 +207,47 @@ export class ConfiguracionServicioPage {
     });
     alertOpion.present();
   }
+
+  // Se inicia el servicio : se guarda información en localStorage
   public iniciarServicio() {
+    // Validar si tiene una actividad pendiente redireccionar a tabs Actividades
+
     this.app.getRootNavs()[0].setRoot(this.menuPage);
   }
 
-  public initializeItems() {
-    this.items = ['Amsterdam', 'Bogota'];
-  }
-
-  public getItems(ev: any) {
-    // Reset items back to all of the items
-    this.initializeItems();
-
-    // set val to the value of the searchbar
-    const val = ev.target.value;
-    console.log('this.items', this.items);
-
-    // if the value is an empty string don't filter the items
-    if (val && val.trim() !== '') {
-      console.log('Despues de validar', val);
-      this.items = this.items.filter((item) => {
-        console.log(item);
-        return item.toLowerCase().indexOf(val.toLowerCase()) > -1;
-      });
-    }
-  }
   public filterItems(searchTerm) {
-    return this.itemsS2.filter((item) => {
-      return item.title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+    console.log(
+      'Realizar el filtrado de las unidades, por nuid, modelo, año, marca'
+    );
+    return this.objUnidades.filter(item => {
+      return (
+        item.Nuid.toString()
+          .toLowerCase()
+          .indexOf(searchTerm.toLowerCase()) > -1
+      );
     });
   }
-  public setUnidad(ObjSearch: any) {
+  public setUnidad(ObjSearch: UnidadModel) {
     console.log('ObjSearch', ObjSearch);
+    this.objUnidadSeleccionada = ObjSearch;
+    this.searchTerm =
+      this.objUnidadSeleccionada.Nuid.toString() +
+      ' - ' +
+      this.objUnidadSeleccionada.Marca +
+      ' - ' +
+      this.objUnidadSeleccionada.Modelo;
+    this.nombreUnidad = this.searchTerm;
     delete this.itemsSr;
+  }
+  public goBackConfiguration() {
+    this.confirmacionConfSer = false;
+    this.slides.lockSwipes(false);
+    this.slides.slidePrev();
+    this.slides.lockSwipes(true);
+  }
+  public onCancel(event) {
+    try {
+      delete this.objUnidadSeleccionada;
+    } catch (error) {}
   }
 }
