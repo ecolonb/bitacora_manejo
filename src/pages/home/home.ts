@@ -24,24 +24,15 @@ export class HomePage {
   ) {
     this.LoginOkProvider = this.loginProvider.getActivo();
     this.strLoginOkProvider = String(this.LoginOkProvider);
-    this.strTiempoManejo = this.bitacoraProvider.getTimeForBitacora(1);
-    this.strTiempoServicio = this.bitacoraProvider.getTimeForBitacora(2);
   }
-  public guardarBitacora() {
-    // Preparando la bitácora para guardarla en el servicio
-    const objBitacora = {
-      fecha_inicio: new Date(),
-      fecha_fin: new Date(),
-      inicio_x: 19.999,
-      incio_y: -99.0919,
-      fin_x: 19.1288,
-      fin_y: -99.1918,
-      tiempo_hhmmss: '09:08:21',
-      tiempo_segundos: 19192
-    };
-    this.bitacoraProvider.setBitacora(objBitacora);
-  }
+
   public goToPage(PageParam: any) {
     this.navCtrl.push(PageParam);
+  }
+  public ionViewDidLoad() {
+    // this.bitacoraProvider.getStatus();
+    // setInterval(() => {
+    //   this.bitacoraProvider.statusUpdate();
+    // }, 1000);
   }
 }

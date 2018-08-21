@@ -100,7 +100,6 @@ export class UtilidadesProvider {
     return objRespuesta;
   }
   public convertSecondToHhhmmss(Segundos: number) {
-    console.log('in convert function');
     const horas: number = Math.floor(Segundos / 3600);
     let minutos: number = Math.floor((Segundos - horas * 3600) / 60);
     let segundos: number = Math.round(Segundos - horas * 3600 - minutos * 60);
@@ -132,7 +131,6 @@ export class UtilidadesProvider {
     }
     // Formating segundosHhmmss
     const Respuesta = strHoras + ':' + strMinutos + ':' + strSegundos;
-    console.log('Respuesta: ', Respuesta);
     return Respuesta;
   }
 }

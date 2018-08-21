@@ -55,9 +55,22 @@ export class MyApp {
                 // se obtiene la información de la Bitácora desde el localStorage
                 // ****** si no esta en servicio o configuración de ultimo servicio solicitar configuracion
                 // this.rootPage = MenuPage;
-                this.rootPage = this.configuracionServicioPage;
-                statusBar.styleDefault();
-                splashScreen.hide();
+                // Se obtiene la configuracion del Servicio
+                this.bitacoraProvider.cargarServicioFromStorage().then(() => {
+                  console.log(
+                    'Cargando informacion del servicio desde el Storage'
+                  );
+                  if (
+                    this.bitacoraProvider.StatusServicio.Terminado === false
+                  ) {
+                    this.bitacoraProvider.resetServicicio();
+                    this.rootPage = MenuPage;
+                  } else {
+                    this.rootPage = this.configuracionServicioPage;
+                  }
+                  statusBar.styleDefault();
+                  splashScreen.hide();
+                });
               })
               .catch((err) => {
                 // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage

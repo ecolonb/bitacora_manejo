@@ -7,6 +7,7 @@ import {
   NavParams,
   Slides
 } from 'ionic-angular';
+import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { UnidadModel } from './../../models/unidad.model';
 import { LoginPage, MenuPage } from './../index-paginas';
 
@@ -50,6 +51,7 @@ export class ConfiguracionServicioPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private alertCtrl: AlertController,
+    private bitacoraProvider: BitacoraProvider,
     private app: App
   ) {
     /**
@@ -90,14 +92,11 @@ export class ConfiguracionServicioPage {
   }
   public ionViewDidLoad() {
     // this.setFilteredItems();
-    console.log('ionViewDidLoad ConfiguracionServicioPage');
   }
   public nextSlideConfirmacion() {
-    console.log('Slide confirmation Guardar Capturados');
     let error: boolean = false;
     // Despues de entrar en esta funcion debe guardar los datos que se capturan
     let liErrores: string = '';
-    console.log('Validando los datos de entrada');
 
     if (
       this.objUnidadSeleccionada == null ||
@@ -119,10 +118,7 @@ export class ConfiguracionServicioPage {
         buttons: [
           {
             text: 'Ok',
-            role: 'ok',
-            handler: () => {
-              console.log('Despues de ok');
-            }
+            role: 'ok'
           }
         ]
       });
@@ -188,7 +184,6 @@ export class ConfiguracionServicioPage {
         {
           text: 'Ok',
           handler: (DataOk: string) => {
-            console.log('Entrar clicked', DataOk);
             if (DataOk === 'VerBitacora') {
               // Cambiar variable Status appConfiguracion verbitacora
               this.app.getRootNavs()[0].setRoot(this.menuPage);
@@ -211,15 +206,12 @@ export class ConfiguracionServicioPage {
   // Se inicia el servicio : se guarda información en localStorage
   public iniciarServicio() {
     // Validar si tiene una actividad pendiente redireccionar a tabs Actividades
-
+    this.bitacoraProvider.iniciarServicio();
     this.app.getRootNavs()[0].setRoot(this.menuPage);
   }
 
   public filterItems(searchTerm) {
-    console.log(
-      'Realizar el filtrado de las unidades, por nuid, modelo, año, marca'
-    );
-    return this.objUnidades.filter(item => {
+    return this.objUnidades.filter((item) => {
       return (
         item.Nuid.toString()
           .toLowerCase()
@@ -228,7 +220,6 @@ export class ConfiguracionServicioPage {
     });
   }
   public setUnidad(ObjSearch: UnidadModel) {
-    console.log('ObjSearch', ObjSearch);
     this.objUnidadSeleccionada = ObjSearch;
     this.searchTerm =
       this.objUnidadSeleccionada.Nuid.toString() +

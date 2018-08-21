@@ -29,47 +29,9 @@ import { ActionSheetController } from 'ionic-angular';
 })
 export class ActividadesPage {
   // Delete
-  public strTatusLocation: string = '';
-  public strTatusLocationMode: string = '';
+
   public DetalleItemBitacoraPage: any = DetalleItemBitacoraPage;
-  public actividadTitle: any = ActividadTitlePipe;
-  public InicioActividadX: number;
-  public InicioActividadY: number;
-  public FinActividaX: number;
-  public FinActividadY: number;
-  // PAra mantener el ambito de las variables
-  public BitacoraData: BitacoraModel[] = [];
-  public currentItemBitacora: BitacoraModel;
-  public haveElements: boolean = false;
-  // public that = this;
-  public strCentesimas: string = ':00';
-  public strSegundos: string = ':00';
-  public strMinutos: string = ':00';
-  public strHoras: string = '00';
-  public dtFechaInicio: Date = null;
-  public dtFechaFin: Date = null;
-  public dtCurrentDT: Date = null;
-  // dtFechaFin dtCurrentDT
-  public actividadActual: string = 'S';
-  public actividaActualTtl: string = 'S';
-  public boolServicio: boolean = false;
-  public boolReinicio: boolean = false;
   // public boolSelectActividad: boolean = false;
-
-  // Control de la actividad actual
-  public Conduciendo: boolean = false;
-  public Descanso: boolean = false;
-  public ExcepcionTemporal: boolean = false;
-  public dsConduciendo: boolean = false;
-  public dsDescanso: boolean = false;
-  public dsExcepcionTemporal: boolean = false;
-
-  private centesimas: number = 0;
-  private segundos: number = 0;
-  private minutos: number = 0;
-  private horas: number = 0;
-  private control: any;
-  private stInProgress: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -83,277 +45,210 @@ export class ActividadesPage {
     private actionSheetCtrl: ActionSheetController
   ) {}
 
+  // Error en Dispositivo
   public ionViewDidLoad() {
     if (this.platform.is('cordova')) {
-      this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
-        console.log('DATA' + JSON.stringify(DATA));
-        this.strTatusLocation = JSON.stringify(DATA);
-      });
-      this.diagnostic.getLocationMode().then((DATA) => {
-        console.log('DATA----------->>>' + JSON.stringify(DATA));
-        console.log('DATA----------->>>crudo' + DATA);
-        if (String(DATA) !== 'location_off') {
-          this.strTatusLocationMode = 'Activated <-> ' + DATA;
-        } else {
-          this.strTatusLocationMode = 'Disabled <-> ' + DATA;
-        }
-      });
-      this.diagnostic.isLocationEnabled().then((Respuesta) => {
-        if (Respuesta) {
-          this.strTatusLocation = 'Location Activated';
-        } else {
-          this.strTatusLocation = 'Location Desactivated';
-        }
-
-        console.log('Diagnostic');
-      });
+      // this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
+      //   console.log('DATA ---->>> Autoroization' + JSON.stringify(DATA));
+      //   this.bitacoraProvider.strTatusLocation = JSON.stringify(DATA);
+      // });
+      // this.diagnostic.getLocationMode().then((DATA) => {
+      //   console.log(
+      //     'DATA getLocationMode----------->>>' + JSON.stringify(DATA)
+      //   );
+      //   console.log('DATA----------->>>------>>>crudo' + DATA);
+      //   if (String(DATA) !== 'location_off') {
+      //     this.bitacoraProvider.strTatusLocationMode =
+      //       'Activated <-> --->>' + DATA;
+      //   } else {
+      //     this.bitacoraProvider.strTatusLocationMode =
+      //       'Disabled <-> -->>' + DATA;
+      //   }
+      // });
+      // this.diagnostic.isLocationEnabled().then((Respuesta) => {
+      //   if (Respuesta) {
+      //     this.bitacoraProvider.strTatusLocation = 'Location Activated';
+      //   } else {
+      //     this.bitacoraProvider.strTatusLocation = 'Location Desactivated';
+      //   }
+      //   console.log('Diagnostic-----promesa OK>>>>');
+      // });
     } else {
-      console.log('Else Here');
-      this.strTatusLocation = 'Desktop';
-      this.strTatusLocationMode = 'Desktop';
+      this.bitacoraProvider.strTatusLocation = 'Desktop';
+      this.bitacoraProvider.strTatusLocationMode = 'Desktop';
     }
     try {
-      this.BitacoraData = this.bitacoraProvider.getBitacoraDataStorage();
-      if (this.BitacoraData[0]) {
-        if (this.BitacoraData.length > 0) {
-          this.haveElements = true;
-          if (this.BitacoraData[0].Terminado === false) {
-            // reinicio
-            this.boolReinicio = true;
-            console.log(
-              'this.BitacoraData[0].Actividad',
-              this.BitacoraData[0].Actividad
-            );
+      if (this.bitacoraProvider.BitacoraData !== []) {
+        if (this.bitacoraProvider.BitacoraData[0]) {
+          if (this.bitacoraProvider.BitacoraData.length > 0) {
+            this.bitacoraProvider.haveElements = true;
 
-            if (this.BitacoraData[0].Actividad === 'C') {
-              this.Conduciendo = true;
-              this.dsDescanso = true;
-              this.dsConduciendo = false;
-              this.dsExcepcionTemporal = true;
+            if (
+              Boolean(this.bitacoraProvider.BitacoraData[0].Terminado) === false
+            ) {
+              // reinicio
+
+              this.bitacoraProvider.boolReinicio = true;
+
+              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'C') {
+                this.bitacoraProvider.Conduciendo = true;
+                this.bitacoraProvider.dsDescanso = true;
+                this.bitacoraProvider.dsConduciendo = false;
+                this.bitacoraProvider.dsExcepcionTemporal = true;
+              }
+              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'D') {
+                this.bitacoraProvider.Descanso = true;
+              }
+              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'ET') {
+                this.bitacoraProvider.ExcepcionTemporal = true;
+              }
+              console.log('Llmando a cronometro hay una actividad peneidnete');
+              this.inicio(this.bitacoraProvider.BitacoraData[0].Actividad);
             }
-            if (this.BitacoraData[0].Actividad === 'D') {
-              this.Descanso = true;
-            }
-            if (this.BitacoraData[0].Actividad === 'ET') {
-              this.ExcepcionTemporal = true;
-            }
-            this.inicio(this.BitacoraData[0].Actividad);
           }
         }
       }
-    } catch (error) {
-      console.log('Error: --->>>>' + JSON.stringify(error));
-    }
-  }
-  // Función que se ejecuta cuando se ha cambiado la actividad actual
-  public onChangeSelectActividad() {
-    // se cambia el titulo en el Array de Items bitácora
-    if (this.BitacoraData.length >= 1) {
-      if (!this.BitacoraData[0].Terminado) {
-        this.changeTitlte(this.actividadActual);
-      }
-    }
+    } catch (error) {}
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
-    if (ActividadParam === 'S') {
-      this.actividadActual = 'S';
-      this.actividaActualTtl = 'S';
-      console.log('Servicio cancelado');
-      return;
-    }
     if (ActividadParam === 'C') {
-      this.actividadActual = 'C';
-      this.actividaActualTtl = 'C';
-      this.Conduciendo = true;
-      this.dsDescanso = true;
-      this.dsExcepcionTemporal = true;
-      if (!this.boolReinicio) {
-        this.dsConduciendo = true;
+      this.bitacoraProvider.actividadActual = 'C';
+      this.bitacoraProvider.actividaActualTtl = 'C';
+      this.bitacoraProvider.Conduciendo = true;
+      this.bitacoraProvider.dsDescanso = true;
+      this.bitacoraProvider.dsExcepcionTemporal = true;
+      if (!this.bitacoraProvider.boolReinicio) {
+        this.bitacoraProvider.dsConduciendo = true;
       }
     }
     if (ActividadParam === 'D') {
-      this.actividadActual = 'D';
-      this.actividaActualTtl = 'D';
-      this.Descanso = true;
-      this.dsConduciendo = true;
-      this.dsExcepcionTemporal = true;
-      if (!this.boolReinicio) {
-        this.dsDescanso = true;
+      this.bitacoraProvider.actividadActual = 'D';
+      this.bitacoraProvider.actividaActualTtl = 'D';
+      this.bitacoraProvider.Descanso = true;
+      this.bitacoraProvider.dsConduciendo = true;
+      this.bitacoraProvider.dsExcepcionTemporal = true;
+      if (!this.bitacoraProvider.boolReinicio) {
+        this.bitacoraProvider.dsDescanso = true;
       }
     }
     if (ActividadParam === 'ET') {
-      this.actividadActual = 'ET';
-      this.actividaActualTtl = 'ET';
-      this.ExcepcionTemporal = true;
-      this.dsConduciendo = true;
-      this.dsDescanso = true;
-      if (!this.boolReinicio) {
-        this.dsExcepcionTemporal = true;
+      this.bitacoraProvider.actividadActual = 'ET';
+      this.bitacoraProvider.actividaActualTtl = 'ET';
+      this.bitacoraProvider.ExcepcionTemporal = true;
+      this.bitacoraProvider.dsConduciendo = true;
+      this.bitacoraProvider.dsDescanso = true;
+      if (!this.bitacoraProvider.boolReinicio) {
+        this.bitacoraProvider.dsExcepcionTemporal = true;
       }
     }
-    if (!this.stInProgress) {
-      this.stInProgress = true;
+    if (!this.bitacoraProvider.stInProgress) {
+      this.bitacoraProvider.stInProgress = true;
       let dtSart: Date;
 
-      if (!this.boolReinicio) {
+      if (!this.bitacoraProvider.boolReinicio) {
+        // dtSart = new Date();
         // Obteniendo las coordenadas
-        this.geolocation
-          .getCurrentPosition()
-          .then((resp) => {
-            // resp.coords.latitude
-            // resp.coords.longitude
-            console.log(resp.coords.latitude);
-            console.log(resp.coords.longitude);
-            this.InicioActividadX = Number(resp.coords.latitude);
-            this.InicioActividadY = Number(resp.coords.longitude);
-            console.log('this.InicioActividadX: ', this.InicioActividadX);
-            console.log('this.InicioActividadY: ', this.InicioActividadY);
-            this.newItemBitacora(dtSart);
+        // this.geolocation
+        //   .getCurrentPosition()
+        //   .then((resp) => {
+        //     // resp.coords.latitude
+        //     // resp.coords.longitude
+        //     // console.log(resp.coords.latitude);
+        //     // console.log(resp.coords.longitude);
+        //     // this.bitacoraProvider.InicioActividadX = Number(
+        //     //   resp.coords.latitude
+        //     // );
+        //     // this.bitacoraProvider.InicioActividadY = Number(
+        //     //   resp.coords.longitude
+        //     // );
+        //     // console.log(
+        //     //   'LOCATION this.InicioActividadX: ---------->>>',
+        //     //   this.bitacoraProvider.InicioActividadX
+        //     // );
+        //     // console.log(
+        //     //   'LOCATION this.InicioActividadY: ------------>>',
+        //     //   this.bitacoraProvider.InicioActividadY
+        //     // );
 
-            // si se obtiene la ubicación actual habilitar boton parar actividad
-            if (ActividadParam === 'S') {
-              this.actividadActual = 'S';
-              this.actividaActualTtl = 'S';
-              console.log('Servicio cancelado');
-              return;
-            }
-            if (ActividadParam === 'C') {
-              this.dsConduciendo = false;
-            }
-            if (ActividadParam === 'D') {
-              this.dsDescanso = false;
-            }
-            if (ActividadParam === 'ET') {
-              this.dsExcepcionTemporal = false;
-            }
-          })
-          .catch((error) => {
-            console.log('Error getting location', error);
-            this.InicioActividadX = -2786;
-            this.InicioActividadY = -2786;
-            this.newItemBitacora(dtSart);
-            // si se obtiene la ubicación actual habilitar boton parar actividad
-            if (ActividadParam === 'S') {
-              this.actividadActual = 'S';
-              this.actividaActualTtl = 'S';
-              console.log('Servicio cancelado');
-              return;
-            }
-            if (ActividadParam === 'C') {
-              this.dsConduciendo = false;
-            }
-            if (ActividadParam === 'D') {
-              this.dsDescanso = false;
-            }
-            if (ActividadParam === 'ET') {
-              this.dsExcepcionTemporal = false;
-            }
-          });
+        //     // si se obtiene la ubicación actual habilitar boton parar actividad
+
+        //   })
+        //   .catch((error) => {
+        //     console.log(
+        //       'Error getting location------------->>>>' + JSON.stringify(error)
+        //     );
+        //     this.bitacoraProvider.InicioActividadX = -2786;
+        //     this.bitacoraProvider.InicioActividadY = -2786;
+        //     this.bitacoraProvider.newItemBitacora(dtSart);
+        //     // si se obtiene la ubicación actual habilitar boton parar actividad
+
+        //     if (ActividadParam === 'C') {
+        //       this.bitacoraProvider.dsConduciendo = false;
+        //     }
+        //     if (ActividadParam === 'D') {
+        //       this.bitacoraProvider.dsDescanso = false;
+        //     }
+        //     if (ActividadParam === 'ET') {
+        //       this.bitacoraProvider.dsExcepcionTemporal = false;
+        //     }
+        //     console.log('Despues de error en location------->>>>');
+        //   });
+
+        if (ActividadParam === 'C') {
+          this.bitacoraProvider.dsConduciendo = false;
+        }
+        if (ActividadParam === 'D') {
+          this.bitacoraProvider.dsDescanso = false;
+        }
+        if (ActividadParam === 'ET') {
+          this.bitacoraProvider.dsExcepcionTemporal = false;
+        }
         dtSart = new Date();
-        //
-        this.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
+
+        this.bitacoraProvider.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
           dtSart
         );
-        this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
+
+        this.bitacoraProvider.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
           new Date()
         );
-        this.dtCurrentDT = new Date();
+
+        this.bitacoraProvider.dtCurrentDT = new Date();
+
+        this.bitacoraProvider.newItemBitacora(dtSart);
       } else {
-        this.boolReinicio = false;
+        // Si hay una actividad en curso aqui se reinicia
+
+        this.bitacoraProvider.boolReinicio = false;
+
         dtSart = this.utilidadesProvider.convertSqlToDate(
-          this.BitacoraData[0].FechaHoraInicio
+          this.bitacoraProvider.BitacoraData[0].FechaHoraInicio
         );
+
         // this.dtFechaFin
-        this.dtFechaInicio = this.utilidadesProvider.convertSqlToDate(
-          this.BitacoraData[0].FechaHoraInicio
+        this.bitacoraProvider.dtFechaInicio = this.utilidadesProvider.convertSqlToDate(
+          this.bitacoraProvider.BitacoraData[0].FechaHoraInicio
         );
-        this.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
+
+        this.bitacoraProvider.dtFechaFin = this.utilidadesProvider.convertLocalDateToUTC(
           new Date()
         );
-        this.dtCurrentDT = new Date();
+
+        this.bitacoraProvider.dtCurrentDT = new Date();
       }
-      this.control = setInterval(() => {
-        this.cronometro(this);
+
+      this.bitacoraProvider.control = setInterval(() => {
+        this.bitacoraProvider.cronometro();
       }, 1000);
       // Guardar item bitacora
     } else {
-      this.guardar();
+      this.bitacoraProvider.guardar();
     }
 
     // this.changeTitlteLarge(this.actividaActualTtl);
   }
 
-  // Crear Item bitacora
-  public newItemBitacora(dtSart: Date) {
-    if (this.actividadActual === 'S') {
-      this.actividadActual = 'S';
-      this.actividaActualTtl = 'S';
-      console.log('Servicio cancelado');
-      return;
-    }
-    // this.currentItemBitacora.IdViaje = 1368;
-    // Obtener un hash de la bitacora
-    console.log('In new item Bitacora dtSart: ', dtSart);
-    const dtSQLStartNewItem: string = this.utilidadesProvider.isoStringToSQLServerFormat(
-      dtSart
-        .toISOString()
-        .toString()
-        .toUpperCase()
-    );
-    console.log('In new item Bitacora dtSQLStartNewItem: ', dtSQLStartNewItem);
-    const objNewItem: any = {
-      IdViaje: 1368,
-      HashBitacora: this.utilidadesProvider.hashCode(
-        this.dtFechaInicio.toString() + 'TOKEN'
-      ),
-      FechaHoraInicio: dtSQLStartNewItem,
-      FechaHoraFinal: null,
-      SegundosTotal: 0,
-      TiempoHhmmss: null,
-      Actividad: this.actividadActual,
-      InicioActividadX: this.InicioActividadX,
-      InicioActividadY: this.InicioActividadY,
-      FinActividaX: null,
-      FinActividadY: null,
-      Descripcion: null,
-      GuardadoServer: false,
-      Nota: null,
-      Transicion: 0,
-      TransicionHhmmss: '00:00:00',
-      Terminado: false
-    };
-    console.log('VALIDANDO', this.BitacoraData);
-    if (this.BitacoraData !== [] && this.BitacoraData !== null) {
-      console.log(
-        'Calculando transicion this.BitacoraData.length:',
-        this.BitacoraData.length
-      );
-      if (this.BitacoraData[0]) {
-        // Obtener transciocion segundos y segundos HH:mm:ss
-        try {
-          console.log('Calulando transicion_______________>>>');
-          const objTransicion: any = this.utilidadesProvider.getTimeHHmmss(
-            this.BitacoraData[0].FechaHoraFinal,
-            dtSQLStartNewItem
-          );
-          objNewItem.Transicion = objTransicion.segundosDiferencia;
-          objNewItem.TransicionHhmmss = objTransicion.segundosHhmmss;
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } else {
-      this.BitacoraData = [];
-    }
-    this.currentItemBitacora = new BitacoraModel(objNewItem);
-    this.BitacoraData.unshift(this.currentItemBitacora);
-    // Guardar en LocalStorage ObjBitacora
-    this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
-    // Boolean para saber si hay elementos en la bitacora
-    this.haveElements = true;
-    console.log('this.BitacoraData after UNSHIFT', this.BitacoraData);
-  }
   // Funcion detiene el vento debe guardarse en localStorage
   public terminar() {
     console.log('Termina funcion Actividades');
@@ -362,7 +257,6 @@ export class ActividadesPage {
     console.log('Se abre el panel para editar el item bitacora');
   }
   public eliminar() {
-    console.log('Eliminar', this.actividadActual);
     // Alert desea eliminar
     const alert = this.alertCtrl.create({
       title: 'Confirmar',
@@ -379,9 +273,9 @@ export class ActividadesPage {
           text: 'Eliminar',
           handler: () => {
             console.log('Eliminar clicked');
-            clearInterval(this.control);
+            clearInterval(this.bitacoraProvider.control);
 
-            this.stInProgress = false;
+            this.bitacoraProvider.stInProgress = false;
             (document.getElementById(
               'inicio'
             ) as HTMLInputElement).disabled = false;
@@ -391,18 +285,18 @@ export class ActividadesPage {
             (document.getElementById(
               'guardar'
             ) as HTMLInputElement).disabled = true;
-            this.strSegundos = ':00';
-            this.strMinutos = ':00';
-            this.strHoras = '00';
+            this.bitacoraProvider.strSegundos = ':00';
+            this.bitacoraProvider.strMinutos = ':00';
+            this.bitacoraProvider.strHoras = '00';
             try {
-              this.BitacoraData.splice(0, 1);
+              this.bitacoraProvider.BitacoraData.splice(0, 1);
               // Al eliminar un elemento se actualiza el LocalStorage
-              this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
-              if (this.BitacoraData !== []) {
-                if (this.BitacoraData.length >= 1) {
-                  this.haveElements = true;
+              this.bitacoraProvider.guardarBitacoraInStorage();
+              if (this.bitacoraProvider.BitacoraData !== []) {
+                if (this.bitacoraProvider.BitacoraData.length >= 1) {
+                  this.bitacoraProvider.haveElements = true;
                 } else {
-                  this.haveElements = false;
+                  this.bitacoraProvider.haveElements = false;
                 }
               }
             } catch (error) {
@@ -413,105 +307,6 @@ export class ActividadesPage {
       ]
     });
     alert.present();
-  }
-  public guardar() {
-    this.dtFechaFin = this.dtCurrentDT;
-    this.BitacoraData[0].FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
-      this.dtFechaFin
-        .toISOString()
-        .toString()
-        .toUpperCase()
-    );
-    this.BitacoraData[0].Terminado = true;
-    clearInterval(this.control);
-    // Obtener el tiempo transcurrido
-    const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
-      this.BitacoraData[0].FechaHoraFinal,
-      this.BitacoraData[0].FechaHoraInicio
-    );
-    this.BitacoraData[0].SegundosTotal =
-      objTiempoTranscurrido.segundosDiferencia;
-    this.BitacoraData[0].TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
-    // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
-    this.strSegundos = ':00';
-    this.strMinutos = ':00';
-    this.strHoras = '00';
-    this.stInProgress = false;
-    // Validar en que estado estába y terminarlo
-    this.Conduciendo = false;
-    this.Descanso = false;
-    this.ExcepcionTemporal = false;
-    this.dsConduciendo = false;
-    this.dsDescanso = false;
-    this.dsExcepcionTemporal = false;
-    this.actividaActualTtl = 'S';
-    this.actividadActual = 'S';
-    // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
-    this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
-  }
-  // Obtiene el tiempo transcurrido entre la fecha que inicio el evento y la fecha actual (Se ejecuta cada segundo)
-  public cronometro(that) {
-    that.dtCurrentDT = new Date();
-    const dtFnCurrent: Date = this.utilidadesProvider.convertLocalDateToUTC(
-      that.dtCurrentDT
-    );
-    const dateDiff = Math.abs(
-      (dtFnCurrent.valueOf() - that.dtFechaInicio.valueOf()) / 1000
-    );
-    // console.log('' + that.date1 + ' <-> ' + that.date2 + ' DIFF: ' + dateDiff);
-    let horas: any = Math.floor(dateDiff / 3600);
-    let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
-    let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
-
-    if (
-      (segundos === 60 && minutos === 59) ||
-      (segundos === 60 && minutos === 60)
-    ) {
-      horas++;
-      if (horas < 10) {
-        that.strHoras = '0' + String(horas);
-      } else {
-        that.strHoras = String(horas);
-      }
-      minutos = 0;
-      segundos = 0;
-      that.strSegundos = ':0' + String(segundos);
-      that.strMinutos = ':0' + String(minutos);
-    }
-    if (segundos === 60) {
-      segundos = 0;
-      that.strSegundos = ':0' + String(segundos);
-
-      if (minutos === 59 || minutos === 60) {
-        minutos = 0;
-        that.strMinutos = ':0' + String(minutos);
-        horas++;
-        if (horas < 10) {
-          that.strHoras = '0' + String(horas);
-        } else {
-          that.strHoras = String(horas);
-        }
-      } else {
-        minutos++;
-        if (minutos < 10) {
-          that.strMinutos = ':0' + String(minutos);
-        } else {
-          that.strMinutos = String(minutos);
-        }
-      }
-    }
-    if (segundos < 10) {
-      segundos = '0' + segundos;
-    }
-    that.strSegundos = ':' + String(segundos);
-    if (minutos < 10) {
-      minutos = '0' + minutos;
-    }
-    that.strMinutos = ':' + String(minutos);
-    if (horas < 10) {
-      horas = '0' + horas;
-    }
-    that.strHoras = String(horas);
   }
 
   public testDatetTiime(Title: string, Date1: any, Date2: any) {
@@ -539,61 +334,29 @@ export class ActividadesPage {
     );
   }
 
-  // Esta función no se utiliza, Lleba el control del cronometro en Memoria RAM (Si se suspende el dispositivo o computadora se pierde el Conteo)
-  public cronometroManual(that) {
-    that.segundos++;
-    console.log('In fn cronometro', that.segundos, that.minutos, that.horas);
-    if (that.segundos === 60) {
-      that.minutos++;
-    }
-    if (that.segundos === 60 && that.minutos === 60) {
-      that.segundos = 0;
-      that.minutos = 0;
-      that.horas++;
-    } else {
-      if (that.segundos === 60) {
-        that.segundos = 0;
-      }
-    }
-    if (that.segundos < 10) {
-      that.strSegundos = ':0' + that.segundos;
-    } else {
-      that.strSegundos = ':' + that.segundos;
-    }
-    if (that.minutos < 10) {
-      that.strMinutos = ':0' + that.minutos;
-    } else {
-      that.strMinutos = ':' + that.minutos;
-    }
-    if (that.horas < 10) {
-      that.strHoras = '0' + String(that.horas);
-    } else {
-      that.strHoras = String(that.horas);
-    }
-  }
   // change title card activity
 
   public changeTitlte(Actividad: string) {
-    console.log('In change title', this.BitacoraData);
-    if (this.BitacoraData.length >= 1) {
-      this.BitacoraData[0].Actividad = Actividad;
+    console.log('In change title', this.bitacoraProvider.BitacoraData);
+    if (this.bitacoraProvider.BitacoraData.length >= 1) {
+      this.bitacoraProvider.BitacoraData[0].Actividad = Actividad;
       // Cuando se cambia de actividad tambien se actualiza LocalStorage
-      this.bitacoraProvider.guardarBitacoraInStorage(this.BitacoraData);
+      this.bitacoraProvider.guardarBitacoraInStorage();
     }
   }
   public changeTitlteLarge(Actividad: string) {
     if (Actividad === 'S') {
-      this.actividaActualTtl = 'Servicio';
+      this.bitacoraProvider.actividaActualTtl = 'Servicio';
     } else if (Actividad === 'C') {
-      this.actividaActualTtl = 'Conduciendo';
+      this.bitacoraProvider.actividaActualTtl = 'Conduciendo';
     } else if (Actividad === 'D') {
-      this.actividaActualTtl = 'Descanso';
+      this.bitacoraProvider.actividaActualTtl = 'Descanso';
     } else if (Actividad === 'FS') {
-      this.actividaActualTtl = 'Fuera de servicio';
+      this.bitacoraProvider.actividaActualTtl = 'Fuera de servicio';
     } else if (Actividad === 'ET') {
-      this.actividaActualTtl = 'Excepción temporal';
+      this.bitacoraProvider.actividaActualTtl = 'Excepción temporal';
     } else {
-      this.actividaActualTtl = '--';
+      this.bitacoraProvider.actividaActualTtl = '--';
     }
   }
   public goToDetallesItem(itemBitacora: BitacoraModel) {

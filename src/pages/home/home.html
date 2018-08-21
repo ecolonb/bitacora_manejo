@@ -13,30 +13,31 @@
   <div class="divider">
     <ion-card>
       <ion-card-header class="cardHeaderEvents">
-        Resumen
+        Total de tiempos
       </ion-card-header>
 
       <ion-list>
         <ion-item class="itemCardResumen">
-          Conduciendo
+          Conducción
           <span item-end>
-            <ion-icon name="timer"></ion-icon> &nbsp; {{ bitacoraProvider.getTimeForBitacora(1) }}
+            <ion-icon name="md-timer"></ion-icon> &nbsp; {{ bitacoraProvider.segundosConduccionHhmmss }}
           </span>
         </ion-item>
         <ion-item class="itemCardResumen">
-          Descansando
+          Descanso
           <span item-end>
-            <ion-icon name="timer"></ion-icon> &nbsp; 00:32:00
+            <ion-icon name="md-timer"></ion-icon> &nbsp; {{ bitacoraProvider.segundosDescansoHhmmss }}
           </span>
         </ion-item>
         <ion-item class="itemCardResumen">
           Servicio
           <span item-end>
-            <ion-icon name="timer"></ion-icon> &nbsp; {{ bitacoraProvider.getTimeForBitacora(2) }}
+            <ion-icon name="md-timer"></ion-icon> &nbsp; {{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio
+            + bitacoraProvider.strSegundosServicio }}
           </span>
         </ion-item>
       </ion-list>
-      <span class="actualizadoFooter">Ultima actualización: 2018-07-30 16:20:21</span>
+      <span class="actualizadoFooter"> {{ bitacoraProvider.fehoraActualSystem | date:'long':'GMT+00000':'es-mx'}}</span>
     </ion-card>
   </div>
   <div class="divider">

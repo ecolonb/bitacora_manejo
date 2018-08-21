@@ -19,30 +19,34 @@
         </button>
       </ion-item>
       <ion-item text-center>
-        <span class="actividadTitleSt">{{ actividadActual | actividadTitle }}</span>
+        <span class="actividadTitleSt">{{ bitacoraProvider.actividadActual | actividadTitle }}</span>
       </ion-item>
       <div style="margin-left: auto;margin-right: auto;text-align: center;">
 
-        <span class="reloj">{{ strHoras }}</span>
-        <span class="reloj">{{ strMinutos}}</span>
-        <span class="reloj">{{ strSegundos }}</span>
+        <span class="reloj">{{ bitacoraProvider.strHoras }}</span>
+        <span class="reloj">{{ bitacoraProvider.strMinutos}}</span>
+        <span class="reloj">{{ bitacoraProvider.strSegundos }}</span>
+
+
+
+
       </div>
-      <button id="inicio" ion-button (click)="inicio('C')" color="teal_blue" class="btnActionInicio" [disabled]="dsConduciendo">
-        <ion-icon *ngIf="!Conduciendo" name="play" style="margin-right: 20px"></ion-icon>
-        <ion-icon *ngIf="Conduciendo" name="square" style="margin-right: 8px;font-size:20px;"></ion-icon>
-        <span *ngIf="!Conduciendo">Iniciar conducción</span>
-        <span *ngIf="Conduciendo">Terminar conducción</span>
+      <button id="inicio" ion-button (click)="inicio('C')" color="teal_blue" class="btnActionInicio" [disabled]="bitacoraProvider.dsConduciendo">
+        <ion-icon *ngIf="!bitacoraProvider.Conduciendo" name="play" style="margin-right: 20px"></ion-icon>
+        <ion-icon *ngIf="bitacoraProvider.Conduciendo" name="square" style="margin-right: 8px;font-size:20px;"></ion-icon>
+        <span *ngIf="!bitacoraProvider.Conduciendo">Iniciar conducción</span>
+        <span *ngIf="bitacoraProvider.Conduciendo">Terminar conducción</span>
       </button>
       <div style="padding: 0px;margin:0px;width: 100%;margin-top: 10px;margin-bottom: 7px;">
 
-        <button id="eliminar" ion-button (click)="inicio('D')" color="md_tq" class="btnActionDescanso" [disabled]="dsDescanso">
-          <ion-icon *ngIf="Descanso" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
-          <ion-icon *ngIf="!Descanso" name="play" style="margin-right: 10px"></ion-icon>
+        <button id="eliminar" ion-button (click)="inicio('D')" color="md_tq" class="btnActionDescanso" [disabled]="bitacoraProvider.dsDescanso">
+          <ion-icon *ngIf="bitacoraProvider.Descanso" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
+          <ion-icon *ngIf="!bitacoraProvider.Descanso" name="play" style="margin-right: 10px"></ion-icon>
           <span>Descanso</span>
         </button>
-        <button id="guardar" ion-button (click)="inicio('ET')" color="md_tq" class="btnActionExcepcion" [disabled]="dsExcepcionTemporal">
-          <ion-icon *ngIf="ExcepcionTemporal" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
-          <ion-icon *ngIf="!ExcepcionTemporal" name="play" style="margin-right: 10px"></ion-icon>
+        <button id="guardar" ion-button (click)="inicio('ET')" color="md_tq" class="btnActionExcepcion" [disabled]="bitacoraProvider.dsExcepcionTemporal">
+          <ion-icon *ngIf="bitacoraProvider.ExcepcionTemporal" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
+          <ion-icon *ngIf="!bitacoraProvider.ExcepcionTemporal" name="play" style="margin-right: 10px"></ion-icon>
           <span>Excepción</span>
         </button>
       </div>
@@ -51,16 +55,16 @@
     <span>
       &nbsp;
     </span>
-    <ion-card *ngIf="haveElements">
-      <ion-title text-center style="margin-bottom: 7px;">
-        <span style="font-size: 0.9em;font-weight: bold;color:#21425F;">Registros</span>
+    <ion-card *ngIf="bitacoraProvider.haveElements" style="padding:0;margin: auto;width: 99% !important;">
+      <ion-title text-center style="margin-bottom: 7px; margin-top: 10px;">
+        <span style="font-size: 0.9em;font-weight: bold;color:#21425F;">Actividades realizadas</span>
       </ion-title>
       <ion-list>
-        <ion-item-sliding *ngFor="let itemBitacora of BitacoraData" class="listBitacora" detail-push>
+        <ion-item-sliding *ngFor="let itemBitacora of bitacoraProvider.BitacoraData" class="listBitacora" detail-push>
           <ion-item class="itemListBitacora" (click)="goToDetallesItem(itemBitacora)">
             <span style="color:#21425F;">{{ itemBitacora.Actividad | actividadTitle }}</span>
-            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : strHoras + strMinutos+strSegundos
-              }}
+            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : bitacoraProvider.strHoras
+              + bitacoraProvider.strMinutos+bitacoraProvider.strSegundos }}
             </span>
             <span item-end style="color: #21425F">
               <ion-icon style="margin-top: 2px;" name="ios-arrow-forward"></ion-icon>
@@ -81,10 +85,10 @@
 
       </ion-list>
       <div>
-        {{ strTatusLocation }}
+        {{ bitacoraProvider.strTatusLocation }}
       </div>
       <div>
-        {{ strTatusLocationMode }}
+        {{ bitacoraProvider.strTatusLocationMode }}
       </div>
     </ion-card>
   </ion-card>

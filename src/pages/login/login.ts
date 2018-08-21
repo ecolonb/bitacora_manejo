@@ -50,7 +50,6 @@ export class LoginPage {
       // ****** Validar si esta en Servicio y en alguna actividad
       this.loading.dismiss();
       // Si no esta configurado el servicio solicitar configuracion:
-      console.log('Error here --> 1');
       this.navCtrl.setRoot(this.configuracionServicioPage);
     }
   }
@@ -82,7 +81,7 @@ export class LoginPage {
     }
 
     this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
-      (DATARCV) => {
+      DATARCV => {
         if (DATARCV) {
           ObjMEnsaje = DATARCV;
           if (ObjMEnsaje._error === false) {
@@ -91,7 +90,7 @@ export class LoginPage {
             // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
             this.bitacoraProvider
               .getBitacoraFromStorage()
-              .then((ResultBitacoraStorage) => {
+              .then(ResultBitacoraStorage => {
                 // this.bitacoraProvider.getHHmmss();
                 console.log('ResultBitacoraStorage', ResultBitacoraStorage);
                 this.ingresar();
@@ -117,7 +116,7 @@ export class LoginPage {
           this.LoginProvider.setActivo(false);
         }
       },
-      (error) => {
+      error => {
         this.loading.dismiss();
         const alert = this.alertCtrl.create({
           title: 'Error',
@@ -130,12 +129,10 @@ export class LoginPage {
                 this.LoginProvider.setActivo(false);
                 // Borrar las dos lineas de abajo
                 // this.LoginProvider.setActivo(true);
-                // console.log('Error here --> 2');
                 // // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
                 // this.bitacoraProvider
                 //   .getBitacoraFromStorage()
                 //   .then((ResultBitacoraStorage) => {
-                //     console.log('Error here --> 3');
                 //     // this.bitacoraProvider.getHHmmss();
                 //     console.log('ResultBitacoraStorage', ResultBitacoraStorage);
                 //     this.ingresar();

@@ -25,6 +25,8 @@ export class ActividadTitlePipe implements PipeTransform {
       strTitle = 'Excepción temporal';
     } else if (value === 'FS') {
       strTitle = 'Fuera de servicio';
+    } else if (value === '-') {
+      strTitle = 'Sin actividad';
     }
 
     return strTitle;
