@@ -5,9 +5,11 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  Slides
+  Slides,
+  ViewController
 } from 'ionic-angular';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
+import { ServicioModel } from './../../models/servicio.model';
 import { UnidadModel } from './../../models/unidad.model';
 import { LoginPage, MenuPage } from './../index-paginas';
 
@@ -25,7 +27,7 @@ export class ConfiguracionServicioPage {
   public slides: Slides;
   public tipoDeServicio: string = 'default';
   public modalidadDeServicio: string = 'default';
-  public NombreConductor: string = 'Edd';
+  public NombreConductor: string = 'Copiloto';
   public origenServicio: string;
   public destinoServicio: string;
   public descripcionRutaASeguir: string;
@@ -52,7 +54,8 @@ export class ConfiguracionServicioPage {
     public navParams: NavParams,
     private alertCtrl: AlertController,
     private bitacoraProvider: BitacoraProvider,
-    private app: App
+    private app: App,
+    private viewController: ViewController
   ) {
     /**
      */
@@ -61,19 +64,22 @@ export class ConfiguracionServicioPage {
         Nuid: 191929,
         Marca: 'Mercedes bens',
         Modelo: '2019',
-        Anio: '2021'
+        Anio: '2021',
+        Placas: '0191-1212'
       },
       {
         Nuid: 283283,
         Marca: 'Volvo',
         Modelo: '2000 AirLine',
-        Anio: '2015'
+        Anio: '2015',
+        Placas: '123581axc'
       },
       {
         Nuid: 7776977,
         Marca: 'BMW Bigger',
         Modelo: '2019',
-        Anio: '2021'
+        Anio: '2021',
+        Placas: '213455ABC'
       }
     ];
   }
@@ -157,6 +163,10 @@ export class ConfiguracionServicioPage {
         this.modalidadServicioDescLong = 'Turístico';
       } else if (this.modalidadDeServicio === 'turisticoDeLujo') {
         this.modalidadServicioDescLong = 'Turístico de lujo';
+      } else if (this.modalidadDeServicio === 'deCargaGeneral') {
+        this.modalidadServicioDescLong = 'De carga general';
+      } else if (this.modalidadDeServicio === 'deCargaEspecializada') {
+        this.modalidadServicioDescLong = 'De carga especializada';
       } else if (this.modalidadDeServicio === 'excursion') {
         this.modalidadServicioDescLong = 'Excursión';
       } else if (this.modalidadDeServicio === 'choferGuia') {
@@ -173,9 +183,14 @@ export class ConfiguracionServicioPage {
     const alertOpion = this.alertCtrl.create({
       title: 'Elige una opción',
       inputs: [
-        { type: 'radio', label: 'Iniciar servicio', value: 'IniciarServicio' },
+        {
+          type: 'radio',
+          label: 'Iniciar servicio',
+          value: 'IniciarServicio',
+          checked: true
+        },
         { type: 'radio', label: 'Ver bitácora', value: 'VerBitacora' },
-        { type: 'radio', label: 'Salir', value: 'Salir', checked: true }
+        { type: 'radio', label: 'Salir', value: 'Salir' }
       ],
       buttons: [
         {
@@ -205,8 +220,21 @@ export class ConfiguracionServicioPage {
 
   // Se inicia el servicio : se guarda información en localStorage
   public iniciarServicio() {
-    // Validar si tiene una actividad pendiente redireccionar a tabs Actividades
-    this.bitacoraProvider.iniciarServicio();
+    // Cuando se inicia el servicio se arma el objeto configuración servicio
+    const objConfServicio: ServicioModel = {
+      IdServicio: 121,
+      IdCondcutor: 1368,
+      Unidad: this.objUnidadSeleccionada,
+      DireccionOrigen: this.origenServicio,
+      DireccionDestino: this.destinoServicio,
+      Ruta: this.descripcionRutaASeguir,
+      TipoServicio: this.tipoServicioDescLong,
+      ModalidadServicio: this.modalidadServicioDescLong,
+      Permisionario: 'Saul Teja Gonzalez',
+      PermisionarioDomicilio: 'El Yaqui 2050'
+    };
+
+    this.bitacoraProvider.iniciarServicio(objConfServicio);
     this.app.getRootNavs()[0].setRoot(this.menuPage);
   }
 
@@ -224,7 +252,7 @@ export class ConfiguracionServicioPage {
     this.searchTerm =
       this.objUnidadSeleccionada.Nuid.toString() +
       ' - ' +
-      this.objUnidadSeleccionada.Marca +
+      this.objUnidadSeleccionada.Placas +
       ' - ' +
       this.objUnidadSeleccionada.Modelo;
     this.nombreUnidad = this.searchTerm;
@@ -235,6 +263,25 @@ export class ConfiguracionServicioPage {
     this.slides.lockSwipes(false);
     this.slides.slidePrev();
     this.slides.lockSwipes(true);
+  }
+  public slectTipoServicio(ionElement: any) {
+    // Asignando valor seleccionado
+    this.tipoDeServicio = String(ionElement);
+    // Cerrando vista actual selectTipoDeServicio
+    this.closeCurrentView();
+  }
+
+  public slectModalidadServicio(ionElement: any) {
+    // Asignando valor seleccionado
+    this.modalidadDeServicio = String(ionElement);
+    // Cerrando vista actual selectTipoDeServicio
+    this.closeCurrentView();
+  }
+  // Cerrar vista actual
+  public closeCurrentView() {
+    const root = this.viewController.instance.navCtrl._app._appRoot;
+    const view = root._overlayPortal._views[0];
+    view.dismiss();
   }
   public onCancel(event) {
     try {

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ServicioModel } from './../../models/servicio.model';
 
 // ******** MODELOS DE DATOS *******
 import { BitacoraServerModel } from '../../models/bitacora-server.model';
@@ -51,6 +52,7 @@ export class BitacoraProvider {
   public BitacoraData: BitacoraModel[] = [];
   public currentItemBitacora: BitacoraModel;
   public StatusServicio: BitacoraModel;
+
   public haveElements: boolean = false;
 
   // public that = this;
@@ -61,11 +63,22 @@ export class BitacoraProvider {
   public strSegundosServicio: string = ':00';
   public strMinutosServicio: string = ':00';
   public strHorasServicio: string = '00';
+  // Excepcion temporal
+  public strSegundosExcepcion: string = ':00';
+  public strMinutosExcepcion: string = ':00';
+  public strHorasExcepcion: string = '00';
+  public numSegundosActualesExcepcion: number = 0;
+
   public dtFechaInicio: Date = null;
+  public dtFechaInicioUTC: Date = null;
   public dtFechaFin: Date = null;
   public dtCurrentDT: Date = null;
   public fechaInicioServicio: Date;
+  public fechaInicioExcepcion: Date;
+  public strFechaInicioExcepcion: string = null;
+  public fechaInicioActividad: string = null;
   public fehoraActualSystem: Date;
+  public objConfServicio: ServicioModel = null;
 
   public BitacoraDataServerNow: BitacoraServerModel;
   public BitacoraDataServerBack: BitacoraServerModel;
@@ -80,8 +93,14 @@ export class BitacoraProvider {
   public FinActividaX: number;
   public FinActividadY: number;
   public stInProgress: boolean = false;
+  public boolIniciarStatusUpdate: boolean = true;
+  public stExepcionTemporal: boolean = false;
   public control: any;
   public ctrlTimerServicio: any;
+  public ctrlTimerCurrentDateTiem: any;
+  public ctrlTimerStatusUpdate: any;
+  public controlTimerExcepcion: any;
+
   // Array donde se guardarán los items de la bitácora
   private UrlEndPoint: string =
     'http://dev1.copiloto.com.mx/lab/rest/api/Bitacora';
@@ -223,12 +242,14 @@ export class BitacoraProvider {
   // Obtiene el tiempo transcurrido entre la fecha que inicio el evento y la fecha actual (Se ejecuta cada segundo)
   public cronometro() {
     this.dtCurrentDT = new Date();
-
     const dtFnCurrent: Date = this.utilidadesProvider.convertLocalDateToUTC(
       this.dtCurrentDT
     );
+    this.dtFechaInicioUTC = this.utilidadesProvider.convertSqlToDate(
+      this.fechaInicioActividad
+    );
     const dateDiff: number = Math.abs(
-      (dtFnCurrent.valueOf() - this.dtFechaInicio.valueOf()) / 1000
+      (dtFnCurrent.valueOf() - this.dtFechaInicioUTC.valueOf()) / 1000
     );
 
     this.numSegundosActuales = dateDiff;
@@ -288,43 +309,78 @@ export class BitacoraProvider {
     this.strHoras = String(horas);
   }
   public guardar() {
-    this.dtFechaFin = this.dtCurrentDT;
-    this.BitacoraData[0].FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
-      this.dtFechaFin
-        .toISOString()
-        .toString()
-        .toUpperCase()
-    );
-    this.BitacoraData[0].Terminado = true;
-    clearInterval(this.control);
-    // Obtener el tiempo transcurrido
-    const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
-      this.BitacoraData[0].FechaHoraFinal,
-      this.BitacoraData[0].FechaHoraInicio
-    );
-    this.BitacoraData[0].SegundosTotal =
-      objTiempoTranscurrido.segundosDiferencia;
-    this.BitacoraData[0].TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
-    // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
-    // this.strSegundos = ':00';
-    // this.strMinutos = ':00';
-    // this.strHoras = '00';
-    this.stInProgress = false;
-    this.numSegundosActuales = 0;
-    // Validar en que estado estába y terminarlo
-    this.Conduciendo = false;
-    this.Descanso = false;
-    this.ExcepcionTemporal = false;
-    this.dsConduciendo = false;
-    this.dsDescanso = false;
-    this.dsExcepcionTemporal = false;
+    // Guardando actividad en progreso no ET
+    for (const itBitacoraSave of this.BitacoraData) {
+      if (
+        itBitacoraSave.Terminado === false &&
+        itBitacoraSave.Actividad !== 'ET'
+      ) {
+        this.dtFechaFin = this.dtCurrentDT;
+        itBitacoraSave.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
+          this.dtFechaFin
+            .toISOString()
+            .toString()
+            .toUpperCase()
+        );
+        itBitacoraSave.Terminado = true;
+        clearInterval(this.control);
+        // Obtener el tiempo transcurrido
+        const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+          itBitacoraSave.FechaHoraFinal,
+          itBitacoraSave.FechaHoraInicio
+        );
+        itBitacoraSave.SegundosTotal = objTiempoTranscurrido.segundosDiferencia;
+        itBitacoraSave.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
+        // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
+        // this.strSegundos = ':00';
+        // this.strMinutos = ':00';
+        // this.strHoras = '00';
+        this.stInProgress = false;
+        this.numSegundosActuales = 0;
+        // Validar en que estado estába y terminarlo
+        this.Conduciendo = false;
+        this.Descanso = false;
+        // this.ExcepcionTemporal = false;
+        this.dsConduciendo = false;
+        this.dsDescanso = false;
+        // this.dsExcepcionTemporal = false;
+      }
+    }
+
     // this.actividaActualTtl = 'S';
     // this.actividadActual = 'S';
     // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
     this.guardarBitacoraInStorage();
   }
+
   // Crear Item bitacora
-  public newItemBitacora(dtSart: Date) {
+  public newItemBitacora(dtSart: Date, actividadParam?: string) {
+    let actividadActulFn: string;
+    if (actividadParam !== null && actividadParam !== undefined) {
+      if (actividadParam === 'ET') {
+        if (!this.stExepcionTemporal) {
+          this.stExepcionTemporal = true;
+          this.ExcepcionTemporal = true;
+          actividadActulFn = actividadParam;
+          this.strFechaInicioExcepcion = null;
+        } else {
+          this.stExepcionTemporal = false;
+          this.ExcepcionTemporal = false;
+          this.guardarExcepcionTemporal();
+          return;
+        }
+      }
+    } else {
+      actividadActulFn = this.actividadActual;
+    }
+    this.dtFechaInicioUTC = this.utilidadesProvider.convertSqlToDate(
+      this.utilidadesProvider.isoStringToSQLServerFormat(
+        dtSart
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      )
+    );
     try {
       // this.currentItemBitacora.IdViaje = 1368;
       // Obtener un hash de la bitacora
@@ -340,7 +396,6 @@ export class BitacoraProvider {
       this.dtFechaInicio = this.utilidadesProvider.convertSqlToDate(
         dtSQLStartNewItem
       );
-      // 2018-08-20 00:52:12.265
 
       let objNewItem: any;
       objNewItem = {
@@ -352,7 +407,7 @@ export class BitacoraProvider {
         FechaHoraFinal: null,
         SegundosTotal: 0,
         TiempoHhmmss: null,
-        Actividad: this.actividadActual,
+        Actividad: actividadActulFn,
         InicioActividadX: 9933,
         InicioActividadY: 9393,
         FinActividaX: null,
@@ -397,8 +452,9 @@ export class BitacoraProvider {
       this.haveElements = true;
     } catch (error) {}
   }
-  public iniciarServicio() {
-    console.log('Inciando servicio------>>');
+  public iniciarServicio(objConfServicio: ServicioModel) {
+    // Guardar configuración del servicio en localStorage
+    this.objConfServicio = objConfServicio;
     // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
     const dtSQLIniciaServicio: string = this.utilidadesProvider.isoStringToSQLServerFormat(
       new Date()
@@ -441,8 +497,14 @@ export class BitacoraProvider {
     this.getStatus();
     this.ctrlTimerServicio = setInterval(() => {
       this.timerServicio();
-      this.getDateTimeNow();
+    }, 1000);
+    // Timer para statudUpdate
+    this.ctrlTimerStatusUpdate = setInterval(() => {
       this.statusUpdate();
+    }, 1000);
+    // Timer para fechaHora actual
+    this.ctrlTimerCurrentDateTiem = setInterval(() => {
+      this.getDateTimeNow();
     }, 1000);
   }
   public resetServicicio() {
@@ -452,10 +514,140 @@ export class BitacoraProvider {
     this.getStatus();
     this.ctrlTimerServicio = setInterval(() => {
       this.timerServicio();
-      this.getDateTimeNow();
+    }, 1000);
+    // Timer para statudUpdate
+    this.ctrlTimerStatusUpdate = setInterval(() => {
       this.statusUpdate();
     }, 1000);
+    // Timer para fechaHora actual
+    this.ctrlTimerCurrentDateTiem = setInterval(() => {
+      this.getDateTimeNow();
+    }, 1000);
   }
+  // Crear Item bitacora
+  public iniciarExcepcionTemporal(dtSart: Date) {
+    if (!this.stExepcionTemporal) {
+      this.stExepcionTemporal = true;
+      this.ExcepcionTemporal = true;
+      // Guardar en String la fecha de Inicio
+      this.strFechaInicioExcepcion = this.utilidadesProvider.isoStringToSQLServerFormat(
+        dtSart
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      );
+      // timerExcepcionTemporal
+      this.fechaInicioExcepcion = this.utilidadesProvider.convertSqlToDate(
+        this.strFechaInicioExcepcion
+      );
+      // reiniciando excepcion temporal
+      this.strHorasExcepcion = '00';
+      this.strMinutosExcepcion = ':00';
+      this.strSegundosExcepcion = ':00';
+      this.controlTimerExcepcion = setInterval(() => {
+        this.timerExcepcionTemporal();
+      }, 1000);
+    } else {
+      this.stExepcionTemporal = false;
+      this.ExcepcionTemporal = false;
+      this.guardarExcepcionTemporal();
+      return;
+    }
+
+    try {
+      // this.currentItemBitacora.IdViaje = 1368;
+      // Obtener un hash de la bitacora
+
+      let dtSQLStartNewItem: string;
+      dtSQLStartNewItem = this.utilidadesProvider.isoStringToSQLServerFormat(
+        dtSart
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      );
+
+      let objNewItem: BitacoraModel;
+      objNewItem = {
+        IdViaje: 1368,
+        HashBitacora: this.utilidadesProvider.hashCode(
+          dtSQLStartNewItem + 'TOKEN'
+        ),
+        FechaHoraInicio: dtSQLStartNewItem,
+        FechaHoraFinal: null,
+        SegundosTotal: 0,
+        TiempoHhmmss: null,
+        Actividad: 'ET',
+        InicioActividadX: 9933,
+        InicioActividadY: 9393,
+        FinActividaX: null,
+        FinActividadY: null,
+        Descripcion: null,
+        GuardadoServer: false,
+        Nota: null,
+        Transicion: 0,
+        TransicionHhmmss: '00:00:00',
+        Terminado: false
+      };
+
+      try {
+        if (
+          this.BitacoraData !== [] &&
+          this.BitacoraData !== null &&
+          this.BitacoraData !== undefined
+        ) {
+          // Obtener transciocion segundos y segundos HH:mm:ss
+          try {
+            const objTransicion: any = this.utilidadesProvider.getTimeHHmmss(
+              this.BitacoraData[0].FechaHoraFinal,
+              dtSQLStartNewItem
+            );
+            objNewItem.Transicion = objTransicion.segundosDiferencia;
+            objNewItem.TransicionHhmmss = objTransicion.segundosHhmmss;
+          } catch (error) {
+            // this.BitacoraData = [];
+          }
+        }
+      } catch (error) {
+        // Error punto length
+        // this.BitacoraData = [];
+      }
+      const currentItemETBitacora = new BitacoraModel(objNewItem);
+      try {
+        this.BitacoraData.unshift(currentItemETBitacora);
+      } catch (error) {
+        this.BitacoraData = [];
+        this.BitacoraData.unshift(currentItemETBitacora);
+      }
+      // Guardar en LocalStorage ObjBitacora
+      this.guardarBitacoraInStorage();
+      // Boolean para saber si hay elementos en la bitacora
+      this.haveElements = true;
+    } catch (error) {}
+  }
+  /**
+   * Funcion para terminar el Servicio Actualizar el objService y guardar los servicios en un array de Servicios.
+   */
+  public terminarServicio() {
+    console.log('Terminando servicio...from PROVIDER..');
+    /**
+     * Aqui realizar las siguientes funciones
+     *  Alertas de confirmacion
+     * Terminar todas las actividades pendientes hora actual UTC
+     * Guardar bitacora en storage
+     * Sincronizar información
+     * Parar todos los controles de setInterval => clerInterval
+     * Deshabilitar botones
+     * Guardar información del servicio.
+     */
+    // terminando actividades
+    try {
+      clearInterval(this.control);
+      clearInterval(this.ctrlTimerServicio);
+      clearInterval(this.ctrlTimerStatusUpdate);
+      // separando statusUpdate y timer fecha actual
+    } catch (error) {}
+  }
+
   public getStatus() {
     // typeof this.BitacoraData != "undefined" && this.BitacoraData != null && this.BitacoraData.length != null && this.BitacoraData.length > 0
     if (
@@ -482,26 +674,31 @@ export class BitacoraProvider {
   }
   public statusUpdate() {
     try {
-      // Actualizar tiempo en HHmmss
-      if (this.stInProgress) {
+      // Actualizar tiempo en HHmmss // this.stInProgress || this.IniciarStatusUpdate
+      if (true) {
+        this.boolIniciarStatusUpdate = false;
         if (
           typeof this.BitacoraData !== 'undefined' &&
           this.BitacoraData != null &&
           this.BitacoraData.length != null &&
           this.BitacoraData.length > 0
         ) {
-          if (this.BitacoraData[0].Terminado === false) {
-            if (this.BitacoraData[0].Actividad === 'C') {
-              this.segundosConduccion =
-                this.segundosConduccionStorage + this.numSegundosActuales;
-            }
-            if (this.BitacoraData[0].Actividad === 'D') {
-              this.segundosDescanso =
-                this.segundosDescansoStorage + this.numSegundosActuales;
-            }
-            if (this.BitacoraData[0].Actividad === 'ET') {
-              this.segundosExcepcionT =
-                this.segundosExcepcionTStorage + this.numSegundosActuales;
+          // Recorrer items para obtener el tiempo total de la actividad Actual
+          for (const itBitacora of this.BitacoraData) {
+            if (itBitacora.Terminado === false) {
+              if (itBitacora.Actividad === 'C') {
+                this.segundosConduccion =
+                  this.segundosConduccionStorage + this.numSegundosActuales;
+              }
+              if (itBitacora.Actividad === 'D') {
+                this.segundosDescanso =
+                  this.segundosDescansoStorage + this.numSegundosActuales;
+              }
+              if (itBitacora.Actividad === 'ET') {
+                this.segundosExcepcionT =
+                  this.segundosExcepcionTStorage +
+                  this.numSegundosActualesExcepcion;
+              }
             }
           }
         }
@@ -517,9 +714,80 @@ export class BitacoraProvider {
       }
     } catch (error) {}
   }
-  // configurar Servicio -->> Datos completos que se usarn en tabla Servicios(viajes)
-  public configurarServicio() {
-    console.log('Configurando servicio');
+  // configurar Servicio -->> Datos completos que se usan en tabla Servicios(viajes)
+  public configurarServicio(ObjConfServicio: ServicioModel) {
+    console.log('Configurando servicio : ', ObjConfServicio);
+  }
+  // LLeva el control del tiempo en servicio
+  public timerExcepcionTemporal() {
+    // public strSegundosExcepcion: string = ':00';
+    // public strMinutosExcepcion: string = ':00';
+    // public strHorasExcepcion: string = '00';
+    // public numSegundosActualesExcepcion: number = 0;
+    const dtCurrentDT = new Date();
+    // Obtenemos la fecha inicio en formato Date -> UTC
+    const dtFnCurrent: Date = this.utilidadesProvider.convertLocalDateToUTC(
+      dtCurrentDT
+    );
+    this.fechaInicioExcepcion = this.utilidadesProvider.convertSqlToDate(
+      this.strFechaInicioExcepcion
+    );
+    const dateDiff = Math.abs(
+      (dtFnCurrent.valueOf() - this.fechaInicioExcepcion.valueOf()) / 1000
+    );
+    // console.log('' + this.date1 + ' <-> ' + this.date2 + ' DIFF: ' + dateDiff);
+    let horas: any = Math.floor(dateDiff / 3600);
+    let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
+    let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
+
+    if (
+      (segundos === 60 && minutos === 59) ||
+      (segundos === 60 && minutos === 60)
+    ) {
+      horas++;
+      if (horas < 10) {
+        this.strHorasExcepcion = '0' + String(horas);
+      } else {
+        this.strHorasExcepcion = String(horas);
+      }
+      minutos = 0;
+      segundos = 0;
+      this.strSegundosExcepcion = ':0' + String(segundos);
+      this.strMinutosExcepcion = ':0' + String(minutos);
+    }
+    if (segundos === 60) {
+      segundos = 0;
+      this.strSegundosExcepcion = ':0' + String(segundos);
+      if (minutos === 59 || minutos === 60) {
+        minutos = 0;
+        this.strMinutosExcepcion = ':0' + String(minutos);
+        horas++;
+        if (horas < 10) {
+          this.strHorasExcepcion = '0' + String(horas);
+        } else {
+          this.strHorasExcepcion = String(horas);
+        }
+      } else {
+        minutos++;
+        if (minutos < 10) {
+          this.strMinutosExcepcion = ':0' + String(minutos);
+        } else {
+          this.strMinutosExcepcion = String(minutos);
+        }
+      }
+    }
+    if (segundos < 10) {
+      segundos = '0' + segundos;
+    }
+    this.strSegundosExcepcion = ':' + String(segundos);
+    if (minutos < 10) {
+      minutos = '0' + minutos;
+    }
+    this.strMinutosExcepcion = ':' + String(minutos);
+    if (horas < 10) {
+      horas = '0' + horas;
+    }
+    this.strHorasExcepcion = String(horas);
   }
 
   // Esta funcion obtiene el servicio actual de la bitacora
@@ -529,11 +797,22 @@ export class BitacoraProvider {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
           this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
-            this.StatusServicio = JSON.parse(ObjServicioActual);
-            this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
-              this.StatusServicio.FechaHoraInicio
-            );
-            resolve(true);
+            if (ObjServicioActual) {
+              this.StatusServicio = JSON.parse(ObjServicioActual);
+              this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
+                this.StatusServicio.FechaHoraInicio
+              );
+            } else {
+              this.StatusServicio = null;
+            }
+            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
+              if (RESULTDATA) {
+                this.objConfServicio = JSON.parse(RESULTDATA);
+              } else {
+                this.objConfServicio = null;
+              }
+              resolve(true);
+            });
           });
         });
       } else {
@@ -541,11 +820,13 @@ export class BitacoraProvider {
         this.StatusServicio = JSON.parse(
           localStorage.getItem('ObjServicioActual')
         );
+        this.objConfServicio = JSON.parse(
+          localStorage.getItem('ObjConfServicioActual')
+        );
         if (this.StatusServicio) {
           this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
             this.StatusServicio.FechaHoraInicio
           );
-          console.log('this.StatusServicio: ' + this.StatusServicio);
         }
         resolve(true);
       }
@@ -559,6 +840,9 @@ export class BitacoraProvider {
     // Obtenemos la fecha inicio en formato Date -> UTC
     const dtFnCurrent: Date = this.utilidadesProvider.convertLocalDateToUTC(
       dtCurrentDT
+    );
+    this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
+      this.StatusServicio.FechaHoraInicio
     );
     const dateDiff = Math.abs(
       (dtFnCurrent.valueOf() - this.fechaInicioServicio.valueOf()) / 1000
@@ -617,18 +901,23 @@ export class BitacoraProvider {
     }
     this.strHorasServicio = String(horas);
   }
-
   // Private guardar servicio en localStorage
   private guardaServicioActualInStorage(): Promise<any> {
     const guardarServicioActualPromise = new Promise((resolve, reject) => {
       // Guardando en LocalStorage
       if (this.platform.is('cordova')) {
         // Dispositivo
+        // Guardando el Status del servicio
         this.storage.set(
           'ObjServicioActual',
           JSON.stringify(this.StatusServicio)
         );
-        resolve();
+        // Guardando configuración del servicio.
+        this.storage.set(
+          'ObjConfServicioActual',
+          JSON.stringify(this.objConfServicio)
+        );
+        resolve(true);
       } else {
         // Desktop webBrowser
         if (this.StatusServicio) {
@@ -636,13 +925,57 @@ export class BitacoraProvider {
             'ObjServicioActual',
             JSON.stringify(this.StatusServicio)
           );
+          localStorage.setItem(
+            'ObjConfServicioActual',
+            JSON.stringify(this.objConfServicio)
+          );
         } else {
           localStorage.removeItem('ObjServicioActual');
+          localStorage.removeItem('ObjConfServicioActual');
         }
-        resolve();
+        resolve(true);
       }
     });
     return guardarServicioActualPromise;
+  }
+
+  // Guardar la excepción temporal registrada
+  private guardarExcepcionTemporal() {
+    // recorrer array de items bitacora y terminar la bitacora actual
+
+    for (const itBitacora of this.BitacoraData) {
+      if (itBitacora.Actividad === 'ET' && itBitacora.Terminado === false) {
+        const fechaGuardado: Date = new Date();
+        itBitacora.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
+          fechaGuardado
+            .toISOString()
+            .toString()
+            .toUpperCase()
+        );
+        itBitacora.Terminado = true;
+        clearInterval(this.controlTimerExcepcion);
+        // Obtener el tiempo transcurrido
+        const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+          itBitacora.FechaHoraFinal,
+          itBitacora.FechaHoraInicio
+        );
+        itBitacora.SegundosTotal = objTiempoTranscurrido.segundosDiferencia;
+        itBitacora.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
+      }
+    }
+
+    // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
+    // this.strSegundos = ':00';
+    // this.strMinutos = ':00';
+    // this.strHoras = '00';
+    // Validar en que estado estába y terminarlo
+    // this.ExcepcionTemporal = false;
+    // this.dsExcepcionTemporal = false;
+    // this.stExepcionTemporal = false;
+    // this.actividaActualTtl = 'S';
+    // this.actividadActual = 'S';
+    // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
+    this.guardarBitacoraInStorage();
   }
 
   // Obtiene la fechaHora actual del dispositivo:

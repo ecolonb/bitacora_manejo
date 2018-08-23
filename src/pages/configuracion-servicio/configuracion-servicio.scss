@@ -20,6 +20,8 @@ page-configuracion-servicio {
     max-width: 60%;
     margin: 18px 0;
   }
+
+  // En esta clase controla la posicion Top del ListResults cambiar 10px abajo del SearchBox
   .listResults {
     position: fixed;
     z-index: 1000;
@@ -31,6 +33,7 @@ page-configuracion-servicio {
     -webkit-box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
     box-shadow: 1px 5px 13px 1px rgba(0, 0, 0, 0.75);
+    // top: 1px;
   }
   b {
     font-weight: 500;

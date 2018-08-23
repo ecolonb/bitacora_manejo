@@ -3,4 +3,5 @@ export class UnidadModel {
   public Modelo: string;
   public Marca: string;
   public Anio: string;
+  public Placas: string;
 }

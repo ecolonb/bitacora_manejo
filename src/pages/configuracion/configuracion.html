@@ -1,6 +1,6 @@
 <ion-content class="main-view">
   <div class="overlay"></div>
-  <div class="modal_content">
+  <div class="modal_content" style="height: auto;">
 
     <ion-item style="background-color: #0051a0;">
       <ion-title text-center>
@@ -12,34 +12,31 @@
     </ion-item>
     <div padding>
       <ion-list no-lines radio-group>
-        <ion-item>
-          <ion-label>Micopiloto.com</ion-label>
-          <ion-radio [checked]="boolServerId1" value="s1" id="server" name="server" (ionSelect)="setRadioBtnsServer(1)"></ion-radio>
-        </ion-item>
-        <ion-item>
-          <ion-label>Micopiloto2.com</ion-label>
-          <ion-radio [checked]="boolServerId2" value="s2" id="server" name="server" (ionSelect)="setRadioBtnsServer(2)"></ion-radio>
-        </ion-item>
-        <ion-item-group style="box-shadow: 2px 2px 3px rgba(46, 120, 216, 0.35);">
+        <!-- <ion-item style="box-shadow: 2px 2px 3px rgba(46, 120, 216, 0.35);">
+          <span style="display: inline-block;">Server end-point:</span>
           <ion-input type="text" placeholder="IButton" id="ibutton" name="ibutton" [(ngModel)]="iButton" (keypress)="validateIbutton($event)"></ion-input>
-        </ion-item-group>
+        </ion-item> -->
+        <ion-item>
+          <ion-label color="primary" style="font-size: 1.1em;color:#082E58;" stacked>Server End-point</ion-label>
+          <ion-input [(ngModel)]="serverEndPoint" (ionChange)="toLowerCase()" type="text" placeholder="web.copiloto.com"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-row>
+            <ion-col col-6>
+              <button ion-button color="copiloto" block (click)="guardarConfiguracion()">
+                Guardar
+              </button>
+            </ion-col>
+            <ion-col col-6>
+              <button ion-button type="button" color="copiloto" block outline (click)="closeModalConfiguracion()">
+                Cancelar
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-item>
       </ion-list>
     </div>
-    <ion-footer>
-      <ion-toolbar>
-        <ion-row>
-          <ion-col col-6>
-            <button ion-button color="copiloto" block (click)="guardarConfiguracion()">
-              Guardar
-            </button>
-          </ion-col>
-          <ion-col col-6>
-            <button ion-button type="button" color="copiloto" block outline (click)="closeModalConfiguracion()">
-              Cancelar
-            </button>
-          </ion-col>
-        </ion-row>
-      </ion-toolbar>
-    </ion-footer>
+
   </div>
 </ion-content>

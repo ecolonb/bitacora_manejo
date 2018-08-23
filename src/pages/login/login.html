@@ -9,7 +9,9 @@
 <ion-content padding>
   <ion-card class="cardLogin">
     <ion-card-header class="cardHeaderLogin">
-      <h2 text-center style="color: #ffffff;font-size: 1.2em;font-weight: bold; word-spacing: 5px;letter-spacing: 2px;margin: 0; padding: 0;">Iniciar sesión</h2>
+      <h2 text-center style="color: #ffffff;font-size: 1.2em;font-weight: bold; word-spacing: 5px;letter-spacing: 2px;margin: 0; padding: 0;">Iniciar
+        sesión
+      </h2>
     </ion-card-header>
     <ion-card-content>
       <form #formLogin (submit)="continuar(formLogin)" method="POST">
@@ -21,7 +23,7 @@
             <ion-input type="password" id="contrasenia" name="contrasenia" placeholder="Contraseña"></ion-input>
           </ion-item>
           <ion-item>
-            <button ion-button block color="copiloto">Ingresar</button>
+            <button ion-button block color="copiloto" style="height: 48px;font-size: 1.2em;text-transform: initial;">Ingresar</button>
           </ion-item>
         </ion-list>
       </form>

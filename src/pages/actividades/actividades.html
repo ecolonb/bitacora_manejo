@@ -9,25 +9,57 @@
   </ion-navbar>
 </ion-header>
 <ion-content class="timerExTmp">
-
   <ion-card>
     <div>
-      <ion-item style="background-color: #4DAEDA;color:white;font-size: 18px;">
+      <!-- <ion-item style="background-color: #4DAEDA;color:white;font-size: 18px;">
         <ion-label>Actividad actual</ion-label>
         <button ion-button icon-only item-end color="md_tq" (click)="optionsActionSheet()" outline>
           <ion-icon style="color:honeydew;" name="more"></ion-icon>
         </button>
-      </ion-item>
+      </ion-item> -->
+      <!-- <div style="border-bottom:solid 1px rgb(157, 39, 39);z-index: 1000;text-align: center;"> -->
+      <ion-list *ngIf="bitacoraProvider.stExepcionTemporal">
+        <ion-item-sliding style="border-bottom:solid 1px rgb(157, 39, 39);">
+          <ion-item-options side="left">
+            <button ion-button color="danger_1" (click)="eliminarExcepcion()">Eliminar <ion-icon name="md-trash"></ion-icon></button>
+
+          </ion-item-options>
+          <ion-item text-center style="color: #c25757;display: inline-block;width: 100%;text-align: center;">
+
+            <ion-label text-center style="display: inline-block;">
+              <ion-icon name="warning"></ion-icon> &nbsp; Excepción temporal: {{ bitacoraProvider.strHorasExcepcion + bitacoraProvider.strMinutosExcepcion
+              + bitacoraProvider.strSegundosExcepcion }}
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="right">
+            <button ion-button outline color="md_tq" style="text-transform: capitalize" (click)="controlaExcepcion()">
+              Terminar
+              <ion-icon name="md-checkbox-outline"></ion-icon>
+            </button>
+            <button ion-button outline color="md_tq" style="text-transform: capitalize">
+              Editar
+              <ion-icon name="md-create"></ion-icon>
+            </button>
+          </ion-item-options>
+        </ion-item-sliding>
+
+        <!-- </div> -->
+      </ion-list>
       <ion-item text-center>
-        <span class="actividadTitleSt">{{ bitacoraProvider.actividadActual | actividadTitle }}</span>
+        <span class="actividadTitleSt">{{ (bitacoraProvider.stInProgress ? bitacoraProvider.actividadActual : 'S') | actividadProgressTitle
+          }}
+        </span>
       </ion-item>
       <div style="margin-left: auto;margin-right: auto;text-align: center;">
 
-        <span class="reloj">{{ bitacoraProvider.strHoras }}</span>
-        <span class="reloj">{{ bitacoraProvider.strMinutos}}</span>
-        <span class="reloj">{{ bitacoraProvider.strSegundos }}</span>
+        <span *ngIf="bitacoraProvider.stInProgress" class="reloj">{{ bitacoraProvider.strHoras }}</span>
+        <span *ngIf="bitacoraProvider.stInProgress" class="reloj">{{ bitacoraProvider.strMinutos}}</span>
+        <span *ngIf="bitacoraProvider.stInProgress" class="reloj">{{ bitacoraProvider.strSegundos }}</span>
 
-
+        <!-- Servicio -->
+        <span *ngIf="!bitacoraProvider.stInProgress" class="reloj">{{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio
+          + bitacoraProvider.strSegundosServicio }}
+        </span>
 
 
       </div>
@@ -44,18 +76,17 @@
           <ion-icon *ngIf="!bitacoraProvider.Descanso" name="play" style="margin-right: 10px"></ion-icon>
           <span>Descanso</span>
         </button>
-        <button id="guardar" ion-button (click)="inicio('ET')" color="md_tq" class="btnActionExcepcion" [disabled]="bitacoraProvider.dsExcepcionTemporal">
+        <button id="idExcepcion" ion-button (click)="controlaExcepcion()" color="md_tq" class="btnActionExcepcion">
           <ion-icon *ngIf="bitacoraProvider.ExcepcionTemporal" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
           <ion-icon *ngIf="!bitacoraProvider.ExcepcionTemporal" name="play" style="margin-right: 10px"></ion-icon>
           <span>Excepción</span>
         </button>
       </div>
-      <hr>
     </div>
     <span>
       &nbsp;
     </span>
-    <ion-card *ngIf="bitacoraProvider.haveElements" style="padding:0;margin: auto;width: 99% !important;">
+    <ion-card *ngIf="bitacoraProvider.haveElements" style="padding:0;margin: auto;width: 99.2% !important;">
       <ion-title text-center style="margin-bottom: 7px; margin-top: 10px;">
         <span style="font-size: 0.9em;font-weight: bold;color:#21425F;">Actividades realizadas</span>
       </ion-title>
@@ -63,8 +94,9 @@
         <ion-item-sliding *ngFor="let itemBitacora of bitacoraProvider.BitacoraData" class="listBitacora" detail-push>
           <ion-item class="itemListBitacora" (click)="goToDetallesItem(itemBitacora)">
             <span style="color:#21425F;">{{ itemBitacora.Actividad | actividadTitle }}</span>
-            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : bitacoraProvider.strHoras
-              + bitacoraProvider.strMinutos+bitacoraProvider.strSegundos }}
+            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : (itemBitacora.Actividad!=='ET'
+              ? (bitacoraProvider.strHoras + bitacoraProvider.strMinutos+bitacoraProvider.strSegundos) : bitacoraProvider.strHorasExcepcion
+              + bitacoraProvider.strMinutosExcepcion + bitacoraProvider.strSegundosExcepcion ) }}
             </span>
             <span item-end style="color: #21425F">
               <ion-icon style="margin-top: 2px;" name="ios-arrow-forward"></ion-icon>
@@ -84,12 +116,11 @@
         </ion-item-sliding>
 
       </ion-list>
-      <div>
-        {{ bitacoraProvider.strTatusLocation }}
-      </div>
-      <div>
-        {{ bitacoraProvider.strTatusLocationMode }}
-      </div>
     </ion-card>
+    <button id="inicio" ion-button color="danger_2" style="width: 95% !important;margin-right: auto;margin-left: auto; margin-bottom: 15px;margin-top: 15px;font-size: 1.3em;text-transform: initial;height: 48px;font-size: 1.5em;"
+      [disabled]="bitacoraProvider.StatusServicio.Terminado" (click)="terminarServicio()" block>
+      <span>Terminar servicio</span>
+    </button>
   </ion-card>
+
 </ion-content>

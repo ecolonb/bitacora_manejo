@@ -33,6 +33,7 @@ export class LoginPage {
   public contrasenia: string = '';
   public strLoginOkProvider: string = 'false';
   public configuracionServicioPage: any = ConfiguracionServicioPage;
+  public menuPage: any = MenuPage;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -50,7 +51,24 @@ export class LoginPage {
       // ****** Validar si esta en Servicio y en alguna actividad
       this.loading.dismiss();
       // Si no esta configurado el servicio solicitar configuracion:
-      this.navCtrl.setRoot(this.configuracionServicioPage);
+      try {
+        if (
+          this.bitacoraProvider.StatusServicio !== null &&
+          this.bitacoraProvider.StatusServicio !== undefined
+        ) {
+          if (this.bitacoraProvider.StatusServicio.Terminado === false) {
+            console.log(
+              'Reseteando el servicio...................----------->>>'
+            );
+            this.bitacoraProvider.resetServicicio();
+            this.navCtrl.setRoot(this.menuPage);
+            // this.rootPage = this.configuracionServicioPage;
+          }
+        } else {
+          // this.rootPage = this.configuracionServicioPage;
+          this.navCtrl.setRoot(this.configuracionServicioPage);
+        }
+      } catch (error) {}
     }
   }
   public continuar(formData: any) {
@@ -81,18 +99,17 @@ export class LoginPage {
     }
 
     this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
-      DATARCV => {
+      (DATARCV) => {
         if (DATARCV) {
           ObjMEnsaje = DATARCV;
           if (ObjMEnsaje._error === false) {
             this.LoginProvider.guardarServicio(DATARCV);
             this.LoginProvider.setActivo(true);
-            // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
+            // Promise cargar y guardar solo el Login Cuando se cargue la bitacora manejar variable boolean para mantener el estado actual de la bitacora (loaded/unload) y luego ingresar -------------------------------------->>>>>>>>>>>>
             this.bitacoraProvider
               .getBitacoraFromStorage()
-              .then(ResultBitacoraStorage => {
+              .then((ResultBitacoraStorage) => {
                 // this.bitacoraProvider.getHHmmss();
-                console.log('ResultBitacoraStorage', ResultBitacoraStorage);
                 this.ingresar();
               });
           } else {
@@ -116,7 +133,7 @@ export class LoginPage {
           this.LoginProvider.setActivo(false);
         }
       },
-      error => {
+      (error) => {
         this.loading.dismiss();
         const alert = this.alertCtrl.create({
           title: 'Error',
@@ -126,9 +143,10 @@ export class LoginPage {
               text: 'Ok',
               role: 'ok',
               handler: () => {
-                this.LoginProvider.setActivo(false);
+                // this.LoginProvider.setActivo(false);
                 // Borrar las dos lineas de abajo
-                // this.LoginProvider.setActivo(true);
+                this.LoginProvider.setActivo(true);
+                this.ingresar();
                 // // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
                 // this.bitacoraProvider
                 //   .getBitacoraFromStorage()

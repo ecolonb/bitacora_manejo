@@ -41,8 +41,8 @@ export class LoginProvider {
     };
     // Obj datos que recibe el ApiRestFul LoginIbutton
     const dataSendform = {
-      id_ibutton: this.appConfiguracionProvider.getIdIbutton(),
-      server_endpoint: this.appConfiguracionProvider.getServerEndPoint()
+      id_ibutton: '9721371',
+      server_endpoint: 's2'
     };
     return this.httpClient.post<Observable<any>>(
       this.URL_,

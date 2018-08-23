@@ -8,7 +8,7 @@ import {
   Platform
 } from 'ionic-angular';
 import { BitacoraModel } from '../../models/bitacora.model';
-import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
+
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
 import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item-bitacora';
@@ -18,6 +18,11 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 
 // Alertas Modals
 import { ActionSheetController } from 'ionic-angular';
+
+// **** PIPEs ****
+import { ActividadProgressTitlePipe } from './../../pipes/actividad-progress-title/actividad-progress-title';
+import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
+
 /**
  * En esta pagina se gestionan las actividades, se lleva el control de los tiempos
  */
@@ -83,27 +88,42 @@ export class ActividadesPage {
           if (this.bitacoraProvider.BitacoraData.length > 0) {
             this.bitacoraProvider.haveElements = true;
 
-            if (
-              Boolean(this.bitacoraProvider.BitacoraData[0].Terminado) === false
-            ) {
-              // reinicio
+            // Recorrer items para ver que actividad esta pendiente
+            for (const itBitacoraReboot of this.bitacoraProvider.BitacoraData) {
+              if (Boolean(itBitacoraReboot.Terminado) === false) {
+                // Reiniciando actividad pendiente
 
-              this.bitacoraProvider.boolReinicio = true;
-
-              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'C') {
-                this.bitacoraProvider.Conduciendo = true;
-                this.bitacoraProvider.dsDescanso = true;
-                this.bitacoraProvider.dsConduciendo = false;
-                this.bitacoraProvider.dsExcepcionTemporal = true;
+                if (itBitacoraReboot.Actividad === 'C') {
+                  this.bitacoraProvider.Conduciendo = true;
+                  this.bitacoraProvider.dsDescanso = true;
+                  this.bitacoraProvider.dsConduciendo = false;
+                  this.bitacoraProvider.dsExcepcionTemporal = true;
+                  this.bitacoraProvider.boolReinicio = true;
+                  this.bitacoraProvider.fechaInicioActividad =
+                    itBitacoraReboot.FechaHoraInicio;
+                  this.inicio(itBitacoraReboot.Actividad);
+                }
+                if (itBitacoraReboot.Actividad === 'D') {
+                  this.bitacoraProvider.Descanso = true;
+                  this.bitacoraProvider.boolReinicio = true;
+                  this.bitacoraProvider.fechaInicioActividad =
+                    itBitacoraReboot.FechaHoraInicio;
+                  this.inicio(itBitacoraReboot.Actividad);
+                }
+                if (itBitacoraReboot.Actividad === 'ET') {
+                  // reiniciar timerexcepcion temporal
+                  this.bitacoraProvider.ExcepcionTemporal = true;
+                  this.bitacoraProvider.stExepcionTemporal = true;
+                  this.bitacoraProvider.strFechaInicioExcepcion =
+                    itBitacoraReboot.FechaHoraInicio;
+                  this.bitacoraProvider.controlTimerExcepcion = setInterval(
+                    () => {
+                      this.bitacoraProvider.timerExcepcionTemporal();
+                    },
+                    1000
+                  );
+                }
               }
-              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'D') {
-                this.bitacoraProvider.Descanso = true;
-              }
-              if (this.bitacoraProvider.BitacoraData[0].Actividad === 'ET') {
-                this.bitacoraProvider.ExcepcionTemporal = true;
-              }
-              console.log('Llmando a cronometro hay una actividad peneidnete');
-              this.inicio(this.bitacoraProvider.BitacoraData[0].Actividad);
             }
           }
         }
@@ -112,40 +132,46 @@ export class ActividadesPage {
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
+    console.log(
+      'Inicio/Fin una actividad........ActividadParam :' + ActividadParam
+    );
     if (ActividadParam === 'C') {
+      console.log('In ActividadParam ActividadParam === C');
       this.bitacoraProvider.actividadActual = 'C';
       this.bitacoraProvider.actividaActualTtl = 'C';
       this.bitacoraProvider.Conduciendo = true;
       this.bitacoraProvider.dsDescanso = true;
-      this.bitacoraProvider.dsExcepcionTemporal = true;
       if (!this.bitacoraProvider.boolReinicio) {
         this.bitacoraProvider.dsConduciendo = true;
       }
     }
     if (ActividadParam === 'D') {
+      console.log('In ActividadParam ActividadParam === D');
       this.bitacoraProvider.actividadActual = 'D';
       this.bitacoraProvider.actividaActualTtl = 'D';
       this.bitacoraProvider.Descanso = true;
       this.bitacoraProvider.dsConduciendo = true;
-      this.bitacoraProvider.dsExcepcionTemporal = true;
       if (!this.bitacoraProvider.boolReinicio) {
         this.bitacoraProvider.dsDescanso = true;
       }
     }
-    if (ActividadParam === 'ET') {
-      this.bitacoraProvider.actividadActual = 'ET';
-      this.bitacoraProvider.actividaActualTtl = 'ET';
-      this.bitacoraProvider.ExcepcionTemporal = true;
-      this.bitacoraProvider.dsConduciendo = true;
-      this.bitacoraProvider.dsDescanso = true;
-      if (!this.bitacoraProvider.boolReinicio) {
-        this.bitacoraProvider.dsExcepcionTemporal = true;
-      }
-    }
+    // if (ActividadParam === 'ET') {
+    //   this.bitacoraProvider.actividadActual = 'ET';
+    //   this.bitacoraProvider.actividaActualTtl = 'ET';
+    //   this.bitacoraProvider.ExcepcionTemporal = true;
+    //   this.bitacoraProvider.dsConduciendo = true;
+    //   this.bitacoraProvider.dsDescanso = true;
+    //   if (!this.bitacoraProvider.boolReinicio) {
+    //     this.bitacoraProvider.dsExcepcionTemporal = true;
+    //   }
+    // }
+
     if (!this.bitacoraProvider.stInProgress) {
       this.bitacoraProvider.stInProgress = true;
+      this.bitacoraProvider.strSegundos = ':00';
+      this.bitacoraProvider.strMinutos = ':00';
+      this.bitacoraProvider.strHoras = '00';
       let dtSart: Date;
-
       if (!this.bitacoraProvider.boolReinicio) {
         // dtSart = new Date();
         // Obteniendo las coordenadas
@@ -215,10 +241,15 @@ export class ActividadesPage {
         );
 
         this.bitacoraProvider.dtCurrentDT = new Date();
-
+        this.bitacoraProvider.fechaInicioActividad = this.utilidadesProvider.isoStringToSQLServerFormat(
+          dtSart
+            .toISOString()
+            .toString()
+            .toUpperCase()
+        );
         this.bitacoraProvider.newItemBitacora(dtSart);
       } else {
-        // Si hay una actividad en curso aqui se reinicia
+        // Si hay una actividad en curso aqui se reiniciar tomar la fecha de inicio de actividad pendiente que no sea ET
 
         this.bitacoraProvider.boolReinicio = false;
 
@@ -243,6 +274,7 @@ export class ActividadesPage {
       }, 1000);
       // Guardar item bitacora
     } else {
+      // al guardar habilitar o deshabilitar botones.
       this.bitacoraProvider.guardar();
     }
 
@@ -250,8 +282,8 @@ export class ActividadesPage {
   }
 
   // Funcion detiene el vento debe guardarse en localStorage
-  public terminar() {
-    console.log('Termina funcion Actividades');
+  public eliminarExcepcion() {
+    console.log('Elimina excepción temporal!');
   }
   public editar() {
     console.log('Se abre el panel para editar el item bitacora');
@@ -360,7 +392,6 @@ export class ActividadesPage {
     }
   }
   public goToDetallesItem(itemBitacora: BitacoraModel) {
-    console.log('goToDetalles', itemBitacora);
     this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
   }
   // Muestra las opciones para la actividad actual
@@ -393,5 +424,16 @@ export class ActividadesPage {
       ]
     });
     actionSheet.present();
+  }
+  public terminarServicio() {
+    console.log('Terminando servicio... Actividades page');
+    this.bitacoraProvider.terminarServicio();
+  }
+  public controlaExcepcion() {
+    // public newItemBitacora(dtSart: Date, actividadParam?: string) {
+    this.bitacoraProvider.iniciarExcepcionTemporal(new Date());
+  }
+  public terminarExcepcion() {
+    console.log('In terminar excepcion...');
   }
 }

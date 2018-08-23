@@ -1,6 +1,7 @@
 // MODULOS
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
+import { LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
@@ -16,7 +17,12 @@ import {
   MenuPage,
   TabsPage
 } from '../pages/index-paginas';
+
+// ********** PIPES **********
+import { ActividadProgressTitlePipe } from './../pipes/actividad-progress-title/actividad-progress-title';
 import { ActividadTitlePipe } from './../pipes/actividad-title/actividad-title';
+import { DateUtcToLocalePipe } from './../pipes/date-utc-to-locale/date-utc-to-locale';
+
 import { MyApp } from './app.component';
 
 // *********** PROVIDERS **************
@@ -51,7 +57,9 @@ import { LoadingController } from 'ionic-angular';
     DetalleItemBitacoraPage,
     ActividadesPage,
     ActividadTitlePipe,
-    ConfiguracionServicioPage
+    ConfiguracionServicioPage,
+    ActividadProgressTitlePipe,
+    DateUtcToLocalePipe
   ],
   imports: [
     BrowserModule,
@@ -78,6 +86,7 @@ import { LoadingController } from 'ionic-angular';
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: LOCALE_ID, useValue: 'es-mx' },
     LoginProvider,
     LoadingController,
     BitacoraProvider,

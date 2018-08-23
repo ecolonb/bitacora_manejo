@@ -1,21 +1,60 @@
 <ion-header>
 
   <ion-navbar color="copiloto">
-    <ion-title>Detalle</ion-title>
+    <ion-title>Detalles de actividad</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
-  <h1>
-    Detalle de item bitácora
-  </h1>
-  <p>NUID: {{ objItemBitacora.HashBitacora}}</p>
-  <p>INICIO ACTIVIDAD: {{ objItemBitacora.FechaHoraInicio }}</p>
-  <p>FIN_ACTIVIDAD: {{ objItemBitacora.FechaHoraFinal? (objItemBitacora.FechaHoraFinal) : 'En progreso' }}</p>
-  <p>InicioActividadX: {{ objItemBitacora.InicioActividadX }}</p>
-  <p>InicioActividadY: {{ objItemBitacora.InicioActividadY }}</p>
-  <h3>Actividad: {{ objItemBitacora.Actividad | actividadTitle }}</h3>
-  <h2>Tiempo: {{ objItemBitacora.TiempoHhmmss }}</h2>
+<ion-content>
+  <ion-card style="width:97% !important;margin: auto; margin-bottom:20px;margin-top:20px;">
+    <ion-list>
+      <ion-card-header text-center>
+        <span style="font-weight: bold;font-size: 1.2em;"> {{ objItemBitacora.Actividad | actividadTitle }}: {{ objItemBitacora.Terminado?
+          objItemBitacora.TiempoHhmmss : (objItemBitacora.Actividad=='ET'? bitacoraProvider.strHorasExcepcion + bitacoraProvider.strMinutosExcepcion
+          + bitacoraProvider.strSegundosExcepcion: bitacoraProvider.strHoras + bitacoraProvider.strMinutos + bitacoraProvider.strSegundos
+          ) }}
+        </span>
+      </ion-card-header>
+      <hr>
+      <ion-item text-center>
+        ID:
+        <p>{{ objItemBitacora.HashBitacora}}</p>
+      </ion-item>
+      <ion-item text-center>
+        INICIO ACTIVIDAD:
+        <p>{{ ((objItemBitacora.FechaHoraInicio | dateUtcToLocale) | date:'d, MMM, y, HH:mm:ss':'es-mx') | uppercase }}</p>
+      </ion-item>
+      <ion-item text-center>
+        FIN ACTIVIDAD:
+        <p>{{ objItemBitacora.FechaHoraFinal? (((objItemBitacora.FechaHoraFinal | dateUtcToLocale) | date:'d, MMM, y, HH:mm:ss':'es-mx'
+          ) | uppercase) : 'En progreso' }}
+        </p>
+      </ion-item>
+      <ion-card-header text-center>
+        <span style="font-weight: bold;font-size: 1.2em;"> Coordenadas inicio </span>
+      </ion-card-header>
+      <ion-item text-center>
+        Latitud:
+        <p>{{ objItemBitacora.InicioActividadX }}</p>
+      </ion-item>
+      <ion-item text-center>
+        Longitud:
+        <p>{{ objItemBitacora.InicioActividadY }}</p>
+      </ion-item>
+      <ion-card-header text-center>
+        <span style="font-weight: bold;font-size: 1.2em;"> Coordenadas fin </span>
+      </ion-card-header>
+      <ion-item text-center>
+        Latitud:
+        <p>{{ objItemBitacora.InicioActividadX }}</p>
+      </ion-item>
+      <ion-item text-center>
+        Longitud:
+        <p>{{ objItemBitacora.InicioActividadY }}</p>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
 </ion-content>

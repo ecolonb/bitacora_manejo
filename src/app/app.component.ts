@@ -29,18 +29,22 @@ export class MyApp {
     private utilidadesProvider: UtilidadesProvider
   ) {
     // ************ TEST Add TimeZone ((horas en -> muinutos) + or - )***********
-    const dateTest1: Date = new Date();
-    console.log('dateTest1', dateTest1);
-    console.log('dateTest1.getTimezoneOffset', dateTest1.getTimezoneOffset());
-    this.utilidadesProvider.convertSecondToHhhmmss(
-      dateTest1.getTimezoneOffset() * 60
-    );
+    // const dateTest1: Date = new Date('2018-08-21T08:15:25');
+    // console.log('dateTest1', dateTest1);
+    // console.log('dateTest1.getTimezoneOffset', dateTest1.getTimezoneOffset());
 
-    dateTest1.setMinutes(
-      dateTest1.getMinutes() + dateTest1.getTimezoneOffset()
-    );
-    console.log('dateTest1 converted:', dateTest1);
-    console.log('dateTest1 + UTC: ');
+    // console.log(
+    //   'convertSecondToHhhmmss in appcomponent:',
+    //   this.utilidadesProvider.convertSecondToHhhmmss(
+    //     dateTest1.getTimezoneOffset() * 60
+    //   )
+    // );
+
+    // dateTest1.setMinutes(
+    //   dateTest1.getMinutes() + dateTest1.getTimezoneOffset()
+    // );
+    // console.log('dateTest1 converted:', dateTest1);
+    // console.log('dateTest1 + UTC: ');
     platform.ready().then(() => {
       // Aqui la plataforma esta lista -> Todos los plugins cargados
       this.loginProvider.cargarStorage().then(() => {
@@ -48,7 +52,6 @@ export class MyApp {
           // Cargar Info Usuario from Storage
           this.usuarioProvider.cargarStorage().then(() => {
             // Información del usuario cargada Validar Sesion Status -> Redirect
-
             this.bitacoraProvider
               .getBitacoraFromStorage()
               .then(() => {
@@ -57,17 +60,22 @@ export class MyApp {
                 // this.rootPage = MenuPage;
                 // Se obtiene la configuracion del Servicio
                 this.bitacoraProvider.cargarServicioFromStorage().then(() => {
-                  console.log(
-                    'Cargando informacion del servicio desde el Storage'
-                  );
-                  if (
-                    this.bitacoraProvider.StatusServicio.Terminado === false
-                  ) {
-                    this.bitacoraProvider.resetServicicio();
-                    this.rootPage = MenuPage;
-                  } else {
-                    this.rootPage = this.configuracionServicioPage;
-                  }
+                  try {
+                    if (
+                      this.bitacoraProvider.StatusServicio !== null &&
+                      this.bitacoraProvider.StatusServicio !== undefined
+                    ) {
+                      if (
+                        this.bitacoraProvider.StatusServicio.Terminado === false
+                      ) {
+                        this.bitacoraProvider.resetServicicio();
+                        this.rootPage = MenuPage;
+                        // this.rootPage = this.configuracionServicioPage;
+                      }
+                    } else {
+                      this.rootPage = this.configuracionServicioPage;
+                    }
+                  } catch (error) {}
                   statusBar.styleDefault();
                   splashScreen.hide();
                 });
