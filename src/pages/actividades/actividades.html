@@ -32,7 +32,7 @@
             </ion-label>
           </ion-item>
           <ion-item-options side="right">
-            <button ion-button outline color="md_tq" style="text-transform: capitalize" (click)="controlaExcepcion()">
+            <button ion-button outline color="md_tq" style="text-transform: capitalize" (click)="confirmExcepcionTemporal()">
               Terminar
               <ion-icon name="md-checkbox-outline"></ion-icon>
             </button>
@@ -63,7 +63,7 @@
 
 
       </div>
-      <button id="inicio" ion-button (click)="inicio('C')" color="teal_blue" class="btnActionInicio" [disabled]="bitacoraProvider.dsConduciendo">
+      <button id="inicio" ion-button (click)="confirmarAccionActividad('C')" color="teal_blue" class="btnActionInicio" [disabled]="bitacoraProvider.dsConduciendo">
         <ion-icon *ngIf="!bitacoraProvider.Conduciendo" name="play" style="margin-right: 20px"></ion-icon>
         <ion-icon *ngIf="bitacoraProvider.Conduciendo" name="square" style="margin-right: 8px;font-size:20px;"></ion-icon>
         <span *ngIf="!bitacoraProvider.Conduciendo">Iniciar conducción</span>
@@ -71,12 +71,12 @@
       </button>
       <div style="padding: 0px;margin:0px;width: 100%;margin-top: 10px;margin-bottom: 7px;">
 
-        <button id="eliminar" ion-button (click)="inicio('D')" color="md_tq" class="btnActionDescanso" [disabled]="bitacoraProvider.dsDescanso">
+        <button id="eliminar" ion-button (click)="confirmarAccionActividad('D')" color="md_tq" class="btnActionDescanso" [disabled]="bitacoraProvider.dsDescanso">
           <ion-icon *ngIf="bitacoraProvider.Descanso" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
           <ion-icon *ngIf="!bitacoraProvider.Descanso" name="play" style="margin-right: 10px"></ion-icon>
           <span>Descanso</span>
         </button>
-        <button id="idExcepcion" ion-button (click)="controlaExcepcion()" color="md_tq" class="btnActionExcepcion">
+        <button id="idExcepcion" ion-button (click)="confirmExcepcionTemporal()" color="md_tq" class="btnActionExcepcion">
           <ion-icon *ngIf="bitacoraProvider.ExcepcionTemporal" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
           <ion-icon *ngIf="!bitacoraProvider.ExcepcionTemporal" name="play" style="margin-right: 10px"></ion-icon>
           <span>Excepción</span>
@@ -118,7 +118,7 @@
       </ion-list>
     </ion-card>
     <button id="inicio" ion-button color="danger_2" style="width: 95% !important;margin-right: auto;margin-left: auto; margin-bottom: 15px;margin-top: 15px;font-size: 1.3em;text-transform: initial;height: 48px;font-size: 1.5em;"
-      [disabled]="bitacoraProvider.StatusServicio.Terminado" (click)="terminarServicio()" block>
+      (click)="terminarServicio()" block>
       <span>Terminar servicio</span>
     </button>
   </ion-card>

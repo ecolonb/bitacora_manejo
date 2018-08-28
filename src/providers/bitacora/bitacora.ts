@@ -12,9 +12,13 @@ import { UtilidadesProvider } from '../utilidades/utilidades';
 
 // ******** PLUGINS *******
 import { Storage } from '@ionic/storage';
-import { Platform } from 'ionic-angular';
+import { App, Platform } from 'ionic-angular';
 import 'rxjs/add/operator/toPromise';
 import { filter, map, switchMap } from 'rxjs/operators';
+
+// ***** Paginás */
+import { ConfiguracionServicioPage } from './../../pages/configuracion-servicio/configuracion-servicio';
+
 /**
  * Este servicio administra la información de las Bitácoras
  */
@@ -63,6 +67,7 @@ export class BitacoraProvider {
   public strSegundosServicio: string = ':00';
   public strMinutosServicio: string = ':00';
   public strHorasServicio: string = '00';
+
   // Excepcion temporal
   public strSegundosExcepcion: string = ':00';
   public strMinutosExcepcion: string = ':00';
@@ -101,6 +106,9 @@ export class BitacoraProvider {
   public ctrlTimerStatusUpdate: any;
   public controlTimerExcepcion: any;
 
+  // Pages declarations
+  public configuracionServicioPage: any = ConfiguracionServicioPage;
+
   // Array donde se guardarán los items de la bitácora
   private UrlEndPoint: string =
     'http://dev1.copiloto.com.mx/lab/rest/api/Bitacora';
@@ -118,7 +126,8 @@ export class BitacoraProvider {
     private appConfiguracionProvider: AppConfiguracionProvider,
     private utilidadesProvider: UtilidadesProvider,
     private platform: Platform,
-    private storage: Storage
+    private storage: Storage,
+    private app: App
   ) {}
 
   public getBitacora() {
@@ -472,8 +481,8 @@ export class BitacoraProvider {
       SegundosTotal: 0,
       TiempoHhmmss: null,
       Actividad: 'S',
-      InicioActividadX: this.InicioActividadX,
-      InicioActividadY: this.InicioActividadY,
+      InicioActividadX: -1919,
+      InicioActividadY: -1919,
       FinActividaX: null,
       FinActividadY: null,
       Descripcion: null,
@@ -627,11 +636,9 @@ export class BitacoraProvider {
   /**
    * Funcion para terminar el Servicio Actualizar el objService y guardar los servicios en un array de Servicios.
    */
-  public terminarServicio() {
-    console.log('Terminando servicio...from PROVIDER..');
+  public terminarServicio(): Promise<any> {
     /**
      * Aqui realizar las siguientes funciones
-     *  Alertas de confirmacion
      * Terminar todas las actividades pendientes hora actual UTC
      * Guardar bitacora en storage
      * Sincronizar información
@@ -640,16 +647,67 @@ export class BitacoraProvider {
      * Guardar información del servicio.
      */
     // terminando actividades
-    try {
-      clearInterval(this.control);
-      clearInterval(this.ctrlTimerServicio);
-      clearInterval(this.ctrlTimerStatusUpdate);
-      // separando statusUpdate y timer fecha actual
-    } catch (error) {}
+    const promiseTerminarServicio = new Promise((resolve, reject) => {
+      try {
+        // Actualiza los datos en ServicioActual y guarda en Storage
+        this.updateStatusServicio().then(() => {
+          this.terminarActividades().then(() => {
+            // terminando actividades listo-> Guardar promise
+            this.guardarBitacoraInStorage().then(() => {
+              // Bitacora guardada redireccionar configuracion Servicio
+              clearInterval(this.control);
+              clearInterval(this.ctrlTimerServicio);
+              clearInterval(this.ctrlTimerStatusUpdate);
+              // en este punto ya se guardo en el storage información actualizada, la información se sincronizará al server
+              this.sincronizarInformacion().then(() => {
+                resolve();
+              });
+            });
+          });
+        });
+
+        // separando statusUpdate y timer fecha actual
+      } catch (error) {
+        reject();
+      }
+    });
+
+    return promiseTerminarServicio;
   }
 
+  public updateStatusServicio(): Promise<any> {
+    const promiseUpdateStausServicio = new Promise((resolve, reject) => {
+      let dtSQLStartNewItem: string;
+      dtSQLStartNewItem = this.utilidadesProvider.isoStringToSQLServerFormat(
+        new Date()
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      );
+      this.StatusServicio.FechaHoraFinal = dtSQLStartNewItem;
+      this.StatusServicio.Terminado = true;
+      // Obtener el tiempo transcurrido
+      const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+        this.StatusServicio.FechaHoraFinal,
+        this.StatusServicio.FechaHoraInicio
+      );
+      this.StatusServicio.SegundosTotal =
+        objTiempoTranscurrido.segundosDiferencia;
+      this.StatusServicio.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
+      // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
+      this.guardaServicioActualInStorage()
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject();
+        });
+    });
+    return promiseUpdateStausServicio;
+  }
+
+  // Obtiene el tiempo acumulado de las actividades almacenadas en el Storage
   public getStatus() {
-    // typeof this.BitacoraData != "undefined" && this.BitacoraData != null && this.BitacoraData.length != null && this.BitacoraData.length > 0
     if (
       typeof this.BitacoraData !== 'undefined' &&
       this.BitacoraData != null &&
@@ -672,9 +730,10 @@ export class BitacoraProvider {
       }
     }
   }
+
+  // Actualiza el tiempo acumulado de todas las actividades estas se muestam en (status, bitacora) HH:mm:ss
   public statusUpdate() {
     try {
-      // Actualizar tiempo en HHmmss // this.stInProgress || this.IniciarStatusUpdate
       if (true) {
         this.boolIniciarStatusUpdate = false;
         if (
@@ -720,10 +779,6 @@ export class BitacoraProvider {
   }
   // LLeva el control del tiempo en servicio
   public timerExcepcionTemporal() {
-    // public strSegundosExcepcion: string = ':00';
-    // public strMinutosExcepcion: string = ':00';
-    // public strHorasExcepcion: string = '00';
-    // public numSegundosActualesExcepcion: number = 0;
     const dtCurrentDT = new Date();
     // Obtenemos la fecha inicio en formato Date -> UTC
     const dtFnCurrent: Date = this.utilidadesProvider.convertLocalDateToUTC(
@@ -735,7 +790,6 @@ export class BitacoraProvider {
     const dateDiff = Math.abs(
       (dtFnCurrent.valueOf() - this.fechaInicioExcepcion.valueOf()) / 1000
     );
-    // console.log('' + this.date1 + ' <-> ' + this.date2 + ' DIFF: ' + dateDiff);
     let horas: any = Math.floor(dateDiff / 3600);
     let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
     let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
@@ -906,8 +960,7 @@ export class BitacoraProvider {
     const guardarServicioActualPromise = new Promise((resolve, reject) => {
       // Guardando en LocalStorage
       if (this.platform.is('cordova')) {
-        // Dispositivo
-        // Guardando el Status del servicio
+        // Dispositivo -> Guardando el Status del servicio
         this.storage.set(
           'ObjServicioActual',
           JSON.stringify(this.StatusServicio)
@@ -939,10 +992,8 @@ export class BitacoraProvider {
     return guardarServicioActualPromise;
   }
 
-  // Guardar la excepción temporal registrada
+  // Guardar la excepción temporal registrada (recorre arrayItem para terminar solo la que esta activa);
   private guardarExcepcionTemporal() {
-    // recorrer array de items bitacora y terminar la bitacora actual
-
     for (const itBitacora of this.BitacoraData) {
       if (itBitacora.Actividad === 'ET' && itBitacora.Terminado === false) {
         const fechaGuardado: Date = new Date();
@@ -963,25 +1014,108 @@ export class BitacoraProvider {
         itBitacora.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
       }
     }
-
-    // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
-    // this.strSegundos = ':00';
-    // this.strMinutos = ':00';
-    // this.strHoras = '00';
-    // Validar en que estado estába y terminarlo
-    // this.ExcepcionTemporal = false;
-    // this.dsExcepcionTemporal = false;
-    // this.stExepcionTemporal = false;
-    // this.actividaActualTtl = 'S';
-    // this.actividadActual = 'S';
-    // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
     this.guardarBitacoraInStorage();
   }
 
-  // Obtiene la fechaHora actual del dispositivo:
+  // Obtiene la fechaHora actual del dispositivo, se muestra en Status(page):
   private getDateTimeNow() {
     try {
       this.fehoraActualSystem = new Date();
     } catch (error) {}
+  }
+  private terminarActividades(): Promise<any> {
+    // Guardando actividad en progreso no ET
+    const promiseTerminarActividades = new Promise((resolve, reject) => {
+      if (this.BitacoraData && this.BitacoraData !== null) {
+        for (const itBitacoraSave of this.BitacoraData) {
+          if (
+            itBitacoraSave.Terminado === false &&
+            itBitacoraSave.Actividad !== 'ET'
+          ) {
+            const fechaGuardado: Date = new Date();
+            itBitacoraSave.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
+              fechaGuardado
+                .toISOString()
+                .toString()
+                .toUpperCase()
+            );
+            itBitacoraSave.Terminado = true;
+            // Obtener el tiempo transcurrido
+            const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+              itBitacoraSave.FechaHoraFinal,
+              itBitacoraSave.FechaHoraInicio
+            );
+            itBitacoraSave.SegundosTotal =
+              objTiempoTranscurrido.segundosDiferencia;
+            itBitacoraSave.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
+            // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
+            // this.strSegundos = ':00';
+            // this.strMinutos = ':00';
+            // this.strHoras = '00';
+            this.stInProgress = false;
+            this.numSegundosActuales = 0;
+            // Validar en que estado estába y terminarlo
+            this.Conduciendo = false;
+            this.Descanso = false;
+            // this.ExcepcionTemporal = false;
+            this.dsConduciendo = false;
+            this.dsDescanso = false;
+            this.stExepcionTemporal = false;
+            this.dsExcepcionTemporal = false;
+            // this.dsExcepcionTemporal = false;
+          } else {
+            // Guardar Excepción
+            if (
+              itBitacoraSave.Actividad === 'ET' &&
+              itBitacoraSave.Terminado === false
+            ) {
+              // terminando actividad con fecha actual
+              const fechaGuardado: Date = new Date();
+              itBitacoraSave.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
+                fechaGuardado
+                  .toISOString()
+                  .toString()
+                  .toUpperCase()
+              );
+              itBitacoraSave.Terminado = true;
+              // Obtener el tiempo transcurrido
+              const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+                itBitacoraSave.FechaHoraFinal,
+                itBitacoraSave.FechaHoraInicio
+              );
+              itBitacoraSave.SegundosTotal =
+                objTiempoTranscurrido.segundosDiferencia;
+              itBitacoraSave.TiempoHhmmss =
+                objTiempoTranscurrido.segundosHhmmss;
+            }
+          }
+        }
+        resolve();
+      } else {
+        resolve();
+      }
+    });
+    return promiseTerminarActividades;
+  }
+  private sincronizarInformacion(): Promise<any> {
+    // Borrando servicios actuales..
+    const promiseSincronizarInfo = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Eliminar el storage
+        if (this.platform.is('cordova')) {
+          // Get items from Storage
+          this.storage.remove('ObjBitacoraDataStorage');
+          this.storage.remove('ObjServicioActual');
+          this.storage.remove('ObjConfServicioActual');
+          resolve();
+        } else {
+          localStorage.removeItem('ObjBitacoraDataStorage');
+          localStorage.removeItem('ObjServicioActual');
+          localStorage.removeItem('ObjConfServicioActual');
+          resolve();
+        }
+      }, 5000);
+    });
+    return promiseSincronizarInfo;
   }
 }

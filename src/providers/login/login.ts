@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 import { UsuarioModel } from '../../models/usuario.model';
 import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
 import { UsuarioProvider } from './../usuario/usuario';
@@ -49,6 +50,36 @@ export class LoginProvider {
       dataSendform,
       HEADERS
     );
+  }
+
+  // LOG IN USER_PASSWORD method POST -> Api RESTFul
+  public loginUserAndPaswword(
+    userToSend: string,
+    passToSend: string
+  ): Promise<any> {
+    const promiseLoginUserAndPaswword = new Promise((resolve, reject) => {
+      userToSend = userToSend.toLowerCase();
+      const HEADERS = {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' }
+      };
+      // Obj datos que recibe el ApiRestFul LoginIbutton
+      passToSend = btoa(passToSend);
+      const dataSendform = {
+        user: userToSend,
+        password: passToSend,
+        uuidDispositivo: 'iphone1368'
+      };
+      this.httpClient
+        .post(this.URL_, dataSendform, HEADERS)
+        .toPromise()
+        .then((RESULT_DATA) => {
+          resolve(RESULT_DATA);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+    return promiseLoginUserAndPaswword;
   }
 
   // Obtiene si está activa la sesion

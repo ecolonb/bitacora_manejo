@@ -3,14 +3,19 @@ import {
   AlertController,
   App,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
   Slides,
   ViewController
 } from 'ionic-angular';
+import { UnidadRequestModel } from '../../models/unidad-response.model';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
+import { LoginProvider } from '../../providers/login/login';
+import { UnidadProvider } from '../../providers/unidad/unidad';
 import { ServicioModel } from './../../models/servicio.model';
 import { UnidadModel } from './../../models/unidad.model';
+import { ConductorProvider } from './../../providers/conductor/conductor';
 import { LoginPage, MenuPage } from './../index-paginas';
 
 /**
@@ -55,37 +60,26 @@ export class ConfiguracionServicioPage {
     private alertCtrl: AlertController,
     private bitacoraProvider: BitacoraProvider,
     private app: App,
-    private viewController: ViewController
+    private viewController: ViewController,
+    private loginProvider: LoginProvider,
+    public conductorProvider: ConductorProvider,
+    private unidadProvider: UnidadProvider,
+    private loadingCtrl: LoadingController
   ) {
     /**
      */
-    this.objUnidades = [
-      {
-        Nuid: 191929,
-        Marca: 'Mercedes bens',
-        Modelo: '2019',
-        Anio: '2021',
-        Placas: '0191-1212'
-      },
-      {
-        Nuid: 283283,
-        Marca: 'Volvo',
-        Modelo: '2000 AirLine',
-        Anio: '2015',
-        Placas: '123581axc'
-      },
-      {
-        Nuid: 7776977,
-        Marca: 'BMW Bigger',
-        Modelo: '2019',
-        Anio: '2021',
-        Placas: '213455ABC'
-      }
-    ];
+    // Aqui realizar peticiones para ontener la lista de unidades
+    // if (this.unidadProvider.cargarFromStorage) {
+    //   this.unidadProvider.getUnidadesFromStorage().then(() => {});
+    // } else {
+    //   this.unidadProvider.getUnidadesPost();
+    // }
   }
   public setFilteredItems() {
+    console.log('Realizando busqueda-->' + this.searchTerm);
     if (this.searchTerm !== '') {
       this.itemsSr = this.filterItems(this.searchTerm);
+      console.log('this.itemsSr' + JSON.stringify(this.itemsSr));
       // Validar cuantos elelementos se encuentran: console.log('this.itemsSr', this.itemsSr.length);
     } else {
       delete this.itemsSr;
@@ -98,6 +92,54 @@ export class ConfiguracionServicioPage {
   }
   public ionViewDidLoad() {
     // this.setFilteredItems();
+    const loading = this.loadingCtrl.create({
+      content: 'Cargandando lista de unidades, porfavor espere...'
+    });
+    loading.present();
+    if (this.unidadProvider.cargarFromStorage) {
+      this.unidadProvider
+        .getUnidadesFromStorage()
+        .then(() => {
+          // Una vez que se cargan las unidades del Storage verficar si existe el objUnidades si no realizar peticion post
+          if (
+            !this.unidadProvider.arrObjUnidades ||
+            this.unidadProvider.arrObjUnidades === null
+          ) {
+            console.log('No existe objeto se vuelve a realzar peticion!');
+            this.unidadProvider
+              .getUnidadesPost()
+              .then((RESULT_DATA: UnidadRequestModel) => {
+                console.log(
+                  'Result from promesa in configruacion servicio: ' +
+                    JSON.stringify(RESULT_DATA)
+                );
+                this.unidadProvider.mappingResult(RESULT_DATA);
+                console.log('Loading from request post');
+                loading.dismiss();
+              });
+          } else {
+            console.log(
+              'Unidades cargadas from storage: ',
+              this.unidadProvider.arrObjUnidades
+            );
+            loading.dismiss();
+          }
+        })
+        .catch((error) => {
+          loading.dismiss();
+        });
+    } else {
+      this.unidadProvider
+        .getUnidadesPost()
+        .then((RESULT_DATA: UnidadRequestModel) => {
+          console.log(
+            'Result from promesa in configruacion servicio: ' +
+              JSON.stringify(RESULT_DATA)
+          );
+          this.unidadProvider.mappingResult(RESULT_DATA);
+          loading.dismiss();
+        });
+    }
   }
   public nextSlideConfirmacion() {
     let error: boolean = false;
@@ -209,7 +251,13 @@ export class ConfiguracionServicioPage {
             }
             if (DataOk === 'Salir') {
               // Cambiar variable Status appConfiguracion verbitacora
-              this.app.getRootNavs()[0].setRoot(this.loginPage);
+              // Cerrar Sesion
+
+              this.loginProvider.cerrarSesion().then(() => {
+                // this.navCtrl.setRoot(LoginPage);
+                // use that this.App.getRootNavs()[0].setRoot(LoginPage); for this.App.getRootNav().setRoot(LoginPage)
+                this.app.getRootNavs()[0].setRoot(this.loginPage);
+              });
             }
           }
         }
@@ -220,7 +268,8 @@ export class ConfiguracionServicioPage {
 
   // Se inicia el servicio : se guarda información en localStorage
   public iniciarServicio() {
-    // Cuando se inicia el servicio se arma el objeto configuración servicio
+    // Cuando se inicia el servicio se arma el objeto configuración servicio en ese mismo objeto se establece la unidad seleccionada.
+    // Falta obtener los datos del Permisionario Nombre/Razon social y Dirección
     const objConfServicio: ServicioModel = {
       IdServicio: 121,
       IdCondcutor: 1368,
@@ -239,9 +288,10 @@ export class ConfiguracionServicioPage {
   }
 
   public filterItems(searchTerm) {
-    return this.objUnidades.filter((item) => {
+    return this.unidadProvider.arrObjUnidades.filter((item: UnidadModel) => {
       return (
-        item.Nuid.toString()
+        item.nuid
+          .toString()
           .toLowerCase()
           .indexOf(searchTerm.toLowerCase()) > -1
       );
@@ -250,11 +300,11 @@ export class ConfiguracionServicioPage {
   public setUnidad(ObjSearch: UnidadModel) {
     this.objUnidadSeleccionada = ObjSearch;
     this.searchTerm =
-      this.objUnidadSeleccionada.Nuid.toString() +
+      this.objUnidadSeleccionada.nuid.toString() +
       ' - ' +
-      this.objUnidadSeleccionada.Placas +
+      this.objUnidadSeleccionada.placas +
       ' - ' +
-      this.objUnidadSeleccionada.Modelo;
+      this.objUnidadSeleccionada.modelo;
     this.nombreUnidad = this.searchTerm;
     delete this.itemsSr;
   }

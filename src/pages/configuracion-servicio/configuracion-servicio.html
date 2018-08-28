@@ -18,7 +18,7 @@
 <ion-content padding>
   <ion-slides pager slider="swiper.data.slider">
     <ion-slide class="ionSlide">
-      <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¡Bienvenido!</h1>
+      <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¡Hola {{ conductorProvider.nombreConductor }}, Bienvenido!</h1>
       <span style="font-size: 0.9em;color:#335D82;margin:0;padding:0;">Porfavor ingresa la siguiente informacion.</span>
       <p style="height: 10px;"></p>
       <span style="width: 100%;font-size: 1.1em; color: #21425F;">
@@ -29,7 +29,7 @@
       </ion-searchbar>
       <ion-list *ngIf="itemsSr" class="listResults">
         <ion-item (click)="setUnidad(search)" *ngFor="let search of itemsSr">
-          {{ search.Nuid + ' - ' + search.Placas + ' - ' + search.Modelo }}
+          {{ search.nuid + ' - ' + search.placas + ' - ' + search.modelo }}
         </ion-item>
       </ion-list>
       <ion-item no-lines style="width: 100%;text-align: center;height: 100px;padding:0px;">

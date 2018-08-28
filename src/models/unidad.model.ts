@@ -1,7 +1,9 @@
 export class UnidadModel {
-  public Nuid: number;
-  public Modelo: string;
-  public Marca: string;
-  public Anio: string;
-  public Placas: string;
+  public nuid: number;
+  public modelo: string;
+  public marca: string;
+  public anio: string;
+  public placas: string;
+  public ultimaComunicacion: Date;
+  public noEconomico: string;
 }

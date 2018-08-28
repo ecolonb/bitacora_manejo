@@ -51,17 +51,17 @@
     <ion-card-content>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Nombre</ion-col>
-        <ion-col col-6>{{ strNombreConductor }}</ion-col>
+        <ion-col col-6>{{ conductorProvider.nombreConductor + ' ' + conductorProvider.apellidosConductor }}</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">N. Licencia</ion-col>
-        <ion-col col-6>23581321</ion-col>
+        <ion-col col-6>{{ conductorProvider.numeroLicencia }}</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Vigencia</ion-col>
         <!--  -->
         <!-- <ion-col col-6>{{ '2018-09-09T00:00:00' | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}</ion-col> -->
-        <ion-col col-6>{{ '2018-08-06T11:44:34' | date:'fullDate':'utc-06':'es-mx' | uppercase }}</ion-col>
+        <ion-col col-6>{{ conductorProvider.vigenciaLicencia | date:'fullDate':'utc-00':'es-mx' | uppercase }}</ion-col>
       </ion-row>
 
     </ion-card-content>
@@ -73,15 +73,15 @@
     <ion-card-content>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Marca</ion-col>
-        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.Marca }}</ion-col>
+        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.marca }}</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Modelo</ion-col>
-        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.Modelo }}</ion-col>
+        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.modelo }}</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
         <ion-col col-6 class="titleItemBitacoraInfo">Placas</ion-col>
-        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.Placas }}</ion-col>
+        <ion-col col-6>{{ bitacoraProvider.objConfServicio.Unidad.placas }}</ion-col>
       </ion-row>
     </ion-card-content>
   </ion-card>

@@ -18,7 +18,6 @@ export class ConfiguracionPage {
   public boolServerId2: boolean = false;
   public iButton: string = '--';
   public serverEndPoint: string;
-
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -26,21 +25,11 @@ export class ConfiguracionPage {
     public alertCtrl: AlertController,
     private appConfiguracionProvider: AppConfiguracionProvider
   ) {
-    try {
-      // Aqui hay un error validar error entra a catch
-      // const hobjConfigServer: AppConfiguracionModel = this.appConfiguracionProvider.getConfiguracion();
-      // this.serverId = hobjConfigServer.serverid;
-      // this.iButton = String(hobjConfigServer.ibutton);
-      // if (this.serverId === 1) {
-      //   this.boolServerId1 = true;
-      //   this.boolServerId2 = false;
-      // } else if (this.serverId === 2) {
-      //   this.boolServerId1 = false;
-      //   this.boolServerId2 = true;
-      // }
-    } catch (error) {
-      // console.log('Error here catch:' + JSON.stringify(error));
-    }
+    this.serverEndPoint = this.appConfiguracionProvider.ServerEndPoint;
+    console.log(
+      'this.serverEndPoint from constructor:-->',
+      this.serverEndPoint
+    );
   }
 
   // Convierte a minuscula cada que se presiona una tecla.
@@ -51,36 +40,34 @@ export class ConfiguracionPage {
     this.viewCtrl.dismiss();
   }
   public guardarConfiguracion() {
-    // this.iButton = this.iButton.trim();
-    // if (this.iButton !== '') {
-    //   // Guardar en Servicio appConfiguracion
-    //   this.appConfiguracionProvider
-    //     .guardarConfigServer(this.serverId, this.iButton)
-    //     .then(() => {
-    //       this.viewCtrl.dismiss();
-    //     });
-    // } else {
-    //   const alert = this.alertCtrl.create({
-    //     title: 'Atención',
-    //     subTitle: '¡Debes ingresar el IButton!',
-    //     buttons: [
-    //       {
-    //         text: 'Ok',
-    //         role: 'ok'
-    //       }
-    //     ]
-    //   });
-    //   alert.present();
-    // }
+    console.log('Aqui guardar serverEndPoint');
+    if (this.serverEndPoint !== '') {
+      // Guardar en Servicio appConfiguracion
+      this.appConfiguracionProvider
+        .guardarConfigServer(this.serverEndPoint)
+        .then(() => {
+          console.log('Se guardo la config del serverEndPoint');
+          this.viewCtrl.dismiss();
+        });
+    } else {
+      const alert = this.alertCtrl.create({
+        title: 'Atención',
+        subTitle: '¡Debes ingresar la url de tu Desktop virtual!',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'ok'
+          }
+        ]
+      });
+      alert.present();
+    }
   }
-  // public setRadioBtnsServer(serverId: number) {
-  //   this.serverId = serverId;
-  // }
   public validateIbutton(Evento: any) {
     // Validando caracteres validos
     const strCaracteresValidos: string = '1234567890';
     if (strCaracteresValidos.indexOf(Evento.key) < 0) {
-      //      return false;
+      return false;
     }
   }
 }

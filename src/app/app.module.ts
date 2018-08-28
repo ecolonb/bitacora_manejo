@@ -44,6 +44,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { ActionSheetController } from 'ionic-angular';
 import { App } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
+import { ConductorProvider } from '../providers/conductor/conductor';
+import { UnidadProvider } from '../providers/unidad/unidad';
 
 @NgModule({
   declarations: [
@@ -96,7 +98,9 @@ import { LoadingController } from 'ionic-angular';
     Geolocation,
     Diagnostic,
     ActionSheetController,
-    App
+    App,
+    ConductorProvider,
+    UnidadProvider
   ]
 })
 export class AppModule {}

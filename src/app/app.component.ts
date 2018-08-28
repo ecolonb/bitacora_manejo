@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Platform } from 'ionic-angular';
-import { BitacoraProvider } from './../providers/bitacora/bitacora';
-import { UsuarioProvider } from './../providers/usuario/usuario';
-import { UtilidadesProvider } from './../providers/utilidades/utilidades';
-
 import {
   ConfiguracionServicioPage,
   LoginPage,
   MenuPage
 } from '../pages/index-paginas';
 import { LoginProvider } from '../providers/login/login';
+import { BitacoraProvider } from './../providers/bitacora/bitacora';
+import { ConductorProvider } from './../providers/conductor/conductor';
+import { UsuarioProvider } from './../providers/usuario/usuario';
+import { UtilidadesProvider } from './../providers/utilidades/utilidades';
 
 @Component({
   templateUrl: 'app.html'
@@ -26,7 +26,8 @@ export class MyApp {
     private loginProvider: LoginProvider,
     private usuarioProvider: UsuarioProvider,
     private bitacoraProvider: BitacoraProvider,
-    private utilidadesProvider: UtilidadesProvider
+    private utilidadesProvider: UtilidadesProvider,
+    private conductorProvider: ConductorProvider
   ) {
     // ************ TEST Add TimeZone ((horas en -> muinutos) + or - )***********
     // const dateTest1: Date = new Date('2018-08-21T08:15:25');
@@ -68,16 +69,35 @@ export class MyApp {
                       if (
                         this.bitacoraProvider.StatusServicio.Terminado === false
                       ) {
-                        this.bitacoraProvider.resetServicicio();
-                        this.rootPage = MenuPage;
+                        this.conductorProvider
+                          .getConductorDataStorage()
+                          .then(() => {
+                            this.bitacoraProvider.resetServicicio();
+                            this.rootPage = MenuPage;
+                            statusBar.styleDefault();
+                            splashScreen.hide();
+                          });
+
                         // this.rootPage = this.configuracionServicioPage;
+                      } else {
+                        this.conductorProvider
+                          .getConductorDataStorage()
+                          .then(() => {
+                            this.rootPage = this.configuracionServicioPage;
+                            statusBar.styleDefault();
+                            splashScreen.hide();
+                          });
                       }
                     } else {
-                      this.rootPage = this.configuracionServicioPage;
+                      this.conductorProvider
+                        .getConductorDataStorage()
+                        .then(() => {
+                          this.rootPage = this.configuracionServicioPage;
+                          statusBar.styleDefault();
+                          splashScreen.hide();
+                        });
                     }
                   } catch (error) {}
-                  statusBar.styleDefault();
-                  splashScreen.hide();
                 });
               })
               .catch((err) => {
@@ -85,7 +105,6 @@ export class MyApp {
                 this.rootPage = LoginPage;
                 statusBar.styleDefault();
                 splashScreen.hide();
-                console.log('Error', err);
               });
             // Realizar peticion con datos la ultima actualizacion
           });

@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
 import {
   AlertController,
+  App,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
   Platform
@@ -11,7 +13,12 @@ import { BitacoraModel } from '../../models/bitacora.model';
 
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
-import { DetalleItemBitacoraPage } from './../detalle-item-bitacora/detalle-item-bitacora';
+
+// *** Paginas *********
+import {
+  ConfiguracionServicioPage,
+  DetalleItemBitacoraPage
+} from './../index-paginas';
 
 // *********** PLUGINS *************
 import { Diagnostic } from '@ionic-native/diagnostic';
@@ -36,6 +43,7 @@ export class ActividadesPage {
   // Delete
 
   public DetalleItemBitacoraPage: any = DetalleItemBitacoraPage;
+  public configuracionServicioPage: any = ConfiguracionServicioPage;
   // public boolSelectActividad: boolean = false;
 
   constructor(
@@ -47,7 +55,9 @@ export class ActividadesPage {
     private geolocation: Geolocation,
     private diagnostic: Diagnostic,
     private platform: Platform,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private loadingCtrl: LoadingController,
+    private app: App
   ) {}
 
   // Error en Dispositivo
@@ -83,7 +93,10 @@ export class ActividadesPage {
       this.bitacoraProvider.strTatusLocationMode = 'Desktop';
     }
     try {
-      if (this.bitacoraProvider.BitacoraData !== []) {
+      if (
+        this.bitacoraProvider.BitacoraData !== [] &&
+        this.bitacoraProvider.BitacoraData !== null
+      ) {
         if (this.bitacoraProvider.BitacoraData[0]) {
           if (this.bitacoraProvider.BitacoraData.length > 0) {
             this.bitacoraProvider.haveElements = true;
@@ -132,11 +145,7 @@ export class ActividadesPage {
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
-    console.log(
-      'Inicio/Fin una actividad........ActividadParam :' + ActividadParam
-    );
     if (ActividadParam === 'C') {
-      console.log('In ActividadParam ActividadParam === C');
       this.bitacoraProvider.actividadActual = 'C';
       this.bitacoraProvider.actividaActualTtl = 'C';
       this.bitacoraProvider.Conduciendo = true;
@@ -146,7 +155,6 @@ export class ActividadesPage {
       }
     }
     if (ActividadParam === 'D') {
-      console.log('In ActividadParam ActividadParam === D');
       this.bitacoraProvider.actividadActual = 'D';
       this.bitacoraProvider.actividaActualTtl = 'D';
       this.bitacoraProvider.Descanso = true;
@@ -281,6 +289,87 @@ export class ActividadesPage {
     // this.changeTitlteLarge(this.actividaActualTtl);
   }
 
+  public confirmarAccionActividad(Actividadaram: string) {
+    let titleAlert: string;
+    let messageAlert: string;
+
+    if (this.bitacoraProvider.stInProgress) {
+      // Termina actividad
+      if (this.bitacoraProvider.Conduciendo && Actividadaram === 'C') {
+        titleAlert = 'Terminar conducción';
+        messageAlert = '¿Realmente deseas terminar de conducir?';
+      }
+      if (this.bitacoraProvider.Descanso && Actividadaram === 'D') {
+        titleAlert = 'Terminar descanso';
+        messageAlert = '¿Realmente deseas terminar de descansar?';
+      }
+    } else {
+      // Inicia actividad
+      if (!this.bitacoraProvider.Conduciendo && Actividadaram === 'C') {
+        titleAlert = '¿Iniciar conducción?';
+        messageAlert = '¿Realmente deseas iniciar a conducir?';
+      }
+      if (!this.bitacoraProvider.Descanso && Actividadaram === 'D') {
+        titleAlert = 'Iniciar descanso?';
+        messageAlert = '¿Realmente deseas iniciar descanso?';
+      }
+    }
+
+    const confirm = this.alertCtrl.create({
+      title: titleAlert,
+      message: messageAlert,
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {}
+        },
+        {
+          text: 'SI',
+          handler: () => {
+            this.inicio(Actividadaram);
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
+
+  public confirmarTerminarServicio() {
+    console.log('Confirmando terminar Servicio');
+  }
+  public confirmExcepcionTemporal() {
+    let titleAlert: string;
+    let messageAlert: string;
+
+    if (this.bitacoraProvider.stExepcionTemporal) {
+      titleAlert = 'Terminar excepción temporal';
+      messageAlert = '¿Realmente deseas terminar la Excepción temporal?';
+    } else {
+      // Inicia actividad
+      titleAlert = 'Iniciar excepción temporal';
+      messageAlert = '¿Realmente deseas iniciar la Excepción temporal?';
+    }
+
+    const confirm = this.alertCtrl.create({
+      title: titleAlert,
+      message: messageAlert,
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {}
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            this.controlaExcepcion();
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
   // Funcion detiene el vento debe guardarse en localStorage
   public eliminarExcepcion() {
     console.log('Elimina excepción temporal!');
@@ -297,9 +386,7 @@ export class ActividadesPage {
         {
           text: 'Cancelar',
           role: 'cancelar',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          handler: () => {}
         },
         {
           text: 'Eliminar',
@@ -367,9 +454,7 @@ export class ActividadesPage {
   }
 
   // change title card activity
-
   public changeTitlte(Actividad: string) {
-    console.log('In change title', this.bitacoraProvider.BitacoraData);
     if (this.bitacoraProvider.BitacoraData.length >= 1) {
       this.bitacoraProvider.BitacoraData[0].Actividad = Actividad;
       // Cuando se cambia de actividad tambien se actualiza LocalStorage
@@ -409,31 +494,70 @@ export class ActividadesPage {
         {
           text: 'Editar',
           icon: 'md-create',
-          handler: () => {
-            console.log('Edit clicked');
-          }
+          handler: () => {}
         },
         {
           text: 'Cancelar',
           role: 'cancel',
           icon: 'md-close',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          handler: () => {}
         }
       ]
     });
     actionSheet.present();
   }
   public terminarServicio() {
-    console.log('Terminando servicio... Actividades page');
-    this.bitacoraProvider.terminarServicio();
+    const confirm = this.alertCtrl.create({
+      title: 'Terminar servicio',
+      message: '¿Realmente deseas terminar el servicio?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel'
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            const loading = this.loadingCtrl.create({
+              content: 'Sincronizando información, porfavor espere...'
+            });
+            loading.present();
+            this.bitacoraProvider.terminarServicio().then(() => {
+              // redirect configuracion nuevo servicio
+              loading.dismiss();
+              this.bitacoraProvider.strHoras = '00';
+              this.bitacoraProvider.strMinutos = ':00';
+              this.bitacoraProvider.strSegundos = ':00';
+              this.bitacoraProvider.strHorasExcepcion = '00';
+              this.bitacoraProvider.strSegundosExcepcion = ':00';
+              this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+              this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+              this.bitacoraProvider.strHorasServicio = '00';
+              this.bitacoraProvider.strMinutosServicio = ':00';
+              this.bitacoraProvider.strSegundosServicio = ':00';
+              this.bitacoraProvider.segundosConduccionStorage = 0;
+              this.bitacoraProvider.segundosDescansoStorage = 0;
+              this.bitacoraProvider.segundosConduccion = 0;
+              this.bitacoraProvider.segundosDescanso = 0;
+              this.bitacoraProvider.haveElements = false;
+              // this.bitacoraProvider.stora
+              this.app.getRootNavs()[0].setRoot(this.configuracionServicioPage);
+              delete this.bitacoraProvider.BitacoraData;
+              delete this.bitacoraProvider.StatusServicio;
+              delete this.bitacoraProvider.objConfServicio;
+              this.bitacoraProvider.stExepcionTemporal = false;
+              this.bitacoraProvider.ExcepcionTemporal = false;
+              this.bitacoraProvider.stInProgress = false;
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
   public controlaExcepcion() {
     // public newItemBitacora(dtSart: Date, actividadParam?: string) {
     this.bitacoraProvider.iniciarExcepcionTemporal(new Date());
   }
-  public terminarExcepcion() {
-    console.log('In terminar excepcion...');
-  }
+  public terminarExcepcion() {}
 }

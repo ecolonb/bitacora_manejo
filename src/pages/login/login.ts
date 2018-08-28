@@ -15,6 +15,11 @@ import {
   MenuPage,
   TabsPage
 } from '../index-paginas';
+
+// ***** Providers **********
+import { AppConfiguracionProvider } from '../../providers/app-configuracion/app-configuracion';
+import { ConductorProvider } from '../../providers/conductor/conductor';
+import { UnidadProvider } from '../../providers/unidad/unidad';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 
 @IonicPage()
@@ -41,7 +46,10 @@ export class LoginPage {
     private loadingCtrl: LoadingController,
     public LoginProvider: LoginProvider,
     private ModalController: ModalController,
-    private bitacoraProvider: BitacoraProvider
+    private bitacoraProvider: BitacoraProvider,
+    private conductorProvider: ConductorProvider,
+    private appConfiguracionProvider: AppConfiguracionProvider,
+    private unidadProvider: UnidadProvider
   ) {
     this.strLoginOkProvider = String(this.LoginProvider.getActivo());
   }
@@ -57,18 +65,18 @@ export class LoginPage {
           this.bitacoraProvider.StatusServicio !== undefined
         ) {
           if (this.bitacoraProvider.StatusServicio.Terminado === false) {
-            console.log(
-              'Reseteando el servicio...................----------->>>'
-            );
             this.bitacoraProvider.resetServicicio();
             this.navCtrl.setRoot(this.menuPage);
             // this.rootPage = this.configuracionServicioPage;
           }
         } else {
-          // this.rootPage = this.configuracionServicioPage;
+          // Aqui cargarLasUnidadesDelaCuenta
+          this.unidadProvider.cargarFromStorage = false;
           this.navCtrl.setRoot(this.configuracionServicioPage);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log('In catch ERROR');
+      }
     }
   }
   public continuar(formData: any) {
@@ -163,6 +171,80 @@ export class LoginPage {
       }
     );
     return false;
+  }
+  public loginUserAndPassword(formData: any) {
+    this.usuario = formData.usuario.value;
+    this.usuario = this.usuario.trim();
+    this.contrasenia = formData.contrasenia.value;
+    this.loading = this.loadingCtrl.create({
+      content: 'Iniciando la aplicación. Favor de esperar...'
+    });
+    if (this.usuario === '' || this.contrasenia === '') {
+      const alert = this.alertCtrl.create({
+        title: 'Error',
+        subTitle: '¡Favor de ingresar Usuario y Contraseña!',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'ok',
+            handler: () => {
+              this.LoginProvider.setActivo(false);
+            }
+          }
+        ]
+      });
+      alert.present();
+      return false;
+    } else {
+      this.loading.present();
+    }
+    this.LoginProvider.loginUserAndPaswword(this.usuario, this.contrasenia)
+      .then((RESULT_PROVIDER) => {
+        // Aqui se procesa la información que se recibe desde el Servidor
+        if (RESULT_PROVIDER.errorRequest === true) {
+          this.loading.dismiss();
+          const alert = this.alertCtrl.create({
+            title: 'Error en login',
+            subTitle: RESULT_PROVIDER.mensaje,
+            buttons: [
+              {
+                text: 'Ok',
+                role: 'ok',
+                handler: () => {
+                  this.LoginProvider.setActivo(false);
+                }
+              }
+            ]
+          });
+          alert.present();
+        } else if (RESULT_PROVIDER.errorRequest === false) {
+          // Guardar datos del conductor en provider
+          this.conductorProvider.setDataconductor(RESULT_PROVIDER.conductor);
+          this.appConfiguracionProvider.setToken(RESULT_PROVIDER.token);
+          this.LoginProvider.setActivo(true); // Guardar token LOGIN_PROVIDER
+          this.ingresar();
+        }
+      })
+      .catch((ERROR) => {
+        if (ERROR.ok === false) {
+          this.loading.dismiss();
+          const alert = this.alertCtrl.create({
+            title: 'Error de comunicación',
+            subTitle:
+              'Fue imposible conectarse al servidor, favor de revisar tu conexión a internet.',
+            buttons: [
+              {
+                text: 'Ok',
+                role: 'ok',
+                handler: () => {
+                  this.LoginProvider.setActivo(false);
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+      });
   }
   public ngAfterViewInit() {
     // this.slides.lockSwipes(true);

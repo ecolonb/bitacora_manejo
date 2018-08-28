@@ -14,7 +14,7 @@
       </h2>
     </ion-card-header>
     <ion-card-content>
-      <form #formLogin (submit)="continuar(formLogin)" method="POST">
+      <form #formLogin (submit)="loginUserAndPassword(formLogin)" method="POST">
         <ion-list no-lines>
           <ion-item>
             <ion-input type="text" id="usuario" name="usuario" placeholder="Usuario"></ion-input>

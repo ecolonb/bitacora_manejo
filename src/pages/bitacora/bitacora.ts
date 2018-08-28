@@ -9,6 +9,7 @@ import { DetalleItemBitacoraPage } from './../index-paginas';
 registerLocaleData(es);
 
 // ************* Pipes **********
+import { ConductorProvider } from '../../providers/conductor/conductor';
 import { DateUtcToLocalePipe } from './../../pipes/date-utc-to-locale/date-utc-to-locale';
 
 @IonicPage()
@@ -32,10 +33,11 @@ export class BitacoraPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public bitacoraProvider: BitacoraProvider,
-    public usuarioProvider: UsuarioProvider
+    public usuarioProvider: UsuarioProvider,
+    public conductorProvider: ConductorProvider
   ) {
     // Obteniendo informacion principal de la bitacora
-    this.strNombreConductor = this.usuarioProvider.getNombreConductor();
+    // this.strNombreConductor = this.usuarioProvider.getNombreConductor();
     // this.strTiempoManejo = this.bitacoraProvider.getTimeForBitacora(1)
     // this.bitacoraProvider.getTimeForBitacora(2)
     // this.strTiempoManejo = '05:00:10';
@@ -55,23 +57,34 @@ export class BitacoraPage {
 
   // Abre otra pagina con parametros
   public goToDetalles(itemBitacora: BitacoraModel) {
-    console.log('goToDetalles', itemBitacora);
     this.navCtrl.push(DetalleItemBitacoraPage, { itemBitacora });
   }
 
   // Las actividades se separan cuando se entra a bitácora y cada que se agrega una nueva Actividad.
   public separateActivitys() {
-    console.log('Separando actividades');
-    for (const ietmBitacora of this.bitacoraProvider.BitacoraData) {
-      if (ietmBitacora.Actividad === 'C') {
-        this.ObjItemsConduciendo.push(ietmBitacora);
+    try {
+      if (
+        this.bitacoraProvider.BitacoraData &&
+        this.bitacoraProvider.BitacoraData !== null &&
+        this.bitacoraProvider.BitacoraData !== undefined
+      ) {
+        console.log('Si hay actividades que separar');
+        for (const ietmBitacora of this.bitacoraProvider.BitacoraData) {
+          if (ietmBitacora.Actividad === 'C') {
+            this.ObjItemsConduciendo.push(ietmBitacora);
+          }
+          if (ietmBitacora.Actividad === 'D') {
+            this.ObjItemsDescansos.push(ietmBitacora);
+          }
+          if (ietmBitacora.Actividad === 'ET') {
+            this.ObjItemsExcepcion.push(ietmBitacora);
+          }
+        }
+      } else {
+        console.log('No hay nada que separar...');
       }
-      if (ietmBitacora.Actividad === 'D') {
-        this.ObjItemsDescansos.push(ietmBitacora);
-      }
-      if (ietmBitacora.Actividad === 'ET') {
-        this.ObjItemsExcepcion.push(ietmBitacora);
-      }
+    } catch (error) {
+      console.log('In error catch error', error);
     }
   }
 }
