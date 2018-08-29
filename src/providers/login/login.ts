@@ -72,10 +72,10 @@ export class LoginProvider {
       this.httpClient
         .post(this.URL_, dataSendform, HEADERS)
         .toPromise()
-        .then((RESULT_DATA) => {
+        .then(RESULT_DATA => {
           resolve(RESULT_DATA);
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error);
         });
     });
@@ -114,7 +114,7 @@ export class LoginProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('sesionOk').then((sesionOkStorage) => {
+          this.storage.get('sesionOk').then(sesionOkStorage => {
             this.sesionOk = Boolean(sesionOkStorage);
             resolve();
           });
@@ -134,6 +134,8 @@ export class LoginProvider {
         // Dispositivo
         try {
           this.storage.remove('sesionOk');
+          this.storage.remove('ObjUnidades');
+          this.storage.remove('ObjConductor');
         } catch (error) {
           console.log(JSON.stringify(error));
         }
@@ -142,6 +144,8 @@ export class LoginProvider {
         // Desktop webBrowser
         try {
           localStorage.removeItem('sesionOk');
+          localStorage.removeItem('ObjUnidades');
+          localStorage.removeItem('ObjConductor');
         } catch (error) {
           console.log(JSON.stringify(error));
         }

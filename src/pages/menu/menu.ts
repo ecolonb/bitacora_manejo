@@ -10,8 +10,14 @@ import {
   NavParams
 } from 'ionic-angular';
 import { LoginProvider } from '../../providers/login/login';
-import { BitacoraPage, HomePage, LoginPage } from '../index-paginas';
+import {
+  BitacoraPage,
+  ConfiguracionServicioPage,
+  HomePage,
+  LoginPage
+} from '../index-paginas';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
+import { UnidadProvider } from './../../providers/unidad/unidad';
 import { TabsPage } from './../tabs/tabs';
 
 @IonicPage()
@@ -20,6 +26,7 @@ import { TabsPage } from './../tabs/tabs';
   templateUrl: 'menu.html'
 })
 export class MenuPage {
+  public configuracionServicioPage: any = ConfiguracionServicioPage;
   public rootPage: any = TabsPage;
   public BitacoraPage: any = BitacoraPage;
   @ViewChild(Nav)
@@ -34,7 +41,8 @@ export class MenuPage {
     private bitacoraProvider: BitacoraProvider,
     private menuController: MenuController,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private unidadProvider: UnidadProvider
   ) {}
   public goToPage(PageParam: any) {
     this.navCtrl.push(PageParam);
@@ -42,7 +50,6 @@ export class MenuPage {
   public cerrarSesion() {
     this.menuController.toggle();
     // Alerta de confirmar
-    console.log('Terminando servicio... Actividades page');
     const confirm = this.alertCtrl.create({
       title: '¿Cerrar sesión?',
       message:
@@ -59,7 +66,7 @@ export class MenuPage {
           text: 'Si',
           handler: () => {
             const loading = this.loadingCtrl.create({
-              content: 'Sincronizando información, porfavor espere...'
+              content: 'Sincronizando información, por favor espere...'
             });
             loading.present();
             this.bitacoraProvider.terminarServicio().then(() => {
@@ -67,8 +74,29 @@ export class MenuPage {
                 loading.dismiss();
                 this.app.getRootNavs()[0].setRoot(this.loginPage);
                 delete this.bitacoraProvider.BitacoraData;
-                delete this.bitacoraProvider.StatusServicio;
-                delete this.bitacoraProvider.objConfServicio;
+                // delete this.bitacoraProvider.StatusServicio;
+                // delete this.bitacoraProvider.objConfServicio;
+                this.LoginProvider.setActivo(false);
+                this.bitacoraProvider.strHoras = '00';
+                this.bitacoraProvider.strMinutos = ':00';
+                this.bitacoraProvider.strSegundos = ':00';
+                this.bitacoraProvider.strHorasExcepcion = '00';
+                this.bitacoraProvider.strSegundosExcepcion = ':00';
+                this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+                this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+                this.bitacoraProvider.strHorasServicio = '00';
+                this.bitacoraProvider.strMinutosServicio = ':00';
+                this.bitacoraProvider.strSegundosServicio = ':00';
+                this.bitacoraProvider.segundosConduccionStorage = 0;
+                this.bitacoraProvider.segundosDescansoStorage = 0;
+                this.bitacoraProvider.segundosConduccion = 0;
+                this.bitacoraProvider.segundosDescanso = 0;
+                this.bitacoraProvider.haveElements = false;
+                // this.bitacoraProvider.stora
+                this.bitacoraProvider.stExepcionTemporal = false;
+                this.bitacoraProvider.ExcepcionTemporal = false;
+                this.bitacoraProvider.stInProgress = false;
+                this.unidadProvider.cargarFromStorage = true;
               });
               // redirect configuracion nuevo servicio
             });
@@ -95,5 +123,58 @@ export class MenuPage {
   public borrarBitacora() {
     this.bitacoraProvider.deleteBitacoraDataStorage();
     this.closeSideMenu();
+  }
+  public terminarServicio() {
+    this.menuController.toggle();
+    const confirm = this.alertCtrl.create({
+      title: 'Terminar servicio',
+      message: '¿Realmente deseas terminar el servicio?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel'
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            const loading = this.loadingCtrl.create({
+              content: 'Sincronizando información, por favor espere...'
+            });
+            loading.present();
+            this.bitacoraProvider.terminarServicio().then(() => {
+              // redirect configuracion nuevo servicio
+              loading.dismiss();
+
+              // this.bitacoraProvider.stora
+              this.app.getRootNavs()[0].setRoot(this.configuracionServicioPage);
+              delete this.bitacoraProvider.BitacoraData;
+              // delete this.bitacoraProvider.StatusServicio;
+              // delete this.bitacoraProvider.objConfServicio;
+              this.bitacoraProvider.strHoras = '00';
+              this.bitacoraProvider.strMinutos = ':00';
+              this.bitacoraProvider.strSegundos = ':00';
+              this.bitacoraProvider.strHorasExcepcion = '00';
+              this.bitacoraProvider.strSegundosExcepcion = ':00';
+              this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+              this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+              this.bitacoraProvider.strHorasServicio = '00';
+              this.bitacoraProvider.strMinutosServicio = ':00';
+              this.bitacoraProvider.strSegundosServicio = ':00';
+              this.bitacoraProvider.segundosConduccionStorage = 0;
+              this.bitacoraProvider.segundosDescansoStorage = 0;
+              this.bitacoraProvider.segundosConduccion = 0;
+              this.bitacoraProvider.segundosDescanso = 0;
+              this.bitacoraProvider.haveElements = false;
+              // this.bitacoraProvider.stora
+              this.bitacoraProvider.stExepcionTemporal = false;
+              this.bitacoraProvider.ExcepcionTemporal = false;
+              this.bitacoraProvider.stInProgress = false;
+              this.unidadProvider.cargarFromStorage = true;
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
 }

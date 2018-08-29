@@ -10,6 +10,7 @@ import {
   Platform
 } from 'ionic-angular';
 import { BitacoraModel } from '../../models/bitacora.model';
+import { UnidadProvider } from './../../providers/unidad/unidad';
 
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { UtilidadesProvider } from './../../providers/utilidades/utilidades';
@@ -57,7 +58,8 @@ export class ActividadesPage {
     private platform: Platform,
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
-    private app: App
+    private app: App,
+    private unidadProvider: UnidadProvider
   ) {}
 
   // Error en Dispositivo
@@ -110,7 +112,7 @@ export class ActividadesPage {
                   this.bitacoraProvider.Conduciendo = true;
                   this.bitacoraProvider.dsDescanso = true;
                   this.bitacoraProvider.dsConduciendo = false;
-                  this.bitacoraProvider.dsExcepcionTemporal = true;
+                  this.bitacoraProvider.dsExcepcionTemporal = false;
                   this.bitacoraProvider.boolReinicio = true;
                   this.bitacoraProvider.fechaInicioActividad =
                     itBitacoraReboot.FechaHoraInicio;
@@ -119,6 +121,7 @@ export class ActividadesPage {
                 if (itBitacoraReboot.Actividad === 'D') {
                   this.bitacoraProvider.Descanso = true;
                   this.bitacoraProvider.boolReinicio = true;
+                  this.bitacoraProvider.dsExcepcionTemporal = false;
                   this.bitacoraProvider.fechaInicioActividad =
                     itBitacoraReboot.FechaHoraInicio;
                   this.inicio(itBitacoraReboot.Actividad);
@@ -127,6 +130,7 @@ export class ActividadesPage {
                   // reiniciar timerexcepcion temporal
                   this.bitacoraProvider.ExcepcionTemporal = true;
                   this.bitacoraProvider.stExepcionTemporal = true;
+                  this.bitacoraProvider.dsExcepcionTemporal = false;
                   this.bitacoraProvider.strFechaInicioExcepcion =
                     itBitacoraReboot.FechaHoraInicio;
                   this.bitacoraProvider.controlTimerExcepcion = setInterval(
@@ -519,7 +523,7 @@ export class ActividadesPage {
           text: 'Si',
           handler: () => {
             const loading = this.loadingCtrl.create({
-              content: 'Sincronizando información, porfavor espere...'
+              content: 'Sincronizando información, por favor espere...'
             });
             loading.present();
             this.bitacoraProvider.terminarServicio().then(() => {
@@ -548,6 +552,7 @@ export class ActividadesPage {
               this.bitacoraProvider.stExepcionTemporal = false;
               this.bitacoraProvider.ExcepcionTemporal = false;
               this.bitacoraProvider.stInProgress = false;
+              this.unidadProvider.cargarFromStorage = true;
             });
           }
         }

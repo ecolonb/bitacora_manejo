@@ -71,7 +71,7 @@ export class ConductorProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjConductor').then((ObjConductor) => {
+          this.storage.get('ObjConductor').then(ObjConductor => {
             if (ObjConductor) {
               this.objConductor = JSON.parse(ObjConductor);
             } else {

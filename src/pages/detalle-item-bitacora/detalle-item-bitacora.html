@@ -20,7 +20,7 @@
       <hr>
       <ion-item text-center>
         ID:
-        <p>{{ objItemBitacora.HashBitacora}}</p>
+        <p>{{ objItemBitacora.HashIdBitacora}}</p>
       </ion-item>
       <ion-item text-center>
         INICIO ACTIVIDAD:
@@ -48,11 +48,11 @@
       </ion-card-header>
       <ion-item text-center>
         Latitud:
-        <p>{{ objItemBitacora.InicioActividadX }}</p>
+        <p>{{ objItemBitacora.FinActividadX === null ? '-' : objItemBitacora.FinActividadX }}</p>
       </ion-item>
       <ion-item text-center>
         Longitud:
-        <p>{{ objItemBitacora.InicioActividadY }}</p>
+        <p>{{ objItemBitacora.FinActividadY === null ? '-' : objItemBitacora.FinActividadY }}</p>
       </ion-item>
     </ion-list>
   </ion-card>

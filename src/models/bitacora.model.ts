@@ -1,6 +1,10 @@
+import { ServicioModel } from './servicio.model';
+
 export class BitacoraModel {
-  public IdViaje: number;
-  public HashBitacora: number;
+  public IdBitacora?: number;
+  public HashIdBitacora: number;
+  public IdServicio?: number;
+  public HashIdServicio: number;
   public FechaHoraInicio: string;
   public FechaHoraFinal: string;
   public SegundosTotal: number;
@@ -12,14 +16,16 @@ export class BitacoraModel {
   public Terminado: boolean;
   public InicioActividadX: number;
   public InicioActividadY: number;
-  public FinActividaX: number;
+  public FinActividadX: number;
   public FinActividadY: number;
   public GuardadoServer: boolean;
   public Nota: string;
 
-  constructor(objDatos: any) {
-    this.IdViaje = objDatos.IdViaje;
-    this.HashBitacora = objDatos.HashBitacora;
+  constructor(objDatos: BitacoraModel) {
+    this.IdBitacora = objDatos.IdBitacora;
+    this.IdServicio = objDatos.IdServicio;
+    this.HashIdBitacora = objDatos.HashIdBitacora;
+    this.HashIdServicio = objDatos.HashIdServicio;
     this.FechaHoraInicio = objDatos.FechaHoraInicio;
     this.FechaHoraFinal = objDatos.FechaHoraFinal;
     this.SegundosTotal = objDatos.SegundosTotal;
@@ -27,7 +33,7 @@ export class BitacoraModel {
     this.Actividad = objDatos.Actividad;
     this.InicioActividadX = objDatos.InicioActividadX;
     this.InicioActividadY = objDatos.InicioActividadY;
-    this.FinActividaX = objDatos.FinActividaX;
+    this.FinActividadX = objDatos.FinActividadX;
     this.FinActividadY = objDatos.FinActividadY;
     this.Descripcion = objDatos.Descripcion;
     this.GuardadoServer = objDatos.GuardadoServer;

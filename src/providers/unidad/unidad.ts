@@ -12,7 +12,7 @@ import { ConductorProvider } from './../conductor/conductor';
 */
 @Injectable()
 export class UnidadProvider {
-  public arrObjUnidades: UnidadModel[];
+  public arrObjUnidades: UnidadModel[] = [];
   public cargarFromStorage: boolean = true;
   // URL to request
   public URL_: string = 'http://dev1.copiloto.com.mx/lab/rest/api/Unidad';
@@ -38,11 +38,11 @@ export class UnidadProvider {
       this.http
         .post(this.URL_, dataSendform, HEADERS)
         .toPromise()
-        .then((RESULT_DATA) => {
+        .then(RESULT_DATA => {
           // this.setUnidadesInStorage();
           resolve(RESULT_DATA);
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error);
         });
     });
@@ -50,14 +50,8 @@ export class UnidadProvider {
   }
 
   public mappingResult(ResultData: UnidadRequestModel) {
-    console.log(
-      'Mapeando el resultado----------------->: UnidadRequestModel: ' +
-        JSON.stringify(ResultData)
-    );
     this.arrObjUnidades = ResultData.unidades;
-    this.setUnidadesInStorage().then(() => {
-      console.log('Se setearon las varables');
-    });
+    this.setUnidadesInStorage().then(() => {});
   }
 
   // Guardar En storage ObjUnidades
@@ -66,17 +60,10 @@ export class UnidadProvider {
       // Guardando en LocalStorage y actualizando el status de horas invertidas
       if (this.platform.is('cordova')) {
         // Dispositivo cordova is running
-        console.log(
-          'Guardando unidades Cordova..' + JSON.stringify(this.arrObjUnidades)
-        );
         this.storage.set('ObjUnidades', JSON.stringify(this.arrObjUnidades));
         resolve(true);
       } else {
         // Desktop webBrowser
-        console.log(
-          'Guardando unidades DesktopBrowser..' +
-            JSON.stringify(this.arrObjUnidades)
-        );
         if (this.arrObjUnidades) {
           localStorage.setItem(
             'ObjUnidades',
@@ -97,13 +84,16 @@ export class UnidadProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjUnidades').then((ObjUnidades) => {
+          this.storage.get('ObjUnidades').then(ObjUnidades => {
+            console.log('ObjUnidades:', ObjUnidades);
+            console.log('TypeOf:', ObjUnidades);
             if (ObjUnidades) {
               this.arrObjUnidades = JSON.parse(ObjUnidades);
+              resolve(true);
             } else {
               this.arrObjUnidades = [];
+              resolve(true);
             }
-            resolve(true);
           });
         });
       } else {

@@ -41,22 +41,34 @@ export class AppConfiguracionProvider {
   public getToken(): string {
     return this.privateToken;
   }
-  public setToken(Token: string) {
-    // Guardar Token en LocalStorage
-    if (
-      this.objConfigApp &&
-      this.objConfigApp !== null &&
-      this.objConfigApp !== undefined
-    ) {
-      this.objConfigApp.token = Token;
-    } else {
-      const objAppConfiguracion: AppConfiguracionModel = {
-        serverEndPoint: '',
-        token: Token
-      };
-      this.objConfigApp = objAppConfiguracion;
-    }
-    this.guardarConfigServer();
+  public setToken(Token: string): Promise<any> {
+    const promiseSetToken = new Promise((resolve, reject) => {
+      // Guardar Token en LocalStorage
+      this.privateToken = Token;
+      if (
+        this.objConfigApp &&
+        this.objConfigApp !== null &&
+        this.objConfigApp !== undefined
+      ) {
+        this.objConfigApp.token = Token;
+      } else {
+        const objAppConfiguracion: AppConfiguracionModel = {
+          serverEndPoint: '',
+          token: Token
+        };
+        this.objConfigApp = objAppConfiguracion;
+      }
+      this.guardarConfigServer()
+        .then(() => {
+          // info guardada
+          resolve();
+        })
+        .catch(ErrorCatch => {
+          reject();
+        });
+    }).catch(ErrorCatch => {});
+
+    return promiseSetToken;
   }
 
   public setTokenInStorage(): Promise<any> {
@@ -78,7 +90,7 @@ export class AppConfiguracionProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('Token').then((Token) => {
+          this.storage.get('Token').then(Token => {
             if (Token) {
               this.privateToken = String(Token);
             } else {
@@ -160,7 +172,7 @@ export class AppConfiguracionProvider {
       if (this.platform.is('cordova')) {
         // Dispositivo
         this.platform.ready().then(() => {
-          this.storage.get('ObjConfigApp').then((ObjConfigApp) => {
+          this.storage.get('ObjConfigApp').then(ObjConfigApp => {
             this.objConfigApp = JSON.parse(ObjConfigApp);
             try {
               this.privateToken = this.objConfigApp.token;

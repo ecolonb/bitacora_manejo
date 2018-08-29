@@ -13,6 +13,7 @@ import { UnidadRequestModel } from '../../models/unidad-response.model';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { LoginProvider } from '../../providers/login/login';
 import { UnidadProvider } from '../../providers/unidad/unidad';
+import { UtilidadesProvider } from '../../providers/utilidades/utilidades';
 import { ServicioModel } from './../../models/servicio.model';
 import { UnidadModel } from './../../models/unidad.model';
 import { ConductorProvider } from './../../providers/conductor/conductor';
@@ -64,7 +65,8 @@ export class ConfiguracionServicioPage {
     private loginProvider: LoginProvider,
     public conductorProvider: ConductorProvider,
     private unidadProvider: UnidadProvider,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private utilidadesProvider: UtilidadesProvider
   ) {
     /**
      */
@@ -76,10 +78,8 @@ export class ConfiguracionServicioPage {
     // }
   }
   public setFilteredItems() {
-    console.log('Realizando busqueda-->' + this.searchTerm);
     if (this.searchTerm !== '') {
       this.itemsSr = this.filterItems(this.searchTerm);
-      console.log('this.itemsSr' + JSON.stringify(this.itemsSr));
       // Validar cuantos elelementos se encuentran: console.log('this.itemsSr', this.itemsSr.length);
     } else {
       delete this.itemsSr;
@@ -91,38 +91,29 @@ export class ConfiguracionServicioPage {
     this.slides.paginationType = 'progress';
   }
   public ionViewDidLoad() {
-    // this.setFilteredItems();
     const loading = this.loadingCtrl.create({
-      content: 'Cargandando lista de unidades, porfavor espere...'
+      content: 'Cargando lista de unidades, por favor espere...'
     });
     loading.present();
     if (this.unidadProvider.cargarFromStorage) {
       this.unidadProvider
         .getUnidadesFromStorage()
         .then(() => {
-          // Una vez que se cargan las unidades del Storage verficar si existe el objUnidades si no realizar peticion post
+          // Una vez que se cargan las unidades del Storage verficar si existe el objUnidades si no realizar peticion pos
           if (
-            !this.unidadProvider.arrObjUnidades ||
-            this.unidadProvider.arrObjUnidades === null
+            this.unidadProvider.arrObjUnidades !== [] &&
+            this.unidadProvider.arrObjUnidades !== null &&
+            this.unidadProvider.arrObjUnidades !== undefined &&
+            this.unidadProvider.arrObjUnidades.length > 0
           ) {
-            console.log('No existe objeto se vuelve a realzar peticion!');
+            loading.dismiss();
+          } else {
             this.unidadProvider
               .getUnidadesPost()
               .then((RESULT_DATA: UnidadRequestModel) => {
-                console.log(
-                  'Result from promesa in configruacion servicio: ' +
-                    JSON.stringify(RESULT_DATA)
-                );
                 this.unidadProvider.mappingResult(RESULT_DATA);
-                console.log('Loading from request post');
                 loading.dismiss();
               });
-          } else {
-            console.log(
-              'Unidades cargadas from storage: ',
-              this.unidadProvider.arrObjUnidades
-            );
-            loading.dismiss();
           }
         })
         .catch((error) => {
@@ -132,10 +123,6 @@ export class ConfiguracionServicioPage {
       this.unidadProvider
         .getUnidadesPost()
         .then((RESULT_DATA: UnidadRequestModel) => {
-          console.log(
-            'Result from promesa in configruacion servicio: ' +
-              JSON.stringify(RESULT_DATA)
-          );
           this.unidadProvider.mappingResult(RESULT_DATA);
           loading.dismiss();
         });
@@ -175,43 +162,49 @@ export class ConfiguracionServicioPage {
       // Esto se ejecuta si no hay errores al validar
       this.confirmacionConfSer = true;
 
-      if (this.tipoDeServicio === 'deCarga') {
+      if (this.tipoDeServicio === '1368') {
         this.tipoServicioDescLong = 'De carga';
-      } else if (this.tipoDeServicio === 'deCargaGeneral') {
-        this.tipoServicioDescLong = 'De carga general';
-      } else if (this.tipoDeServicio === 'deCargaEspecializada') {
-        this.tipoServicioDescLong = 'De carga especializada';
-      } else if (this.tipoDeServicio === 'turismo') {
+      } else if (this.tipoDeServicio === '1369') {
         this.tipoServicioDescLong = 'Turismo';
-      } else if (this.tipoDeServicio === 'pasajeros') {
+      } else if (this.tipoDeServicio === '1370') {
         this.tipoServicioDescLong = 'Pasajeros';
-      } else if (this.tipoDeServicio === 'privado') {
+      } else if (this.tipoDeServicio === '1371') {
         this.tipoServicioDescLong = 'Privado';
       }
-
+      // <!-- De carga general	2786
+      // De carga especializada	2787
+      // De lujo	2788
+      // Ejecutivo	2789
+      // Primera	2790
+      // Económico	2791
+      // Mixto	2792
+      // Turístico	2793
+      // Turístico de lujo	2794
+      // Excursión	2795
+      // Chofer – guía	2796 -->
       if (this.modalidadDeServicio === 'default') {
         this.modalidadServicioDescLong = 'Sin modalidad';
-      } else if (this.modalidadDeServicio === 'deLujo') {
+      } else if (this.modalidadDeServicio === '2788') {
         this.modalidadServicioDescLong = 'De lujo';
-      } else if (this.modalidadDeServicio === 'ejecutivo') {
+      } else if (this.modalidadDeServicio === '2789') {
         this.modalidadServicioDescLong = 'Ejecutivo';
-      } else if (this.modalidadDeServicio === 'primera') {
+      } else if (this.modalidadDeServicio === '2790') {
         this.modalidadServicioDescLong = 'Primera';
-      } else if (this.modalidadDeServicio === 'economico') {
-        this.modalidadServicioDescLong = 'Economico';
-      } else if (this.modalidadDeServicio === 'mixto') {
+      } else if (this.modalidadDeServicio === '2791') {
+        this.modalidadServicioDescLong = 'Económico';
+      } else if (this.modalidadDeServicio === '2792') {
         this.modalidadServicioDescLong = 'Mixto';
-      } else if (this.modalidadDeServicio === 'turistico') {
+      } else if (this.modalidadDeServicio === '2793') {
         this.modalidadServicioDescLong = 'Turístico';
-      } else if (this.modalidadDeServicio === 'turisticoDeLujo') {
+      } else if (this.modalidadDeServicio === '2794') {
         this.modalidadServicioDescLong = 'Turístico de lujo';
-      } else if (this.modalidadDeServicio === 'deCargaGeneral') {
+      } else if (this.modalidadDeServicio === '2786') {
         this.modalidadServicioDescLong = 'De carga general';
-      } else if (this.modalidadDeServicio === 'deCargaEspecializada') {
+      } else if (this.modalidadDeServicio === '2787') {
         this.modalidadServicioDescLong = 'De carga especializada';
-      } else if (this.modalidadDeServicio === 'excursion') {
+      } else if (this.modalidadDeServicio === '2795') {
         this.modalidadServicioDescLong = 'Excursión';
-      } else if (this.modalidadDeServicio === 'choferGuia') {
+      } else if (this.modalidadDeServicio === '2796') {
         this.modalidadServicioDescLong = 'Chofer - Guía';
       }
 
@@ -270,15 +263,20 @@ export class ConfiguracionServicioPage {
   public iniciarServicio() {
     // Cuando se inicia el servicio se arma el objeto configuración servicio en ese mismo objeto se establece la unidad seleccionada.
     // Falta obtener los datos del Permisionario Nombre/Razon social y Dirección
+    // Generar HashId y setearIdConductor
+    const hashIdServicio: number = this.utilidadesProvider.hashCode(
+      new Date().toISOString().toString() + 'TOKEN'
+    );
     const objConfServicio: ServicioModel = {
-      IdServicio: 121,
-      IdCondcutor: 1368,
+      IdServicio: 0,
+      HashIdServicio: hashIdServicio,
+      IdCondcutor: this.conductorProvider.IdConductor(),
       Unidad: this.objUnidadSeleccionada,
       DireccionOrigen: this.origenServicio,
       DireccionDestino: this.destinoServicio,
       Ruta: this.descripcionRutaASeguir,
-      TipoServicio: this.tipoServicioDescLong,
-      ModalidadServicio: this.modalidadServicioDescLong,
+      TipoServicio: Number(this.tipoDeServicio),
+      ModalidadServicio: Number(this.modalidadDeServicio),
       Permisionario: 'Saul Teja Gonzalez',
       PermisionarioDomicilio: 'El Yaqui 2050'
     };

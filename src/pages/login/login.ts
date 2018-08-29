@@ -68,15 +68,17 @@ export class LoginPage {
             this.bitacoraProvider.resetServicicio();
             this.navCtrl.setRoot(this.menuPage);
             // this.rootPage = this.configuracionServicioPage;
+          } else {
+            // Aqui cargarLasUnidadesDelaCuenta
+            this.unidadProvider.cargarFromStorage = false;
+            this.navCtrl.setRoot(this.configuracionServicioPage);
           }
         } else {
           // Aqui cargarLasUnidadesDelaCuenta
           this.unidadProvider.cargarFromStorage = false;
           this.navCtrl.setRoot(this.configuracionServicioPage);
         }
-      } catch (error) {
-        console.log('In catch ERROR');
-      }
+      } catch (error) {}
     }
   }
   public continuar(formData: any) {
@@ -218,11 +220,14 @@ export class LoginPage {
           });
           alert.present();
         } else if (RESULT_PROVIDER.errorRequest === false) {
-          // Guardar datos del conductor en provider
+          // Guardar datos del conductor en provider y el token, Ingresa hasta guardar Token-> evitar error en petición unidades
           this.conductorProvider.setDataconductor(RESULT_PROVIDER.conductor);
-          this.appConfiguracionProvider.setToken(RESULT_PROVIDER.token);
-          this.LoginProvider.setActivo(true); // Guardar token LOGIN_PROVIDER
-          this.ingresar();
+          this.appConfiguracionProvider
+            .setToken(RESULT_PROVIDER.token)
+            .then(() => {
+              this.LoginProvider.setActivo(true); // Guardar token LOGIN_PROVIDER
+              this.ingresar();
+            });
         }
       })
       .catch((ERROR) => {

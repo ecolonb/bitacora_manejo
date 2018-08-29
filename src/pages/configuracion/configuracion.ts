@@ -26,10 +26,6 @@ export class ConfiguracionPage {
     private appConfiguracionProvider: AppConfiguracionProvider
   ) {
     this.serverEndPoint = this.appConfiguracionProvider.ServerEndPoint;
-    console.log(
-      'this.serverEndPoint from constructor:-->',
-      this.serverEndPoint
-    );
   }
 
   // Convierte a minuscula cada que se presiona una tecla.
@@ -40,13 +36,11 @@ export class ConfiguracionPage {
     this.viewCtrl.dismiss();
   }
   public guardarConfiguracion() {
-    console.log('Aqui guardar serverEndPoint');
     if (this.serverEndPoint !== '') {
       // Guardar en Servicio appConfiguracion
       this.appConfiguracionProvider
         .guardarConfigServer(this.serverEndPoint)
         .then(() => {
-          console.log('Se guardo la config del serverEndPoint');
           this.viewCtrl.dismiss();
         });
     } else {

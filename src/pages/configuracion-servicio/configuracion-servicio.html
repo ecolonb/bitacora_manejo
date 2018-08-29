@@ -3,15 +3,16 @@
     <ion-buttons *ngIf="confirmacionConfSer" left>
       <button ion-button icon-only outline (click)="goBackConfiguration()">
         <ion-icon name='md-arrow-back'></ion-icon>
+        <!-- <ion-icon name='md-skip-backward'></ion-icon> -->
       </button>
     </ion-buttons>
 
     <ion-title text-center>Nuevo servicio</ion-title>
-    <ion-buttons *ngIf="!confirmacionConfSer" end>
+    <!-- <ion-buttons *ngIf="!confirmacionConfSer" end>
       <button ion-button color="md_tq" (click)="showOptionsToLogInApp()" outline>
         <ion-icon style="color:md_tq;" name="md-skip-forward"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
@@ -37,10 +38,10 @@
         <ion-select style="max-width: 100% !important;width: 100%;position: absolute; top:40px;color: rgb(70, 69, 69);padding:10px;padding-bottom:7px;margin: 0;border-bottom: solid 1px #c6c6ce;font-size: 1.1em;margin-left: 8px;"
           [(ngModel)]="tipoDeServicio">
           <ion-option disabled value="default">Elige un tipo</ion-option>
-          <ion-option (ionSelect)="slectTipoServicio($event)" value="deCarga">De carga</ion-option>
-          <ion-option (ionSelect)="slectTipoServicio($event)" value="turismo">Turismo</ion-option>
-          <ion-option (ionSelect)="slectTipoServicio($event)" value="pasajeros">Pasajeros</ion-option>
-          <ion-option (ionSelect)="slectTipoServicio($event)" value="privado">Privado</ion-option>
+          <ion-option (ionSelect)="slectTipoServicio($event)" value="1368">De carga</ion-option>
+          <ion-option (ionSelect)="slectTipoServicio($event)" value="1369">Turismo</ion-option>
+          <ion-option (ionSelect)="slectTipoServicio($event)" value="1370">Pasajeros</ion-option>
+          <ion-option (ionSelect)="slectTipoServicio($event)" value="1371">Privado</ion-option>
         </ion-select>
       </ion-item>
       <ion-item no-lines style="width: 100%;text-align: center;height: 100px;padding:0px;">
@@ -48,17 +49,17 @@
         <ion-select style="max-width: 100% !important;width: 100%;position: absolute; top:40px;color: rgb(70, 69, 69);padding:10px;padding-bottom:7px;margin: 0;border-bottom: solid 1px #c6c6ce;font-size: 1.1em;margin-left: 8px;"
           [(ngModel)]="modalidadDeServicio">
           <ion-option disabled value="default">Elige un tipo</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="deCargaGeneral">De carga general</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="deCargaEspecializada">De carga especializada</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="deLujo">De lujo</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="ejecutivo">Ejecutivo</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="primera">Primera</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="economico">Económico</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="mixto">Mixto</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="turistico">Turístico</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="turisticoDeLujo">Turístico de lujo</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="excursion">Excursión</ion-option>
-          <ion-option (ionSelect)="slectModalidadServicio($event)" value="choferGuia">Chofer - guía</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2786">De carga general</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2787">De carga especializada</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2788">De lujo</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2789">Ejecutivo</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2790">Primera</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2791">Económico</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2792">Mixto</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2793">Turístico</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2794">Turístico de lujo</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2795">Excursión</ion-option>
+          <ion-option (ionSelect)="slectModalidadServicio($event)" value="2796">Chofer - guía</ion-option>
         </ion-select>
       </ion-item>
       <ion-item>

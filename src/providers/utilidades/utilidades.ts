@@ -16,7 +16,7 @@ export class UtilidadesProvider {
     return fechaSqlServerFormat;
   }
   // Este metodo nos devuelve un numero entero no repetido (id_bitacora)
-  public hashCode(stringToConvert: string) {
+  public hashCode(stringToConvert: string): number {
     let hash: number = 0;
     if (stringToConvert.length === 0) {
       return hash;
@@ -28,7 +28,7 @@ export class UtilidadesProvider {
       // tslint:disable-next-line:no-bitwise
       hash = Math.round(Math.abs(hash & hash)); // Convert to 32bit integer
     }
-    return hash;
+    return Number(hash);
   }
   // Funcion para convertir fecha local a UTC
   public convertLocalDateToUTC(date: Date): Date {

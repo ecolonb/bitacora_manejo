@@ -76,7 +76,7 @@
           <ion-icon *ngIf="!bitacoraProvider.Descanso" name="play" style="margin-right: 10px"></ion-icon>
           <span>Descanso</span>
         </button>
-        <button id="idExcepcion" ion-button (click)="confirmExcepcionTemporal()" color="md_tq" class="btnActionExcepcion">
+        <button id="idExcepcion" ion-button (click)="confirmExcepcionTemporal()" color="md_tq" class="btnActionExcepcion" [disabled]="bitacoraProvider.dsExcepcionTemporal">
           <ion-icon *ngIf="bitacoraProvider.ExcepcionTemporal" name="square" style="margin-right: 10px;font-size:20px;"></ion-icon>
           <ion-icon *ngIf="!bitacoraProvider.ExcepcionTemporal" name="play" style="margin-right: 10px"></ion-icon>
           <span>Excepción</span>
@@ -93,13 +93,16 @@
       <ion-list>
         <ion-item-sliding *ngFor="let itemBitacora of bitacoraProvider.BitacoraData" class="listBitacora" detail-push>
           <ion-item class="itemListBitacora" (click)="goToDetallesItem(itemBitacora)">
-            <span style="color:#21425F;">{{ itemBitacora.Actividad | actividadTitle }}</span>
-            <span style="float:right;color:#21425F;">{{ itemBitacora.Terminado ? itemBitacora.TiempoHhmmss : (itemBitacora.Actividad!=='ET'
-              ? (bitacoraProvider.strHoras + bitacoraProvider.strMinutos+bitacoraProvider.strSegundos) : bitacoraProvider.strHorasExcepcion
-              + bitacoraProvider.strMinutosExcepcion + bitacoraProvider.strSegundosExcepcion ) }}
+            <span [ngStyle]="{'color':itemBitacora.GuardadoServer ? '#21425F' : '#FF7575' }">{{ itemBitacora.Actividad |
+              actividadTitle }}
+            </span>
+            <span [ngStyle]="{'color':itemBitacora.GuardadoServer ? '#21425F' : '#FF7575' }" style="float:right;">{{ itemBitacora.Terminado
+              ? itemBitacora.TiempoHhmmss : (itemBitacora.Actividad!=='ET' ? (bitacoraProvider.strHoras + bitacoraProvider.strMinutos+bitacoraProvider.strSegundos)
+              : bitacoraProvider.strHorasExcepcion + bitacoraProvider.strMinutosExcepcion + bitacoraProvider.strSegundosExcepcion
+              ) }}
             </span>
             <span item-end style="color: #21425F">
-              <ion-icon style="margin-top: 2px;" name="ios-arrow-forward"></ion-icon>
+              <ion-icon style="margin-top: 2px;" [ngStyle]="{'color':itemBitacora.GuardadoServer ? '#21425F' : 'red' }" name="ios-arrow-forward"></ion-icon>
             </span>
           </ion-item>
           <ion-item-options side="right">
