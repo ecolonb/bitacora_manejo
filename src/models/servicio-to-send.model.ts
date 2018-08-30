@@ -9,5 +9,16 @@ export class ServicioToSendModel {
   public TipoServicio: number;
   public Modalidad: number;
   public Terminado: number;
-  public FechaAlta: Date;
+  public IdUsuarioParent: number;
+  public Token: string;
 }
+// HashId:
+// IdConductor:
+// Nuid:
+// Descripcion:
+// DomicilioOrigen:
+// DomicilioDestino:
+// Ruta:
+// TipoServicio:
+// Modalidad:
+// Terminado:

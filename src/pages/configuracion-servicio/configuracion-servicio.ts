@@ -272,15 +272,24 @@ export class ConfiguracionServicioPage {
       HashIdServicio: hashIdServicio,
       IdCondcutor: this.conductorProvider.IdConductor(),
       Unidad: this.objUnidadSeleccionada,
-      DireccionOrigen: this.origenServicio,
-      DireccionDestino: this.destinoServicio,
-      Ruta: this.descripcionRutaASeguir,
+      DireccionOrigen:
+        this.origenServicio === undefined || this.origenServicio === null
+          ? '-'
+          : this.origenServicio,
+      DireccionDestino:
+        this.destinoServicio === undefined || this.origenServicio === null
+          ? '-'
+          : this.destinoServicio,
+      Ruta:
+        this.descripcionRutaASeguir === undefined
+          ? '-'
+          : this.descripcionRutaASeguir,
       TipoServicio: Number(this.tipoDeServicio),
       ModalidadServicio: Number(this.modalidadDeServicio),
       Permisionario: 'Saul Teja Gonzalez',
       PermisionarioDomicilio: 'El Yaqui 2050'
     };
-
+    console.log('Antes de iniciar servicio...', objConfServicio);
     this.bitacoraProvider.iniciarServicio(objConfServicio);
     this.app.getRootNavs()[0].setRoot(this.menuPage);
   }

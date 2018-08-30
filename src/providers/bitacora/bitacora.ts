@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ServicioModel } from './../../models/servicio.model';
+import { ConductorProvider } from './../conductor/conductor';
 
 // ******** MODELOS DE DATOS *******
 import { BitacoraServerModel } from '../../models/bitacora-server.model';
 import { BitacoraModel } from '../../models/bitacora.model';
+import { ServicioToSendModel } from '../../models/servicio-to-send.model';
 
 // ******** PROVIDERS *******
 import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
@@ -129,7 +131,8 @@ export class BitacoraProvider {
     private platform: Platform,
     private storage: Storage,
     private app: App,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    private conductorProvider: ConductorProvider
   ) {}
 
   public getBitacora() {
@@ -490,62 +493,96 @@ export class BitacoraProvider {
   public iniciarServicio(objConfServicio: ServicioModel) {
     // Guardar configuración del servicio en localStorage
     this.objConfServicio = objConfServicio;
+    const dtIniciaServicio = new Date();
+    console.log('Iniciando servicio-->>', this.objConfServicio);
     // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
+
+    // Obtener coordenadas donde se inicia el servicio.
+    this.getLatLong()
+      .then(LocationDevice => {
+        this.setObjServicio(dtIniciaServicio, objConfServicio, LocationDevice);
+      })
+      .catch((ErrorLocation) => {
+        this.setObjServicio(dtIniciaServicio, objConfServicio, ErrorLocation);
+      });
+  }
+  public setObjServicio(
+    dtStart: Date,
+    objConfServicio: ServicioModel,
+    LocationDevice: any
+  ) {
     const dtSQLIniciaServicio: string = this.utilidadesProvider.isoStringToSQLServerFormat(
-      new Date()
+      dtStart
         .toISOString()
         .toString()
         .toUpperCase()
     );
-    // Obtener coordenadas donde se inicia el servicio.
-    this.getLatLong().then(LocationDevice => {
-      const objIniciaServicio: BitacoraModel = {
-        IdBitacora: 0,
-        IdServicio: objConfServicio.IdServicio,
-        HashIdServicio: objConfServicio.HashIdServicio,
-        HashIdBitacora: this.utilidadesProvider.hashCode(
-          dtSQLIniciaServicio.toString() + 'TOKEN'
-        ),
-        FechaHoraInicio: dtSQLIniciaServicio,
-        FechaHoraFinal: null,
-        SegundosTotal: 0,
-        TiempoHhmmss: null,
-        Actividad: 'S',
-        InicioActividadX: LocationDevice.Latitude,
-        InicioActividadY: LocationDevice.Longitude,
-        FinActividadX: null,
-        FinActividadY: null,
-        Descripcion: null,
-        GuardadoServer: false,
-        Nota: null,
-        Transicion: 0,
-        TransicionHhmmss: '00:00:00',
-        Terminado: false
-      };
-      this.StatusServicio = objIniciaServicio;
-      this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
-        this.StatusServicio.FechaHoraInicio
-      );
-      // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
-      this.guardaServicioActualInStorage()
-        .then(() => {})
-        .catch(error => {});
-      this.segundosConduccionStorage = 0;
-      this.segundosDescansoStorage = 0;
-      this.segundosExcepcionTStorage = 0;
-      this.getStatus();
-      this.ctrlTimerServicio = setInterval(() => {
-        this.timerServicio();
-      }, 1000);
-      // Timer para statudUpdate
-      this.ctrlTimerStatusUpdate = setInterval(() => {
-        this.statusUpdate();
-      }, 1000);
-      // Timer para fechaHora actual
-      this.ctrlTimerCurrentDateTiem = setInterval(() => {
-        this.getDateTimeNow();
-      }, 1000);
-    });
+    const objIniciaServicio: BitacoraModel = {
+      IdBitacora: 0,
+      IdServicio: objConfServicio.IdServicio,
+      HashIdServicio: objConfServicio.HashIdServicio,
+      HashIdBitacora: this.utilidadesProvider.hashCode(
+        dtSQLIniciaServicio.toString() + 'TOKEN'
+      ),
+      FechaHoraInicio: dtSQLIniciaServicio,
+      FechaHoraFinal: null,
+      SegundosTotal: 0,
+      TiempoHhmmss: null,
+      Actividad: 'S',
+      InicioActividadX: LocationDevice.Latitude,
+      InicioActividadY: LocationDevice.Longitude,
+      FinActividadX: null,
+      FinActividadY: null,
+      Descripcion: null,
+      GuardadoServer: false,
+      Nota: null,
+      Transicion: 0,
+      TransicionHhmmss: '00:00:00',
+      Terminado: false
+    };
+    this.StatusServicio = objIniciaServicio;
+    this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
+      this.StatusServicio.FechaHoraInicio
+    );
+    // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
+    this.guardaServicioActualInStorage()
+      .then(() => {})
+      .catch((error) => {});
+    this.segundosConduccionStorage = 0;
+    this.segundosDescansoStorage = 0;
+    this.segundosExcepcionTStorage = 0;
+    this.getStatus();
+    this.ctrlTimerServicio = setInterval(() => {
+      this.timerServicio();
+    }, 1000);
+    // Timer para statudUpdate
+    this.ctrlTimerStatusUpdate = setInterval(() => {
+      this.statusUpdate();
+    }, 1000);
+    // Timer para fechaHora actual
+    this.ctrlTimerCurrentDateTiem = setInterval(() => {
+      this.getDateTimeNow();
+    }, 1000);
+    console.log('Aqui armar ObjServicioToSend y sincronizar');
+    this.makeObjServicioToSend(objConfServicio);
+  }
+  // Funcion para armarObjServicioToSend y enviarlo a provider Sync
+  public makeObjServicioToSend(objConfServicio: ServicioModel) {
+    const objServicioToSend: ServicioToSendModel = {
+      HashId: objConfServicio.HashIdServicio,
+      IdConductor: objConfServicio.IdCondcutor,
+      IdUsuarioParent: this.conductorProvider.IdUsuarioParent(),
+      Nuid: objConfServicio.Unidad.nuid,
+      Descripcion: '',
+      DomicilioOrigen: objConfServicio.DireccionOrigen,
+      DomicilioDestino: objConfServicio.DireccionDestino,
+      Ruta: objConfServicio.Ruta,
+      TipoServicio: objConfServicio.TipoServicio,
+      Token: this.appConfiguracionProvider.getToken(),
+      Modalidad: objConfServicio.ModalidadServicio,
+      Terminado: 0
+    };
+    console.log('Objeto a enviar...', objServicioToSend);
   }
   public resetServicicio() {
     this.segundosConduccionStorage = 0;
@@ -599,13 +636,13 @@ export class BitacoraProvider {
 
       // Obtener coordenadas y guardar
       this.getLatLong()
-        .then(LocationDevice => {
+        .then((LocationDevice) => {
           this.guardaNewItemExcepcion(dtSart, LocationDevice);
           this.stExepcionTemporal = true;
           this.ExcepcionTemporal = true;
           this.dsExcepcionTemporal = false;
         })
-        .catch(ErrorLocation => {
+        .catch((ErrorLocation) => {
           this.guardaNewItemExcepcion(dtSart, ErrorLocation);
           this.stExepcionTemporal = true;
           this.ExcepcionTemporal = true;
@@ -747,7 +784,7 @@ export class BitacoraProvider {
         .then(() => {
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           reject();
         });
     });
@@ -896,7 +933,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
+          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -905,7 +942,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
+            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1041,7 +1078,7 @@ export class BitacoraProvider {
   // Guardar la excepción temporal registrada (recorre arrayItem para terminar solo la que esta activa);
   private guardarExcepcionTemporal() {
     // Obtener X , Y antes de recorrer el objeto
-    this.getLatLong().then(LOCATION_DEVICE => {
+    this.getLatLong().then((LOCATION_DEVICE) => {
       for (const itBitacora of this.BitacoraData) {
         if (itBitacora.Actividad === 'ET' && itBitacora.Terminado === false) {
           const fechaGuardado: Date = new Date();
