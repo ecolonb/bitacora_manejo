@@ -194,17 +194,21 @@ export class BitacoraProvider {
           this.getStatus();
           resolve(true);
         } else {
-          // Desktop webBrowser
-          if (this.BitacoraData) {
-            localStorage.setItem(
-              'ObjBitacoraDataStorage',
-              JSON.stringify(this.BitacoraData)
-            );
-          } else {
-            localStorage.removeItem('ObjBitacoraDataStorage');
+          try {
+            // Desktop webBrowser
+            if (this.BitacoraData) {
+              localStorage.setItem(
+                'ObjBitacoraDataStorage',
+                JSON.stringify(this.BitacoraData)
+              );
+            } else {
+              localStorage.removeItem('ObjBitacoraDataStorage');
+            }
+            this.getStatus();
+            resolve(true);
+          } catch (error) {
+            reject();
           }
-          this.getStatus();
-          resolve(true);
         }
       }
     );
@@ -292,100 +296,119 @@ export class BitacoraProvider {
   }
   public guardar() {
     // antes de guardar la actividad pendiente obtener X Y
-    this.getLatLong().then(LOCATION_DEVICE => {
-      // Guardando actividad en progreso no ET
-      for (const itBitacoraSave of this.BitacoraData) {
-        if (
-          itBitacoraSave.Terminado === false &&
-          itBitacoraSave.Actividad !== 'ET'
-        ) {
-          this.dtFechaFin = this.dtCurrentDT;
-          itBitacoraSave.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
-            this.dtFechaFin
-              .toISOString()
-              .toString()
-              .toUpperCase()
-          );
-          itBitacoraSave.Terminado = true;
-          clearInterval(this.control);
-          // Obtener el tiempo transcurrido
-          const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
-            itBitacoraSave.FechaHoraFinal,
-            itBitacoraSave.FechaHoraInicio
-          );
-          itBitacoraSave.SegundosTotal =
-            objTiempoTranscurrido.segundosDiferencia;
-          itBitacoraSave.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
-          itBitacoraSave.FinActividadX = LOCATION_DEVICE.Latitude;
-          itBitacoraSave.FinActividadY = LOCATION_DEVICE.Longitude;
-          // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
-          // this.strSegundos = ':00';
-          // this.strMinutos = ':00';
-          // this.strHoras = '00';
-          this.stInProgress = false;
-          this.numSegundosActuales = 0;
-          // Validar en que estado estába y terminarlo
-          this.Conduciendo = false;
-          this.Descanso = false;
-          // this.ExcepcionTemporal = false;
-          this.dsConduciendo = false;
-          this.dsDescanso = false;
-          // this.dsExcepcionTemporal = false;
-        }
-      }
-
-      // this.actividaActualTtl = 'S';
-      // this.actividadActual = 'S';
-      // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
-      this.guardarBitacoraInStorage();
+    const promiseGuardarItemBit = new Promise((resolve, reject) => {
+      this.getLatLong()
+        .then(LOCATION_DEVICE => {
+          this.guardarItemBitacoraXY(LOCATION_DEVICE);
+          resolve();
+        })
+        .catch(LOCATION_DEVICE => {
+          this.guardarItemBitacoraXY(LOCATION_DEVICE);
+          resolve();
+        });
     });
+    return promiseGuardarItemBit;
   }
 
-  // Crear Item bitacora
-  public newItemBitacora(dtSart: Date, actividadParam?: string) {
-    let actividadActulFn: string;
-    if (actividadParam !== null && actividadParam !== undefined) {
-      if (actividadParam === 'ET') {
-        if (!this.stExepcionTemporal) {
-          this.stExepcionTemporal = true;
-          this.ExcepcionTemporal = true;
-          actividadActulFn = actividadParam;
-          this.strFechaInicioExcepcion = null;
-        } else {
-          this.stExepcionTemporal = false;
-          this.ExcepcionTemporal = false;
-          this.guardarExcepcionTemporal();
-          return;
-        }
+  public guardarItemBitacoraXY(LOCATION_DEVICE: any) {
+    // Guardando actividad en progreso no ET
+    for (const itBitacoraSave of this.BitacoraData) {
+      if (
+        itBitacoraSave.Terminado === false &&
+        itBitacoraSave.Actividad !== 'ET'
+      ) {
+        this.dtFechaFin = this.dtCurrentDT;
+        itBitacoraSave.FechaHoraFinal = this.utilidadesProvider.isoStringToSQLServerFormat(
+          this.dtFechaFin
+            .toISOString()
+            .toString()
+            .toUpperCase()
+        );
+        itBitacoraSave.Terminado = true;
+        clearInterval(this.control);
+        // Obtener el tiempo transcurrido
+        const objTiempoTranscurrido: any = this.utilidadesProvider.getTimeHHmmss(
+          itBitacoraSave.FechaHoraFinal,
+          itBitacoraSave.FechaHoraInicio
+        );
+        itBitacoraSave.SegundosTotal = objTiempoTranscurrido.segundosDiferencia;
+        itBitacoraSave.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
+        itBitacoraSave.FinActividadX = LOCATION_DEVICE.Latitude;
+        itBitacoraSave.FinActividadY = LOCATION_DEVICE.Longitude;
+        // (document.getElementById('guardar') as HTMLInputElement).disabled = true;
+        // this.strSegundos = ':00';
+        // this.strMinutos = ':00';
+        // this.strHoras = '00';
+        this.stInProgress = false;
+        this.numSegundosActuales = 0;
+        // Validar en que estado estába y terminarlo
+        this.Conduciendo = false;
+        this.Descanso = false;
+        // this.ExcepcionTemporal = false;
+        this.dsConduciendo = false;
+        this.dsDescanso = false;
+        // this.dsExcepcionTemporal = false;
       }
-    } else {
-      actividadActulFn = this.actividadActual;
     }
 
-    try {
-      // this.currentItemBitacora.IdViaje = 1368;
-      // Obtener un hash de la bitacora
+    // this.actividaActualTtl = 'S';
+    // this.actividadActual = 'S';
+    // Al (guardar / terminar) ItemBitacora se actualiza la informacion en el provider y LocalStorage
+    this.guardarBitacoraInStorage();
+  }
+  // Crear Item bitacora
+  public newItemBitacora(dtSart: Date, actividadParam?: string): Promise<any> {
+    const promiseNewItem = new Promise((resolve, reject) => {
+      //
+      let actividadActulFn: string;
+      if (actividadParam !== null && actividadParam !== undefined) {
+        if (actividadParam === 'ET') {
+          if (!this.stExepcionTemporal) {
+            this.stExepcionTemporal = true;
+            this.ExcepcionTemporal = true;
+            actividadActulFn = actividadParam;
+            this.strFechaInicioExcepcion = null;
+          } else {
+            this.stExepcionTemporal = false;
+            this.ExcepcionTemporal = false;
+            this.guardarExcepcionTemporal();
+            resolve();
+          }
+        }
+      } else {
+        actividadActulFn = this.actividadActual;
+      }
 
-      // ********** Obtener coordenadas de inicio ***********
+      try {
+        // this.currentItemBitacora.IdViaje = 1368;
+        // Obtener un hash de la bitacora
 
-      this.getLatLong()
-        .then(LocationDevice => {
-          this.guardarItemBitacora(
-            dtSart,
-            actividadActulFn,
-            LocationDevice.Latitude,
-            LocationDevice.Longitude
-          );
-        })
-        .catch(ErrorLocation => {
-          this.guardarItemBitacora(
-            dtSart,
-            actividadActulFn,
-            ErrorLocation.Latitude,
-            ErrorLocation.Longitude
-          );
-        });
-    } catch (error) {}
+        // ********** Obtener coordenadas de inicio ***********
+        // Aqui mostrar loading Eddpoint ---
+        this.getLatLong()
+          .then(LocationDevice => {
+            this.guardarItemBitacora(
+              dtSart,
+              actividadActulFn,
+              LocationDevice.Latitude,
+              LocationDevice.Longitude
+            );
+            resolve();
+          })
+          .catch(ErrorLocation => {
+            this.guardarItemBitacora(
+              dtSart,
+              actividadActulFn,
+              ErrorLocation.Latitude,
+              ErrorLocation.Longitude
+            );
+            resolve();
+          });
+      } catch (error) {
+        reject();
+      }
+    });
+    return promiseNewItem;
   }
   // Obtiene la posicion actual retorna una promsea
   public getLatLong(): Promise<any> {
@@ -494,7 +517,6 @@ export class BitacoraProvider {
     // Guardar configuración del servicio en localStorage
     this.objConfServicio = objConfServicio;
     const dtIniciaServicio = new Date();
-    console.log('Iniciando servicio-->>', this.objConfServicio);
     // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
 
     // Obtener coordenadas donde se inicia el servicio.
@@ -502,7 +524,7 @@ export class BitacoraProvider {
       .then(LocationDevice => {
         this.setObjServicio(dtIniciaServicio, objConfServicio, LocationDevice);
       })
-      .catch((ErrorLocation) => {
+      .catch(ErrorLocation => {
         this.setObjServicio(dtIniciaServicio, objConfServicio, ErrorLocation);
       });
   }
@@ -547,7 +569,7 @@ export class BitacoraProvider {
     // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
     this.guardaServicioActualInStorage()
       .then(() => {})
-      .catch((error) => {});
+      .catch(error => {});
     this.segundosConduccionStorage = 0;
     this.segundosDescansoStorage = 0;
     this.segundosExcepcionTStorage = 0;
@@ -602,53 +624,74 @@ export class BitacoraProvider {
     }, 1000);
   }
   // Crear Item bitacora
-  public iniciarExcepcionTemporal(dtSart: Date) {
-    if (!this.stExepcionTemporal) {
-      this.dsExcepcionTemporal = true;
-      // Guardar en String la fecha de Inicio
-      this.strFechaInicioExcepcion = this.utilidadesProvider.isoStringToSQLServerFormat(
-        dtSart
-          .toISOString()
-          .toString()
-          .toUpperCase()
-      );
-      // timerExcepcionTemporal
-      this.fechaInicioExcepcion = this.utilidadesProvider.convertSqlToDate(
-        this.strFechaInicioExcepcion
-      );
-      // reiniciando excepcion temporal
-      this.strHorasExcepcion = '00';
-      this.strMinutosExcepcion = ':00';
-      this.strSegundosExcepcion = ':00';
-      this.controlTimerExcepcion = setInterval(() => {
-        this.timerExcepcionTemporal();
-      }, 1000);
-    } else {
-      this.stExepcionTemporal = false;
-      this.ExcepcionTemporal = false;
-      this.guardarExcepcionTemporal();
-      return;
-    }
+  public iniciarExcepcionTemporal(dtSart: Date): Promise<any> {
+    let letDoing: boolean = true;
+    const promiseIniciaExcepcion = new Promise((resolve, reject) => {
+      if (!this.stExepcionTemporal) {
+        letDoing = true;
+        this.stExepcionTemporal = true;
+        this.ExcepcionTemporal = true;
+        // Guardar en String la fecha de Inicio
+        this.strFechaInicioExcepcion = this.utilidadesProvider.isoStringToSQLServerFormat(
+          dtSart
+            .toISOString()
+            .toString()
+            .toUpperCase()
+        );
+        // timerExcepcionTemporal
+        this.fechaInicioExcepcion = this.utilidadesProvider.convertSqlToDate(
+          this.strFechaInicioExcepcion
+        );
+        // reiniciando excepcion temporal
+        this.strHorasExcepcion = '00';
+        this.strMinutosExcepcion = ':00';
+        this.strSegundosExcepcion = ':00';
+        this.controlTimerExcepcion = setInterval(() => {
+          this.timerExcepcionTemporal();
+        }, 1000);
+      } else {
+        letDoing = false;
 
-    try {
-      // this.currentItemBitacora.IdViaje = 1368;
-      // Obtener un hash de la bitacora
+        this.guardarExcepcionTemporal()
+          .then(() => {
+            this.stExepcionTemporal = false;
+            this.ExcepcionTemporal = false;
+            resolve();
+          })
+          .catch(err => {
+            this.stExepcionTemporal = false;
+            this.ExcepcionTemporal = false;
+            reject(err);
+          });
+      }
 
-      // Obtener coordenadas y guardar
-      this.getLatLong()
-        .then((LocationDevice) => {
-          this.guardaNewItemExcepcion(dtSart, LocationDevice);
-          this.stExepcionTemporal = true;
-          this.ExcepcionTemporal = true;
-          this.dsExcepcionTemporal = false;
-        })
-        .catch((ErrorLocation) => {
-          this.guardaNewItemExcepcion(dtSart, ErrorLocation);
-          this.stExepcionTemporal = true;
-          this.ExcepcionTemporal = true;
-          this.dsExcepcionTemporal = false;
-        });
-    } catch (error) {}
+      if (letDoing) {
+        try {
+          // this.currentItemBitacora.IdViaje = 1368;
+          // Obtener un hash de la bitacora
+
+          // Obtener coordenadas y guardar
+          this.getLatLong()
+            .then(LocationDevice => {
+              this.guardaNewItemExcepcion(dtSart, LocationDevice);
+              this.stExepcionTemporal = true;
+              this.ExcepcionTemporal = true;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            })
+            .catch(ErrorLocation => {
+              this.guardaNewItemExcepcion(dtSart, ErrorLocation);
+              this.stExepcionTemporal = true;
+              this.ExcepcionTemporal = true;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            });
+        } catch (error) {
+          reject();
+        }
+      }
+    });
+    return promiseIniciaExcepcion;
   }
   public guardaNewItemExcepcion(dtSart: Date, LocationDevice: any) {
     let dtSQLStartNewItem: string;
@@ -784,7 +827,7 @@ export class BitacoraProvider {
         .then(() => {
           resolve();
         })
-        .catch((error) => {
+        .catch(error => {
           reject();
         });
     });
@@ -933,7 +976,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
+          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -942,7 +985,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
+            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1076,9 +1119,44 @@ export class BitacoraProvider {
   }
 
   // Guardar la excepción temporal registrada (recorre arrayItem para terminar solo la que esta activa);
-  private guardarExcepcionTemporal() {
+  private guardarExcepcionTemporal(): Promise<any> {
     // Obtener X , Y antes de recorrer el objeto
-    this.getLatLong().then((LOCATION_DEVICE) => {
+
+    const promiseExcepcionTemp = new Promise((resolve, reject) => {
+      this.getLatLong()
+        .then(LOCATION_DEVICE => {
+          this.guardaItemExcepcion(LOCATION_DEVICE)
+            .then(() => {
+              this.ExcepcionTemporal = false;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            })
+            .catch(err => {
+              this.ExcepcionTemporal = false;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            });
+        })
+        .catch(error => {
+          // ERROR HERE
+          this.guardaItemExcepcion(error)
+            .then(() => {
+              this.ExcepcionTemporal = false;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            })
+            .catch(() => {
+              this.ExcepcionTemporal = false;
+              this.dsExcepcionTemporal = false;
+              resolve();
+            });
+        });
+    });
+    return promiseExcepcionTemp;
+  }
+  // GUARDA ITEM EXCEPCION:
+  private guardaItemExcepcion(LOCATION_DEVICE: any): Promise<any> {
+    const promiseGuardaItemExcepcion = new Promise((resolve, reject) => {
       for (const itBitacora of this.BitacoraData) {
         if (itBitacora.Actividad === 'ET' && itBitacora.Terminado === false) {
           const fechaGuardado: Date = new Date();
@@ -1099,10 +1177,18 @@ export class BitacoraProvider {
           itBitacora.TiempoHhmmss = objTiempoTranscurrido.segundosHhmmss;
           itBitacora.FinActividadX = LOCATION_DEVICE.Latitude;
           itBitacora.FinActividadY = LOCATION_DEVICE.Longitude;
+          this.guardarBitacoraInStorage()
+            .then(() => {
+              resolve();
+            })
+            .catch(Error_ => {
+              reject();
+            });
+          break;
         }
       }
-      this.guardarBitacoraInStorage();
     });
+    return promiseGuardaItemExcepcion;
   }
 
   // Obtiene la fechaHora actual del dispositivo, se muestra en Status(page):

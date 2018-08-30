@@ -179,7 +179,7 @@ export class LoginPage {
     this.usuario = this.usuario.trim();
     this.contrasenia = formData.contrasenia.value;
     this.loading = this.loadingCtrl.create({
-      content: 'Iniciando la aplicación. Favor de esperar...'
+      content: 'Iniciando sesión. Por favor espere...'
     });
     if (this.usuario === '' || this.contrasenia === '') {
       const alert = this.alertCtrl.create({

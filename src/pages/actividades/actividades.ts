@@ -259,7 +259,16 @@ export class ActividadesPage {
             .toString()
             .toUpperCase()
         );
-        this.bitacoraProvider.newItemBitacora(dtSart);
+
+        // Eddpoint
+        const loading = this.loadingCtrl.create({
+          content:
+            'Obteniendo posición y sincronizando información, por favor espere...'
+        });
+        loading.present();
+        this.bitacoraProvider.newItemBitacora(dtSart).then(() => {
+          loading.dismiss();
+        });
       } else {
         // Si hay una actividad en curso aqui se reiniciar tomar la fecha de inicio de actividad pendiente que no sea ET
 
@@ -286,8 +295,20 @@ export class ActividadesPage {
       }, 1000);
       // Guardar item bitacora
     } else {
-      // al guardar habilitar o deshabilitar botones.
-      this.bitacoraProvider.guardar();
+      // al guardar habilitar o deshabilitar botones. Eddpoint
+      const loading = this.loadingCtrl.create({
+        content:
+          'Obteniendo posición y sincronizando información, por favor espere...'
+      });
+      loading.present();
+      this.bitacoraProvider
+        .guardar()
+        .then(() => {
+          loading.dismiss();
+        })
+        .catch(() => {
+          loading.dismiss();
+        });
     }
 
     // this.changeTitlteLarge(this.actividaActualTtl);
@@ -433,15 +454,11 @@ export class ActividadesPage {
   }
 
   public testDatetTiime(Title: string, Date1: any, Date2: any) {
-    console.log('In TestDateTime');
     const date1Test: any = new Date(Date1);
     const date2Test: Date = new Date(Date2);
-    console.log(Date1 + ' <-----------> ' + Date2);
-    console.log(date1Test + ' <-> ' + date2Test);
     let dateDiff = Math.abs(date1Test.valueOf() - date2Test.valueOf());
 
     dateDiff /= 1000;
-    console.log('Segundos transcurridos: ', dateDiff);
     const horas: any = Math.floor(dateDiff / 3600);
     const minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
     const segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
@@ -562,7 +579,14 @@ export class ActividadesPage {
   }
   public controlaExcepcion() {
     // public newItemBitacora(dtSart: Date, actividadParam?: string) {
-    this.bitacoraProvider.iniciarExcepcionTemporal(new Date());
+    const loading = this.loadingCtrl.create({
+      content:
+        'Obteniendo posición y sincronizando información, por favor espere...'
+    });
+    loading.present();
+    this.bitacoraProvider.iniciarExcepcionTemporal(new Date()).then(() => {
+      loading.dismiss();
+    });
   }
   public terminarExcepcion() {}
 }

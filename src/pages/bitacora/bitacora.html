@@ -97,7 +97,7 @@
       {{ bitacoraProvider.StatusServicio.FechaHoraInicio | date:'fullDate':'GMT+00000':'es-mx' | uppercase }}
       <hr>
     </ion-card-header> -->
-    <div *ngIf="ObjItemsConduciendo">
+    <div *ngIf="bitacoraProvider.segundosConduccionHhmmss !== '00:00:00'">
       <ion-card-header text-center class="headerTipoBitacora">
         <span>Tiempo en conducción</span>
         <br>
@@ -120,7 +120,7 @@
         </ion-row>
       </ion-card-content>
     </div>
-    <div *ngIf="ObjItemsDescansos">
+    <div *ngIf="bitacoraProvider.segundosDescansoHhmmss !== '00:00:00'">
       <ion-card-header text-center class="headerTipoBitacora">
         <span> Tiempo en descanso </span>
         <br>
