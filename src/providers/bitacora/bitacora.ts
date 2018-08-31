@@ -11,6 +11,7 @@ import { ServicioToSendModel } from '../../models/servicio-to-send.model';
 // ******** PROVIDERS *******
 import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
 import { UtilidadesProvider } from '../utilidades/utilidades';
+import { SyncUpProvider } from '../sync-up/sync-up';
 
 // ******** PLUGINS *******
 import { Geolocation } from '@ionic-native/geolocation';
@@ -48,6 +49,15 @@ export class BitacoraProvider {
   public segundosExcepcionTHhmmss: string = '00:00:00';
   public boolIniciado: boolean = false;
   public segIninicio: number = 0;
+
+  // Variables para la grafica Tiempos
+  public horasDescansoGB: string = '00';
+  public minutosDescansoGB: string = ':00';
+  public segundosDescansoGB: string = ':00';
+
+  public horasConduccionGB: string = '00';
+  public minutosConduccionGB: string = ':00';
+  public segundosConduccionGB: string = ':00';
 
   // dtFechaFin dtCurrentDT
   public actividadActual: string = '-';
@@ -132,7 +142,8 @@ export class BitacoraProvider {
     private storage: Storage,
     private app: App,
     private geolocation: Geolocation,
-    private conductorProvider: ConductorProvider
+    private conductorProvider: ConductorProvider,
+    private syncUpProvider: SyncUpProvider
   ) {}
 
   public getBitacora() {
@@ -604,7 +615,9 @@ export class BitacoraProvider {
       Modalidad: objConfServicio.ModalidadServicio,
       Terminado: 0
     };
-    console.log('Objeto a enviar...', objServicioToSend);
+    console.log('Objeto a enviar...' + JSON.stringify(objServicioToSend));
+    this.syncUpProvider.syncUpServicio(objServicioToSend);
+    // eddpoint
   }
   public resetServicicio() {
     this.segundosConduccionStorage = 0;
@@ -658,7 +671,7 @@ export class BitacoraProvider {
             this.ExcepcionTemporal = false;
             resolve();
           })
-          .catch(err => {
+          .catch((err) => {
             this.stExepcionTemporal = false;
             this.ExcepcionTemporal = false;
             reject(err);
@@ -672,14 +685,14 @@ export class BitacoraProvider {
 
           // Obtener coordenadas y guardar
           this.getLatLong()
-            .then(LocationDevice => {
+            .then((LocationDevice) => {
               this.guardaNewItemExcepcion(dtSart, LocationDevice);
               this.stExepcionTemporal = true;
               this.ExcepcionTemporal = true;
               this.dsExcepcionTemporal = false;
               resolve();
             })
-            .catch(ErrorLocation => {
+            .catch((ErrorLocation) => {
               this.guardaNewItemExcepcion(dtSart, ErrorLocation);
               this.stExepcionTemporal = true;
               this.ExcepcionTemporal = true;
@@ -827,7 +840,7 @@ export class BitacoraProvider {
         .then(() => {
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           reject();
         });
     });
@@ -898,6 +911,12 @@ export class BitacoraProvider {
         this.segundosExcepcionTHhmmss = this.utilidadesProvider.convertSecondToHhhmmss(
           this.segundosExcepcionT
         );
+        const arrTmpoDescanso: any = this.segundosDescansoHhmmss.split(':');
+        const arrTmpoConduccion: any = this.segundosConduccionHhmmss.split(':');
+        this.minutosConduccionGB = arrTmpoConduccion[1];
+        this.horasConduccionGB = arrTmpoConduccion[0];
+        this.minutosDescansoGB = arrTmpoDescanso[1];
+        this.horasDescansoGB = arrTmpoDescanso[0];
       }
     } catch (error) {}
   }
@@ -976,7 +995,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
+          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -985,7 +1004,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
+            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1124,20 +1143,20 @@ export class BitacoraProvider {
 
     const promiseExcepcionTemp = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(LOCATION_DEVICE => {
+        .then((LOCATION_DEVICE) => {
           this.guardaItemExcepcion(LOCATION_DEVICE)
             .then(() => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             })
-            .catch(err => {
+            .catch((err) => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             });
         })
-        .catch(error => {
+        .catch((error) => {
           // ERROR HERE
           this.guardaItemExcepcion(error)
             .then(() => {
@@ -1181,7 +1200,7 @@ export class BitacoraProvider {
             .then(() => {
               resolve();
             })
-            .catch(Error_ => {
+            .catch((Error_) => {
               reject();
             });
           break;

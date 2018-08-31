@@ -47,6 +47,7 @@ import { App } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { ConductorProvider } from '../providers/conductor/conductor';
 import { UnidadProvider } from '../providers/unidad/unidad';
+import { SyncUpProvider } from '../providers/sync-up/sync-up';
 
 @NgModule({
   declarations: [
@@ -102,7 +103,8 @@ import { UnidadProvider } from '../providers/unidad/unidad';
     ActionSheetController,
     App,
     ConductorProvider,
-    UnidadProvider
+    UnidadProvider,
+    SyncUpProvider
   ]
 })
 export class AppModule {}

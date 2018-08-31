@@ -116,7 +116,7 @@ export class ConfiguracionServicioPage {
               });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           loading.dismiss();
         });
     } else {
@@ -289,7 +289,9 @@ export class ConfiguracionServicioPage {
       Permisionario: 'Saul Teja Gonzalez',
       PermisionarioDomicilio: 'El Yaqui 2050'
     };
-    console.log('Antes de iniciar servicio...', objConfServicio);
+    console.log(
+      'Antes de iniciar servicio...' + JSON.stringify(objConfServicio)
+    );
     this.bitacoraProvider.iniciarServicio(objConfServicio);
     this.app.getRootNavs()[0].setRoot(this.menuPage);
   }
