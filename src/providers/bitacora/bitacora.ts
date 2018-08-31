@@ -597,27 +597,49 @@ export class BitacoraProvider {
       this.getDateTimeNow();
     }, 1000);
     console.log('Aqui armar ObjServicioToSend y sincronizar');
-    this.makeObjServicioToSend(objConfServicio);
+    this.makeObjServicioToSend(objConfServicio)
+      .then(() => {
+        console.log('Ok');
+      })
+      .catch(() => {
+        console.log('Catch');
+      });
   }
   // Funcion para armarObjServicioToSend y enviarlo a provider Sync
-  public makeObjServicioToSend(objConfServicio: ServicioModel) {
-    const objServicioToSend: ServicioToSendModel = {
-      HashId: objConfServicio.HashIdServicio,
-      IdConductor: objConfServicio.IdCondcutor,
-      IdUsuarioParent: this.conductorProvider.IdUsuarioParent(),
-      Nuid: objConfServicio.Unidad.nuid,
-      Descripcion: '',
-      DomicilioOrigen: objConfServicio.DireccionOrigen,
-      DomicilioDestino: objConfServicio.DireccionDestino,
-      Ruta: objConfServicio.Ruta,
-      TipoServicio: objConfServicio.TipoServicio,
-      Token: this.appConfiguracionProvider.getToken(),
-      Modalidad: objConfServicio.ModalidadServicio,
-      Terminado: 0
-    };
-    console.log('Objeto a enviar...' + JSON.stringify(objServicioToSend));
-    this.syncUpProvider.syncUpServicio(objServicioToSend);
-    // eddpoint
+  public makeObjServicioToSend(objConfServicio: ServicioModel): Promise<any> {
+    const promiseMakeServiceToSend = new Promise((resolve, reject) => {
+      const objServicioToSend: ServicioToSendModel = {
+        HashId: objConfServicio.HashIdServicio,
+        IdConductor: objConfServicio.IdCondcutor,
+        IdUsuarioParent: this.conductorProvider.IdUsuarioParent(),
+        Nuid: objConfServicio.Unidad.nuid,
+        Descripcion: '',
+        DomicilioOrigen: objConfServicio.DireccionOrigen,
+        DomicilioDestino: objConfServicio.DireccionDestino,
+        Ruta: objConfServicio.Ruta,
+        TipoServicio: objConfServicio.TipoServicio,
+        Token: this.appConfiguracionProvider.getToken(),
+        Modalidad: objConfServicio.ModalidadServicio,
+        Terminado: 0
+      };
+      console.log('Objeto a enviar...' + JSON.stringify(objServicioToSend));
+
+      // Validar si sincronicar o enviarStorage
+      // --------------this.syncUpProvider.syncUpServicio(objServicioToSend);
+      console.log('Verificando si hay datos a enviar');
+      this.syncUpProvider
+        .checkServiceToSend()
+        .then(() => {
+          this.syncUpProvider.syncUpServicio(objServicioToSend);
+          resolve();
+        })
+        .catch(Error => {
+          console.log('CATCH--->>>');
+          this.syncUpProvider.syncUpServicio(objServicioToSend);
+          reject();
+        });
+    });
+    return promiseMakeServiceToSend;
   }
   public resetServicicio() {
     this.segundosConduccionStorage = 0;

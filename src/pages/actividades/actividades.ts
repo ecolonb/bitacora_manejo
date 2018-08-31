@@ -28,6 +28,7 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { ActionSheetController } from 'ionic-angular';
 
 // **** PIPEs ****
+import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 import { ActividadProgressTitlePipe } from './../../pipes/actividad-progress-title/actividad-progress-title';
 import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
 
@@ -59,7 +60,8 @@ export class ActividadesPage {
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private app: App,
-    private unidadProvider: UnidadProvider
+    private unidadProvider: UnidadProvider,
+    private syncUpProvider: SyncUpProvider
   ) {}
 
   // Error en Dispositivo
@@ -146,6 +148,24 @@ export class ActividadesPage {
         }
       }
     } catch (error) {}
+
+    // Sincronizando eventos pendientes
+    // Eddpoint
+    const loading = this.loadingCtrl.create({
+      content:
+        'Sincronizando información del LocalStorage asl servidor, por favor espere...'
+    });
+    loading.present();
+    this.syncUpProvider
+      .checkServiceToSend()
+      .then(() => {
+        console.log('Servicio sincronizados....');
+        loading.dismiss();
+      })
+      .catch((Err) => {
+        console.log('Error:', Err);
+        loading.dismiss();
+      });
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
