@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ServicioToSendModel } from '../../models/servicio-to-send.model';
+import { ServicioToSendModel } from './../../models/servicio-to-send.model';
 
 // ******** PLUGINS *********
 import { Storage } from '@ionic/storage';
@@ -26,6 +26,10 @@ export class SyncUpProvider {
     private storage: Storage
   ) {
     // ******* cuando se inicializa el provider se verifica si hay Información para soncronizar
+  }
+  public setServicesToSend(ObjNewService: ServicioToSendModel) {
+    this.ServiciosToSync.push(ObjNewService);
+    return true;
   }
   public deleteSynchronizedServices(
     objSynchronizedServices: any
@@ -53,53 +57,48 @@ export class SyncUpProvider {
     return promiseDeleteSS;
   }
   public syncAllServicesPending(): Promise<any> {
-    const RESPUESTA: any = {
-      errorRequest: false,
-      mensaje: 'OK'
-    };
-    console.log('Sincronizando todos los eventos...', this.ServiciosToSync);
     const promiseSyncAllServices = new Promise((resolve, reject) => {
+      // Se envia todo el objeto completo
       const formDataToSend: SyncAllServicesToSyncModel = {
         ServiciosToSync: this.ServiciosToSync
       };
+      console.log('Form Data to send: ', formDataToSend);
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
-      console.log('formDataToSend', formDataToSend);
       this.http
         .post(this.URL_SyncAllServices, formDataToSend, HEADERS)
         .toPromise()
         .then((RESULT_DATA) => {
-          console.log('Result Data', RESULT_DATA);
+          console.log(
+            'Resolve syncAllServicesPending httpRequest',
+            RESULT_DATA
+          );
           resolve(RESULT_DATA);
         })
         .catch((ErrorPromise) => {
+          console.log(
+            'Reject syncAllServicesPending httpRequest: ',
+            ErrorPromise
+          );
           reject(ErrorPromise);
         });
-    }).catch((err) => {
-      console.log('Error No Hacer nada...', err);
     });
     return promiseSyncAllServices;
   }
   public syncUpServicio(objServicioToSync: ServicioToSendModel) {
+    // Si hay eventos pendientes en storage realizar push de [[objServicioToSync]] y enviar todo en una sola peticion..
+    // en caso de error guardar todo el Objeto de servicios pendientes.
     this.syncUpServicioInServer(objServicioToSync)
-      .then((RESULT) => {
-        console.log('Promesa ok: ' + JSON.stringify(RESULT));
-      })
+      .then((RESULT) => {})
       .catch((Err) => {
-        console.log(
-          'Aqui guardarObjetoServicioParaEnviar----->>>' + JSON.stringify(Err)
-        );
         this.saveServiceToSync(objServicioToSync);
       });
   }
   public syncUpServicioInServer(
     objServicioToSync: ServicioToSendModel
   ): Promise<any> {
-    console.log(
-      'Sincronizando el servicio si hay error al guardar se envia a->saveServiceToSync' +
-        JSON.stringify(objServicioToSync)
-    );
+    console.log('Sincronizado un solo evento');
     const promiseNuevoServicio = new Promise((resolve, reject) => {
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
@@ -110,7 +109,6 @@ export class SyncUpProvider {
         .toPromise()
         .then((RESULT_DATA) => {
           // this.setUnidadesInStorage();
-          console.log('RESULT_DATA:' + JSON.stringify(RESULT_DATA));
           resolve(RESULT_DATA);
         })
         .catch((error) => {
@@ -119,46 +117,113 @@ export class SyncUpProvider {
     });
     return promiseNuevoServicio;
   }
-  public saveServiceToSync(objServicioToSync: ServicioToSendModel) {
-    console.log(
-      'Guardando servicio para sincronizar despues------------->>>>>>>>' +
-        JSON.stringify(objServicioToSync)
-    );
-    console.log('this.ServiciosToSync', this.ServiciosToSync);
-    console.log('this.ServiciosToSync typeof:', typeof this.ServiciosToSync);
-    if (
-      this.ServiciosToSync &&
-      this.ServiciosToSync !== null &&
-      this.ServiciosToSync !== undefined
-    ) {
-      console.log('Push in IF-->');
-      this.ServiciosToSync.push(objServicioToSync);
-    } else {
-      console.log('Push in ELSE-->');
-      this.ServiciosToSync = [];
-      this.ServiciosToSync.push(objServicioToSync);
-    }
+  public saveServiceToSync(
+    objServicioToSync?: ServicioToSendModel
+  ): Promise<any> {
+    const promiseSaveService = new Promise((resolve, reject) => {
+      if (
+        objServicioToSync &&
+        objServicioToSync !== null &&
+        objServicioToSync !== undefined
+      ) {
+        if (
+          this.ServiciosToSync &&
+          this.ServiciosToSync !== null &&
+          this.ServiciosToSync !== undefined
+        ) {
+          this.ServiciosToSync.push(objServicioToSync);
+        } else {
+          this.ServiciosToSync = [];
+          this.ServiciosToSync.push(objServicioToSync);
+        }
+      }
 
-    // this.ServiciosToSync.unshift(objServicioToSync);
-    console.log(
-      'this.ServiciosToSyncPush' + JSON.stringify(this.ServiciosToSync)
-    );
-    this.setServiciosToSyncInStorage()
-      .then(() => {
-        console.log('Se guardo en localStorage');
-      })
-      .catch((Err) => {
-        console.log('Error al guradar->' + JSON.stringify(Err));
-      });
+      // this.ServiciosToSync.unshift(objServicioToSync);
+      this.setServiciosToSyncInStorage()
+        .then(() => {
+          resolve();
+        })
+        .catch((Err) => {
+          reject();
+        });
+    });
+    return promiseSaveService;
   }
 
-  public checkServiceToSend(): Promise<any> {
-    console.log('Verficando si hay servicio para enviar..!');
+  // verifica si hay eventos pendientes en el Storage...
+  public checkServiceToSend(
+    objServicioToSend?: ServicioToSendModel
+  ): Promise<any> {
     const promiseChkServiceToSend = new Promise((resolve, reject) => {
-      console.log('-->');
       this.getServiciosToSyncStorage()
         .then(() => {
+          console.log('Servicios from Storage: ', this.ServiciosToSync);
           try {
+            if (
+              this.ServiciosToSync &&
+              this.ServiciosToSync !== null &&
+              this.ServiciosToSync !== undefined &&
+              this.ServiciosToSync.length > 0
+            ) {
+              console.log(
+                'Si hay eventos que sincronizar: ',
+                this.ServiciosToSync.length
+              );
+              console.log('objServicioToSend', objServicioToSend);
+              if (
+                objServicioToSend &&
+                objServicioToSend !== null &&
+                objServicioToSend !== undefined
+              ) {
+                console.log(
+                  'Aqui recorrer arreglo de Servicios y cambiar el estado de NewOrSync'
+                );
+                for (const ServiceToSync of this.ServiciosToSync) {
+                  ServiceToSync.NewOrSync = 2;
+                }
+                this.ServiciosToSync.push(objServicioToSend);
+                this.saveServiceToSync();
+              }
+            } else {
+              if (
+                objServicioToSend &&
+                objServicioToSend !== null &&
+                objServicioToSend !== undefined
+              ) {
+                console.log(
+                  'No hay elementos que cambiar se manda un unico evento como nuevo..'
+                );
+                this.ServiciosToSync = [];
+                this.ServiciosToSync.push(objServicioToSend);
+                this.saveServiceToSync();
+              }
+              console.log('Else 1');
+              // resolve();
+            }
+            if (
+              !objServicioToSend ||
+              objServicioToSend === null ||
+              objServicioToSend === undefined
+            ) {
+              console.log('Resetando NewOrSynz');
+              if (
+                this.ServiciosToSync &&
+                this.ServiciosToSync !== null &&
+                this.ServiciosToSync !== undefined &&
+                this.ServiciosToSync.length > 0
+              ) {
+                console.log('Entro al FOR cambiar tipo NewOrSync');
+                for (const ServiceToSync of this.ServiciosToSync) {
+                  ServiceToSync.NewOrSync = 2;
+                }
+              } else {
+                console.log('No entro al FOR porque objeto vacio...');
+                resolve();
+              }
+            } else {
+              console.log('Else objServicioToSend');
+            }
+            // Aqui cambiar los valores de tos los objetos existentes New or Sync = 2 y despues el push con 1
             if (
               this.ServiciosToSync &&
               this.ServiciosToSync !== null &&
@@ -167,35 +232,41 @@ export class SyncUpProvider {
             ) {
               this.syncAllServicesPending()
                 .then((RESPUESTA) => {
+                  console.log('RESPUESTA:', RESPUESTA);
                   // Llamar funcion eliminar Objeto sincronizados
                   this.deleteSynchronizedServices(RESPUESTA)
                     .then((result) => {
                       this.setServiciosToSyncInStorage()
                         .then(() => {
+                          console.log('Resolve 1');
                           resolve();
                         })
                         .catch((Err) => {
+                          console.log('Reject 1');
                           reject();
                         });
                     })
                     .catch((Err) => {
+                      console.log('Reject 1');
                       reject();
                     });
                 })
                 .catch((error) => {
+                  console.log('Error al sincronizar eventos al server...');
                   reject();
                 });
-            } else {
-              resolve();
             }
           } catch (error) {
+            console.log('Normal catch error 1');
             reject();
           }
         })
         .catch((Err) => {
+          console.log('Catch Promise getServiciosToSyncStorage');
           reject();
         });
     });
+    console.log('Retornando promesa.... promiseChkServiceToSend');
     return promiseChkServiceToSend;
   }
   public getServiciosToSyncStorage() {

@@ -116,7 +116,7 @@ export class ConfiguracionServicioPage {
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           loading.dismiss();
         });
     } else {
@@ -289,11 +289,25 @@ export class ConfiguracionServicioPage {
       Permisionario: 'Saul Teja Gonzalez',
       PermisionarioDomicilio: 'El Yaqui 2050'
     };
-    console.log(
-      'Antes de iniciar servicio...' + JSON.stringify(objConfServicio)
-    );
-    this.bitacoraProvider.iniciarServicio(objConfServicio);
-    this.app.getRootNavs()[0].setRoot(this.menuPage);
+    const loading = this.loadingCtrl.create({
+      content:
+        'Sincronizando información del localStorage al server, por favor espere...'
+    });
+    loading.present();
+    this.bitacoraProvider
+      .iniciarServicio(objConfServicio)
+      .then(() => {
+        console.log('Todo OK>>');
+        console.log('Close loading...');
+        loading.dismiss();
+        this.app.getRootNavs()[0].setRoot(this.menuPage);
+      })
+      .catch((Err) => {
+        console.log('Error --->>');
+        console.log('Close loading...');
+        loading.dismiss();
+        this.app.getRootNavs()[0].setRoot(this.menuPage);
+      });
   }
 
   public filterItems(searchTerm) {

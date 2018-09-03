@@ -46,6 +46,15 @@ export class MyApp {
     // );
     // console.log('dateTest1 converted:', dateTest1);
     // console.log('dateTest1 + UTC: ');
+    // try {
+    //   const now: Date = new Date();
+    //   const strTime: string = now.toTimeString();
+    //   const TimeZone = strTime.substring(8, strTime.length);
+    //   console.log('Zona horaria: ', TimeZone);
+    //   const minutosTimeOfSet = now.getTimezoneOffset();
+    //   console.log('timeOfSet: ', minutosTimeOfSet);
+    //   console.log('timeOfSet Horas: ', minutosTimeOfSet / 60);
+    // } catch (error) {}
     platform.ready().then(() => {
       // Aqui la plataforma esta lista -> Todos los plugins cargados
       this.loginProvider.cargarStorage().then(() => {
@@ -100,7 +109,7 @@ export class MyApp {
                   } catch (error) {}
                 });
               })
-              .catch((err) => {
+              .catch(err => {
                 // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
                 this.rootPage = LoginPage;
                 statusBar.styleDefault();

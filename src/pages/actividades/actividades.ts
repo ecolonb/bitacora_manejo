@@ -149,21 +149,22 @@ export class ActividadesPage {
       }
     } catch (error) {}
 
-    // Sincronizando eventos pendientes
+    // Sincronizando eventos pendientes -> aqui validar cuando ya se sincronizaron por Nuevo Evento
     // Eddpoint
     const loading = this.loadingCtrl.create({
       content:
-        'Sincronizando información del LocalStorage asl servidor, por favor espere...'
+        'Sincronizando información del LocalStorage al server, por favor espere...'
     });
     loading.present();
+    console.log(
+      'Antes de [Sincronizando información del LocalStorage al server]'
+    );
     this.syncUpProvider
       .checkServiceToSend()
       .then(() => {
-        console.log('Servicio sincronizados....');
         loading.dismiss();
       })
       .catch((Err) => {
-        console.log('Error:', Err);
         loading.dismiss();
       });
   }

@@ -524,86 +524,107 @@ export class BitacoraProvider {
     this.haveElements = true;
     // ----------------------
   }
-  public iniciarServicio(objConfServicio: ServicioModel) {
-    // Guardar configuración del servicio en localStorage
-    this.objConfServicio = objConfServicio;
-    const dtIniciaServicio = new Date();
-    // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
-
-    // Obtener coordenadas donde se inicia el servicio.
-    this.getLatLong()
-      .then(LocationDevice => {
-        this.setObjServicio(dtIniciaServicio, objConfServicio, LocationDevice);
-      })
-      .catch(ErrorLocation => {
-        this.setObjServicio(dtIniciaServicio, objConfServicio, ErrorLocation);
-      });
+  public iniciarServicio(objConfServicio: ServicioModel): Promise<any> {
+    const promiseIniciarServicio = new Promise((resolve, reject) => {
+      // Guardar configuración del servicio en localStorage
+      this.objConfServicio = objConfServicio;
+      const dtIniciaServicio = new Date();
+      // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
+      console.log('Antes de llamar this.getLatLong():', objConfServicio);
+      // Obtener coordenadas donde se inicia el servicio.
+      this.getLatLong()
+        .then(LocationDevice => {
+          this.setObjServicio(dtIniciaServicio, objConfServicio, LocationDevice)
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        })
+        .catch(ErrorLocation => {
+          this.setObjServicio(dtIniciaServicio, objConfServicio, ErrorLocation)
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        });
+    });
+    return promiseIniciarServicio;
   }
   public setObjServicio(
     dtStart: Date,
     objConfServicio: ServicioModel,
     LocationDevice: any
-  ) {
-    const dtSQLIniciaServicio: string = this.utilidadesProvider.isoStringToSQLServerFormat(
-      dtStart
-        .toISOString()
-        .toString()
-        .toUpperCase()
-    );
-    const objIniciaServicio: BitacoraModel = {
-      IdBitacora: 0,
-      IdServicio: objConfServicio.IdServicio,
-      HashIdServicio: objConfServicio.HashIdServicio,
-      HashIdBitacora: this.utilidadesProvider.hashCode(
-        dtSQLIniciaServicio.toString() + 'TOKEN'
-      ),
-      FechaHoraInicio: dtSQLIniciaServicio,
-      FechaHoraFinal: null,
-      SegundosTotal: 0,
-      TiempoHhmmss: null,
-      Actividad: 'S',
-      InicioActividadX: LocationDevice.Latitude,
-      InicioActividadY: LocationDevice.Longitude,
-      FinActividadX: null,
-      FinActividadY: null,
-      Descripcion: null,
-      GuardadoServer: false,
-      Nota: null,
-      Transicion: 0,
-      TransicionHhmmss: '00:00:00',
-      Terminado: false
-    };
-    this.StatusServicio = objIniciaServicio;
-    this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
-      this.StatusServicio.FechaHoraInicio
-    );
-    // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
-    this.guardaServicioActualInStorage()
-      .then(() => {})
-      .catch(error => {});
-    this.segundosConduccionStorage = 0;
-    this.segundosDescansoStorage = 0;
-    this.segundosExcepcionTStorage = 0;
-    this.getStatus();
-    this.ctrlTimerServicio = setInterval(() => {
-      this.timerServicio();
-    }, 1000);
-    // Timer para statudUpdate
-    this.ctrlTimerStatusUpdate = setInterval(() => {
-      this.statusUpdate();
-    }, 1000);
-    // Timer para fechaHora actual
-    this.ctrlTimerCurrentDateTiem = setInterval(() => {
-      this.getDateTimeNow();
-    }, 1000);
-    console.log('Aqui armar ObjServicioToSend y sincronizar');
-    this.makeObjServicioToSend(objConfServicio)
-      .then(() => {
-        console.log('Ok');
-      })
-      .catch(() => {
-        console.log('Catch');
-      });
+  ): Promise<any> {
+    console.log('Armando item nuevo servicio...');
+    const promiseSetNuevoServicio = new Promise((resolve, reject) => {
+      const dtSQLIniciaServicio: string = this.utilidadesProvider.isoStringToSQLServerFormat(
+        dtStart
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      );
+      const objIniciaServicio: BitacoraModel = {
+        IdBitacora: 0,
+        IdServicio: objConfServicio.IdServicio,
+        HashIdServicio: objConfServicio.HashIdServicio,
+        HashIdBitacora: this.utilidadesProvider.hashCode(
+          dtSQLIniciaServicio.toString() + 'TOKEN'
+        ),
+        FechaHoraInicio: dtSQLIniciaServicio,
+        FechaHoraFinal: null,
+        SegundosTotal: 0,
+        TiempoHhmmss: null,
+        Actividad: 'S',
+        InicioActividadX: LocationDevice.Latitude,
+        InicioActividadY: LocationDevice.Longitude,
+        FinActividadX: null,
+        FinActividadY: null,
+        Descripcion: null,
+        GuardadoServer: false,
+        Nota: null,
+        Transicion: 0,
+        TransicionHhmmss: '00:00:00',
+        Terminado: false
+      };
+      this.StatusServicio = objIniciaServicio;
+      this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
+        this.StatusServicio.FechaHoraInicio
+      );
+      // Guardar ServicioActual en localStorage y inicir contador de Servicio y la fecha Hora
+      this.guardaServicioActualInStorage()
+        .then(() => {})
+        .catch(error => {
+          reject(error);
+        });
+      this.segundosConduccionStorage = 0;
+      this.segundosDescansoStorage = 0;
+      this.segundosExcepcionTStorage = 0;
+      this.getStatus();
+      this.ctrlTimerServicio = setInterval(() => {
+        this.timerServicio();
+      }, 1000);
+      // Timer para statudUpdate
+      this.ctrlTimerStatusUpdate = setInterval(() => {
+        this.statusUpdate();
+      }, 1000);
+      // Timer para fechaHora actual
+      this.ctrlTimerCurrentDateTiem = setInterval(() => {
+        this.getDateTimeNow();
+      }, 1000);
+      console.log('Llamando a makeObjServicioToSend', objConfServicio);
+      this.makeObjServicioToSend(objConfServicio)
+        .then(() => {
+          resolve();
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+    return promiseSetNuevoServicio;
   }
   // Funcion para armarObjServicioToSend y enviarlo a provider Sync
   public makeObjServicioToSend(objConfServicio: ServicioModel): Promise<any> {
@@ -620,22 +641,18 @@ export class BitacoraProvider {
         TipoServicio: objConfServicio.TipoServicio,
         Token: this.appConfiguracionProvider.getToken(),
         Modalidad: objConfServicio.ModalidadServicio,
-        Terminado: 0
+        Terminado: 0,
+        NewOrSync: 1
       };
-      console.log('Objeto a enviar...' + JSON.stringify(objServicioToSend));
-
-      // Validar si sincronicar o enviarStorage
-      // --------------this.syncUpProvider.syncUpServicio(objServicioToSend);
-      console.log('Verificando si hay datos a enviar');
+      //this.syncUpProvider.setServicesToSend(objServicioToSend);
       this.syncUpProvider
-        .checkServiceToSend()
+        .checkServiceToSend(objServicioToSend)
         .then(() => {
-          this.syncUpProvider.syncUpServicio(objServicioToSend);
+          //this.syncUpProvider.syncUpServicio(objServicioToSend);
           resolve();
         })
         .catch(Error => {
-          console.log('CATCH--->>>');
-          this.syncUpProvider.syncUpServicio(objServicioToSend);
+          //this.syncUpProvider.syncUpServicio(objServicioToSend);
           reject();
         });
     });
@@ -693,7 +710,7 @@ export class BitacoraProvider {
             this.ExcepcionTemporal = false;
             resolve();
           })
-          .catch((err) => {
+          .catch(err => {
             this.stExepcionTemporal = false;
             this.ExcepcionTemporal = false;
             reject(err);

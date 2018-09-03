@@ -11,6 +11,7 @@ export class ServicioToSendModel {
   public Terminado: number;
   public IdUsuarioParent: number;
   public Token: string;
+  public NewOrSync?: number;
 }
 // HashId:
 // IdConductor:
@@ -22,3 +23,4 @@ export class ServicioToSendModel {
 // TipoServicio:
 // Modalidad:
 // Terminado:
+/**
