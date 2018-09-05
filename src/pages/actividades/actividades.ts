@@ -164,7 +164,7 @@ export class ActividadesPage {
       .then(() => {
         loading.dismiss();
       })
-      .catch((Err) => {
+      .catch(Err => {
         loading.dismiss();
       });
   }
@@ -331,7 +331,7 @@ export class ActividadesPage {
       loading.present();
       this.bitacoraProvider
         .guardar()
-        .then((DataRequest) => {
+        .then(DataRequest => {
           console.log('DataRequest ok: ', DataRequest);
           loading.dismiss();
         })
@@ -614,9 +614,6 @@ export class ActividadesPage {
         'Obteniendo posición y sincronizando información, por favor espere...'
     });
     loading.present();
-    console.log(
-      'Obteniendo posición y sincronizando información, por favor espere...'
-    );
     this.bitacoraProvider
       .iniciarExcepcionTemporal(new Date())
       .then(() => {
