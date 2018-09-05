@@ -46,8 +46,8 @@ import { ActionSheetController } from 'ionic-angular';
 import { App } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { ConductorProvider } from '../providers/conductor/conductor';
-import { UnidadProvider } from '../providers/unidad/unidad';
 import { SyncUpProvider } from '../providers/sync-up/sync-up';
+import { UnidadProvider } from '../providers/unidad/unidad';
 
 @NgModule({
   declarations: [

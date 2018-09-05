@@ -170,6 +170,7 @@ export class ActividadesPage {
   }
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
+    console.log('Validando si hay que guardar como teminado la actividad...');
     if (ActividadParam === 'C') {
       this.bitacoraProvider.actividadActual = 'C';
       this.bitacoraProvider.actividaActualTtl = 'C';
@@ -287,9 +288,15 @@ export class ActividadesPage {
             'Obteniendo posición y sincronizando información, por favor espere...'
         });
         loading.present();
-        this.bitacoraProvider.newItemBitacora(dtSart).then(() => {
-          loading.dismiss();
-        });
+        this.bitacoraProvider
+          .newItemBitacora(dtSart)
+          .then(() => {
+            // Una vez Resuelta la promEsa de nuevoItemBitacora se guarda para sincronizar despues.
+            loading.dismiss();
+          })
+          .catch(() => {
+            loading.dismiss();
+          });
       } else {
         // Si hay una actividad en curso aqui se reiniciar tomar la fecha de inicio de actividad pendiente que no sea ET
 
@@ -324,10 +331,12 @@ export class ActividadesPage {
       loading.present();
       this.bitacoraProvider
         .guardar()
-        .then(() => {
+        .then((DataRequest) => {
+          console.log('DataRequest ok: ', DataRequest);
           loading.dismiss();
         })
         .catch(() => {
+          console.log('Error in catch');
           loading.dismiss();
         });
     }
@@ -605,9 +614,19 @@ export class ActividadesPage {
         'Obteniendo posición y sincronizando información, por favor espere...'
     });
     loading.present();
-    this.bitacoraProvider.iniciarExcepcionTemporal(new Date()).then(() => {
-      loading.dismiss();
-    });
+    console.log(
+      'Obteniendo posición y sincronizando información, por favor espere...'
+    );
+    this.bitacoraProvider
+      .iniciarExcepcionTemporal(new Date())
+      .then(() => {
+        console.log('Closing loading....');
+        loading.dismiss();
+      })
+      .catch(() => {
+        console.log('Closing loading.....catch(() => {');
+        loading.dismiss();
+      });
   }
   public terminarExcepcion() {}
 }

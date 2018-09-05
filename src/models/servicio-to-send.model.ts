@@ -23,4 +23,3 @@ export class ServicioToSendModel {
 // TipoServicio:
 // Modalidad:
 // Terminado:
-/**

@@ -270,7 +270,7 @@ export class ConfiguracionServicioPage {
     const objConfServicio: ServicioModel = {
       IdServicio: 0,
       HashIdServicio: hashIdServicio,
-      IdCondcutor: this.conductorProvider.IdConductor(),
+      IdConductor: this.conductorProvider.IdConductor(),
       Unidad: this.objUnidadSeleccionada,
       DireccionOrigen:
         this.origenServicio === undefined || this.origenServicio === null

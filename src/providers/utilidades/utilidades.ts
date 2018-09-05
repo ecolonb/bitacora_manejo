@@ -133,4 +133,34 @@ export class UtilidadesProvider {
     const Respuesta = strHoras + ':' + strMinutos + ':' + strSegundos;
     return Respuesta;
   }
+  // Retorna la zona horaría
+  public getTimeZone(Type?: string): string {
+    try {
+      // let TimeZone: string;
+      const now: Date = new Date();
+      const strTime: string = now.toTimeString();
+
+      if (Type !== undefined && Type !== null) {
+        if (Type === 'short') {
+          const TimeZone = strTime.substring(8, strTime.length).trim();
+          const arrTimeZone = TimeZone.split(' ');
+          return arrTimeZone[0].trim();
+        } else if (Type === 'long') {
+          const TimeZone = strTime.substring(8, strTime.length).trim();
+          return TimeZone;
+        } else if (Type === 'minutosTimeOfSet') {
+          const minutosTimeOfSet = Math.abs(now.getTimezoneOffset());
+          return String(minutosTimeOfSet);
+        } else {
+          const TimeZone = strTime.substring(8, strTime.length).trim();
+          return TimeZone;
+        }
+      } else {
+        const TimeZone = strTime.substring(8, strTime.length).trim();
+        return TimeZone;
+      }
+    } catch (error) {
+      return 'Error';
+    }
+  }
 }

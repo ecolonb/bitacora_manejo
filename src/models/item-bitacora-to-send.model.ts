@@ -9,11 +9,12 @@ export class ItemBitacoraToSendModel {
   public Descripcion: string;
   public Terminado: number;
   public Nota: string;
-  public ZonaHorariaInicio: string;
-  public ZonaHorariaFin: string;
+  public ZonaHorariaInicio?: string;
+  public ZonaHorariaFin?: string;
   public InicioLatitud: number;
   public InicioLongitud: number;
   public FinLatitud: number;
   public FinLongitud: number;
+  public NewOrSync: number;
 }
-// Definir catalogo de tipo de actividad.
+// NewOrSync: 1-nuevo, 2-Sync

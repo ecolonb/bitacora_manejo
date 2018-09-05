@@ -2,7 +2,7 @@ import { UnidadModel } from './unidad.model';
 export class ServicioModel {
   public IdServicio?: number;
   public HashIdServicio: number;
-  public IdCondcutor: number;
+  public IdConductor: number;
   public Unidad: UnidadModel;
   public DireccionOrigen: string;
   public DireccionDestino: string;

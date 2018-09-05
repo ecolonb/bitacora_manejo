@@ -28,8 +28,8 @@
       </ion-item>
       <ion-item text-center>
         FIN ACTIVIDAD:
-        <p>{{ objItemBitacora.FechaHoraFinal? (((objItemBitacora.FechaHoraFinal | dateUtcToLocale) | date:'d, MMM, y, HH:mm:ss':'es-mx'
-          ) | uppercase) : 'En progreso' }}
+        <p>{{ objItemBitacora.FechaHoraFinal !== '-' ? (((objItemBitacora.FechaHoraFinal | dateUtcToLocale) | date:'d, MMM,
+          y, HH:mm:ss':'es-mx' ) | uppercase) : 'En progreso' }}
         </p>
       </ion-item>
       <ion-card-header text-center>

@@ -1,9 +1,9 @@
-import { ServicioModel } from './servicio.model';
-
 export class BitacoraModel {
   public IdBitacora?: number;
   public HashIdBitacora: number;
   public IdServicio?: number;
+  public IdConductor?: number;
+  public IdUsuarioParent?: number;
   public HashIdServicio: number;
   public FechaHoraInicio: string;
   public FechaHoraFinal: string;
@@ -20,6 +20,10 @@ export class BitacoraModel {
   public FinActividadY: number;
   public GuardadoServer: boolean;
   public Nota: string;
+  public ZonaHorariaInicio?: string;
+  public ZonaHorariaFin?: string;
+  public NewOrSync?: number;
+  public Token?: string;
 
   constructor(objDatos: BitacoraModel) {
     this.IdBitacora = objDatos.IdBitacora;
@@ -41,15 +45,13 @@ export class BitacoraModel {
     this.Transicion = objDatos.Transicion;
     this.TransicionHhmmss = objDatos.TransicionHhmmss;
     this.Terminado = objDatos.Terminado;
+    this.ZonaHorariaInicio = objDatos.ZonaHorariaInicio;
+    this.ZonaHorariaFin = objDatos.ZonaHorariaFin;
+    this.NewOrSync = objDatos.NewOrSync;
+    this.IdConductor = objDatos.IdConductor;
+    this.Token = objDatos.Token;
+    this.IdUsuarioParent = objDatos.IdUsuarioParent;
   }
 
-  /**
-   * Con los datos que se crea la bitacora:
-   * IdViaje = Puede tener o no un viaje asignado.
-   * HashBitacora = se crea apartir de la fecha hora UTC + Token
-   * FechaHoraInicio = Es la fecha que se registra cuando el usuario inicia una Actividad
-   * InicioActividadX = Punto Latitud
-   * InicioActividadY = Punto longitud
-   *
-   */
+  // 1-Nuevo <-> 2-Sync
 }

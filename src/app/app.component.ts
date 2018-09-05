@@ -46,15 +46,16 @@ export class MyApp {
     // );
     // console.log('dateTest1 converted:', dateTest1);
     // console.log('dateTest1 + UTC: ');
-    // try {
-    //   const now: Date = new Date();
-    //   const strTime: string = now.toTimeString();
-    //   const TimeZone = strTime.substring(8, strTime.length);
-    //   console.log('Zona horaria: ', TimeZone);
-    //   const minutosTimeOfSet = now.getTimezoneOffset();
-    //   console.log('timeOfSet: ', minutosTimeOfSet);
-    //   console.log('timeOfSet Horas: ', minutosTimeOfSet / 60);
-    // } catch (error) {}
+    // let respuestaTZ: any = null;
+
+    // respuestaTZ = this.utilidadesProvider.getTimeZone();
+    // console.log('Llmando forma default:', respuestaTZ);
+
+    // respuestaTZ = this.utilidadesProvider.getTimeZone('short');
+    // console.log('Llmando forma short:', respuestaTZ);
+
+    // respuestaTZ = this.utilidadesProvider.getTimeZone('minutosTimeOfSet');
+    // console.log('Llmando forma minutosTimeOfSet:', respuestaTZ);
     platform.ready().then(() => {
       // Aqui la plataforma esta lista -> Todos los plugins cargados
       this.loginProvider.cargarStorage().then(() => {
