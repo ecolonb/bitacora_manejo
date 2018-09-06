@@ -1034,6 +1034,9 @@ export class BitacoraProvider {
     const promiseTerminarServicio = new Promise((resolve, reject) => {
       try {
         // Actualiza los datos en ServicioActual y guarda en Storage
+        console.log(
+          'Aqui validar la informacion actual del servicio, guardar datos de fin de servicio'
+        );
         this.updateStatusServicio().then(() => {
           this.terminarActividades().then(() => {
             // terminando actividades listo-> Guardar promise
@@ -1496,6 +1499,7 @@ export class BitacoraProvider {
     } catch (error) {}
   }
   private terminarActividades(): Promise<any> {
+    console.log('Terminando actividaes......>>>>>>>>>>>>>>>>>>');
     // Guardando actividad en progreso no ET
     const promiseTerminarActividades = new Promise((resolve, reject) => {
       if (this.BitacoraData && this.BitacoraData !== null) {
@@ -1524,6 +1528,7 @@ export class BitacoraProvider {
             // this.strSegundos = ':00';
             // this.strMinutos = ':00';
             // this.strHoras = '00';
+            this.saveItemToSend(itBitacoraSave);
             this.stInProgress = false;
             this.numSegundosActuales = 0;
             // Validar en que estado estába y terminarlo
@@ -1534,6 +1539,7 @@ export class BitacoraProvider {
             this.dsDescanso = false;
             this.stExepcionTemporal = false;
             this.dsExcepcionTemporal = false;
+            // this.syncUpProvider.syncNewActivity(itBitacoraSave, false);
             // this.dsExcepcionTemporal = false;
           } else {
             // Guardar Excepción
@@ -1559,6 +1565,7 @@ export class BitacoraProvider {
                 objTiempoTranscurrido.segundosDiferencia;
               itBitacoraSave.TiempoHhmmss =
                 objTiempoTranscurrido.segundosHhmmss;
+              this.saveItemToSend(itBitacoraSave);
             }
           }
         }
@@ -1569,6 +1576,12 @@ export class BitacoraProvider {
     });
     return promiseTerminarActividades;
   }
+
+  // Guardar items de las bitacoras pero no enviar hasta terminar For..
+  private saveItemToSend(ItemToSave: any) {
+    console.log('Añadiendo item para enviar....', ItemToSave);
+  }
+
   private sincronizarInformacion(): Promise<any> {
     // Borrando servicios actuales..
     const promiseSincronizarInfo = new Promise((resolve, reject) => {
