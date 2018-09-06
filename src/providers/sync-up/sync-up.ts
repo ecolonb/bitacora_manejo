@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, ReflectiveInjector } from '@angular/core';
 import { ServicioToSendModel } from './../../models/servicio-to-send.model';
 
 // ******** PLUGINS *********
@@ -31,12 +31,62 @@ export class SyncUpProvider {
     private platform: Platform,
     private storage: Storage
   ) {
-    // ******* cuando se inicializa el provider se verifica si hay Información para soncronizar
+    // ******* cuando se inicializa el provider se verifica si hay Información para soncronizar Servicio Actividades
+    // this.getActivitysFromStorage()
+    //   .then(() => {
+    //     console.log('Activitys loaded OK');
+    //   })
+    //   .catch(() => {
+    //     console.log('Activitys catch Error');
+    //   });
   }
   public setServicesToSend(ObjNewService: ServicioToSendModel) {
     this.ServiciosToSync.push(ObjNewService);
     return true;
   }
+  public setActivityToSend(
+    ObjItemBitacora: BitacoraModel,
+    GurdarStorage: boolean
+  ): Promise<any> {
+    const promiseSetActivity = new Promise((resolve, reject) => {
+      if (
+        this.ActivitysToSync &&
+        this.ActivitysToSync !== null &&
+        this.ActivitysToSync !== undefined &&
+        this.ActivitysToSync.length > 0
+      ) {
+        this.ActivitysToSync.push(ObjItemBitacora);
+        if (GurdarStorage) {
+          this.setActivitysFromStorage()
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        } else {
+          resolve();
+        }
+      } else {
+        this.ActivitysToSync = [];
+        this.ActivitysToSync.push(ObjItemBitacora);
+        if (GurdarStorage) {
+          this.setActivitysFromStorage()
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        } else {
+          resolve();
+        }
+      }
+    });
+    return promiseSetActivity;
+  }
+  // Indica si hay activdades pendientes para enviar.
+
   public deleteSynchronizedServices(
     objSynchronizedServices: any
   ): Promise<any> {
@@ -302,7 +352,7 @@ export class SyncUpProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjServiciosToSync').then((ObjServiciosToSync) => {
+          this.storage.get('ObjServiciosToSync').then(ObjServiciosToSync => {
             if (ObjServiciosToSync) {
               this.ServiciosToSync = JSON.parse(ObjServiciosToSync);
               resolve(true);
@@ -320,6 +370,40 @@ export class SyncUpProvider {
       }
     });
     return storageInfoPromise;
+  }
+
+  public checkActivitysToSend(): Promise<any> {
+    const promiseCheckActivitysToSend = new Promise((resolve, reject) => {
+      this.getActivitysFromStorage()
+        .then(() => {
+          //Sync allactivitys
+          if (
+            this.ActivitysToSync &&
+            this.ActivitysToSync !== null &&
+            this.ActivitysToSync !== undefined &&
+            this.ActivitysToSync.length > 0
+          ) {
+            this.syncActivitystoServer()
+              .then(DataRequest => {
+                console.log(
+                  'Eliminando actividad sincronizadas y guardando storae',
+                  DataRequest
+                );
+                resolve(DataRequest);
+              })
+              .catch(() => {
+                // error here
+                reject();
+              });
+          } else {
+            resolve();
+          }
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+    return promiseCheckActivitysToSend;
   }
 
   // ******** Funciones publicas de Actividades Sync
@@ -358,7 +442,7 @@ export class SyncUpProvider {
                     // ok
                     this.ActivitysToSync.push(Activity);
                     this.prepareActivityToSync()
-                      .then((DataRequest) => {
+                      .then(DataRequest => {
                         // ok
                         console.log('DataRequest OK_', DataRequest);
                         resolve(DataRequest);
@@ -379,12 +463,12 @@ export class SyncUpProvider {
                     // err
                     this.ActivitysToSync.push(Activity);
                     this.prepareActivityToSync()
-                      .then((DataRequest) => {
+                      .then(DataRequest => {
                         // ok
                         console.log('Resolve OK');
                         resolve(DataRequest);
                       })
-                      .catch((Error_) => {
+                      .catch(Error_ => {
                         // err
                         console.log('Reject Eror_', Error_);
                         reject();
@@ -397,12 +481,12 @@ export class SyncUpProvider {
                 this.ActivitysToSync = [];
                 this.ActivitysToSync.push(Activity);
                 this.prepareActivityToSync()
-                  .then((DataRequest) => {
+                  .then(DataRequest => {
                     // ok
                     console.log('Resolve OK');
                     resolve(DataRequest);
                   })
-                  .catch((Eror_) => {
+                  .catch(Eror_ => {
                     // err
                     console.log('Reject Eror_', Eror_);
                     reject();
@@ -410,7 +494,7 @@ export class SyncUpProvider {
               }
               // REALIZAR PETICION POST ENVIAR DATA
             })
-            .catch((Error_) => {
+            .catch(Error_ => {
               console.log('.catch(Error_ => {Reject Eror_', Error_);
               reject();
             });
@@ -461,37 +545,46 @@ export class SyncUpProvider {
   public prepareActivityToSync(): Promise<any> {
     console.log('Preparando actividad to send');
     const promisePrepareActivityToSync = new Promise((resolve, reject) => {
-      this.syncActivitystoServer()
-        .then((RESPONSE_DATA) => {
-          // Aqui eliminar actividades sincronizadas
-          console.log('RESPONSE_DATA', RESPONSE_DATA);
+      if (
+        this.ActivitysToSync &&
+        this.ActivitysToSync !== undefined &&
+        this.ActivitysToSync !== null &&
+        this.ActivitysToSync.length > 0
+      ) {
+        this.syncActivitystoServer()
+          .then(RESPONSE_DATA => {
+            // Aqui eliminar actividades sincronizadas
+            console.log('RESPONSE_DATA', RESPONSE_DATA);
 
-          this.setActivitysFromStorage()
-            .then(() => {
-              console.log('Se guardaron las actividades en Storage-->');
-              resolve(RESPONSE_DATA);
-            })
-            .catch((Error_) => {
-              console.log(
-                'Reject return public prepareActivityToSync():11',
-                Error_
-              );
-              reject();
-            });
-        })
-        .catch((ErrorCatch) => {
-          console.log(
-            'Reject return public prepareActivityToSync():22',
-            ErrorCatch
-          );
-          this.setActivitysFromStorage()
-            .then(() => {
-              reject();
-            })
-            .catch(() => {
-              reject();
-            });
-        });
+            this.setActivitysFromStorage()
+              .then(() => {
+                console.log('Se guardaron las actividades en Storage-->');
+                resolve(RESPONSE_DATA);
+              })
+              .catch(Error_ => {
+                console.log(
+                  'Reject return public prepareActivityToSync():11',
+                  Error_
+                );
+                reject();
+              });
+          })
+          .catch(ErrorCatch => {
+            console.log(
+              'Reject return public prepareActivityToSync():22',
+              ErrorCatch
+            );
+            this.setActivitysFromStorage()
+              .then(() => {
+                reject();
+              })
+              .catch(() => {
+                reject();
+              });
+          });
+      } else {
+        reject();
+      }
     });
     return promisePrepareActivityToSync;
   }
@@ -517,12 +610,12 @@ export class SyncUpProvider {
       this.http
         .post(this.URL_SyncAllActivitys, FormDataSend, HEADERS)
         .toPromise()
-        .then((RESULT_DATA) => {
+        .then(RESULT_DATA => {
           console.log('Resolve Activitys httpRequest', RESULT_DATA);
           this.deleteSynchonizedActivitys(RESULT_DATA);
           resolve(RESULT_DATA);
         })
-        .catch((ErrorPromise) => {
+        .catch(ErrorPromise => {
           console.log('Reject Activitys httpRequest: ', ErrorPromise);
           reject(ErrorPromise);
         });
@@ -535,7 +628,7 @@ export class SyncUpProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjActivitysToSync').then((ObjActivitysToSync) => {
+          this.storage.get('ObjActivitysToSync').then(ObjActivitysToSync => {
             if (ObjActivitysToSync) {
               this.ActivitysToSync = JSON.parse(ObjActivitysToSync);
               resolve(true);

@@ -18,6 +18,7 @@ import { ServicioModel } from './../../models/servicio.model';
 import { UnidadModel } from './../../models/unidad.model';
 import { ConductorProvider } from './../../providers/conductor/conductor';
 import { LoginPage, MenuPage } from './../index-paginas';
+import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 
 /**
  * En esta página se configura el servicio los datos que solicita la norma de la SCT.
@@ -66,7 +67,8 @@ export class ConfiguracionServicioPage {
     public conductorProvider: ConductorProvider,
     private unidadProvider: UnidadProvider,
     private loadingCtrl: LoadingController,
-    private utilidadesProvider: UtilidadesProvider
+    private utilidadesProvider: UtilidadesProvider,
+    private syncUpProvider: SyncUpProvider
   ) {
     /**
      */
@@ -91,7 +93,7 @@ export class ConfiguracionServicioPage {
     this.slides.paginationType = 'progress';
   }
   public ionViewDidLoad() {
-    const loading = this.loadingCtrl.create({
+    let loading = this.loadingCtrl.create({
       content: 'Cargando lista de unidades, por favor espere...'
     });
     loading.present();
@@ -107,16 +109,92 @@ export class ConfiguracionServicioPage {
             this.unidadProvider.arrObjUnidades.length > 0
           ) {
             loading.dismiss();
+            loading = this.loadingCtrl.create({
+              content:
+                'Sincronizando información del localStorage, por favor espere...'
+            });
+            loading.present();
+            this.syncUpProvider
+              .checkServiceToSend()
+              .then(() => {
+                console.log('Service sync OK');
+                this.syncUpProvider
+                  .checkActivitysToSend()
+                  .then(() => {
+                    console.log('sync activitys and services....');
+                    loading.dismiss();
+                  })
+                  .catch(() => {
+                    console.log('Error in syncUpProvider');
+
+                    loading.dismiss();
+                  });
+              })
+              .catch(() => {
+                loading.dismiss();
+              });
           } else {
             this.unidadProvider
               .getUnidadesPost()
               .then((RESULT_DATA: UnidadRequestModel) => {
                 this.unidadProvider.mappingResult(RESULT_DATA);
                 loading.dismiss();
+                loading = this.loadingCtrl.create({
+                  content:
+                    'Sincronizando información del localStorage, por favor espere...'
+                });
+                loading.present();
+                this.syncUpProvider
+                  .checkServiceToSend()
+                  .then(() => {
+                    console.log('Service sync OK');
+                    this.syncUpProvider
+                      .checkActivitysToSend()
+                      .then(() => {
+                        console.log('sync activitys and services....');
+                        loading.dismiss();
+                      })
+                      .catch(() => {
+                        console.log('Error in syncUpProvider');
+
+                        loading.dismiss();
+                      });
+                  })
+                  .catch(() => {
+                    loading.dismiss();
+                  });
+              })
+              .catch(() => {
+                // error get unidades....
+                loading.dismiss();
+                loading = this.loadingCtrl.create({
+                  content:
+                    'Sincronizando información del localStorage, por favor espere...'
+                });
+                loading.present();
+                this.syncUpProvider
+                  .checkServiceToSend()
+                  .then(() => {
+                    console.log('Service sync OK');
+                    this.syncUpProvider
+                      .checkActivitysToSend()
+                      .then(() => {
+                        console.log('sync activitys and services....');
+                        loading.dismiss();
+                      })
+                      .catch(() => {
+                        console.log('Error in syncUpProvider');
+
+                        loading.dismiss();
+                      });
+                  })
+                  .catch(() => {
+                    loading.dismiss();
+                  });
               });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           loading.dismiss();
         });
     } else {
@@ -125,6 +203,30 @@ export class ConfiguracionServicioPage {
         .then((RESULT_DATA: UnidadRequestModel) => {
           this.unidadProvider.mappingResult(RESULT_DATA);
           loading.dismiss();
+          loading = this.loadingCtrl.create({
+            content:
+              'Sincronizando información del localStorage, por favor espere...'
+          });
+          loading.present();
+          this.syncUpProvider
+            .checkServiceToSend()
+            .then(() => {
+              console.log('Service sync OK');
+              this.syncUpProvider
+                .checkActivitysToSend()
+                .then(() => {
+                  console.log('sync activitys and services....');
+                  loading.dismiss();
+                })
+                .catch(() => {
+                  console.log('Error in syncUpProvider');
+
+                  loading.dismiss();
+                });
+            })
+            .catch(() => {
+              loading.dismiss();
+            });
         });
     }
   }
@@ -302,7 +404,7 @@ export class ConfiguracionServicioPage {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
-      .catch((Err) => {
+      .catch(Err => {
         console.log('Error --->>');
         console.log('Close loading...');
         loading.dismiss();
@@ -311,14 +413,24 @@ export class ConfiguracionServicioPage {
   }
 
   public filterItems(searchTerm) {
-    return this.unidadProvider.arrObjUnidades.filter((item: UnidadModel) => {
-      return (
-        item.nuid
-          .toString()
-          .toLowerCase()
-          .indexOf(searchTerm.toLowerCase()) > -1
-      );
-    });
+    console.log(this.unidadProvider.arrObjUnidades);
+    if (
+      this.unidadProvider.arrObjUnidades &&
+      this.unidadProvider.arrObjUnidades !== undefined &&
+      this.unidadProvider.arrObjUnidades !== null &&
+      this.unidadProvider.arrObjUnidades.length > 0
+    ) {
+      return this.unidadProvider.arrObjUnidades.filter((item: UnidadModel) => {
+        return (
+          item.nuid
+            .toString()
+            .toLowerCase()
+            .indexOf(searchTerm.toLowerCase()) > -1
+        );
+      });
+    } else {
+      console.log('No hay unidades....');
+    }
   }
   public setUnidad(ObjSearch: UnidadModel) {
     this.objUnidadSeleccionada = ObjSearch;

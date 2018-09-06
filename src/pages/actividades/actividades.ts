@@ -66,36 +66,6 @@ export class ActividadesPage {
 
   // Error en Dispositivo
   public ionViewDidLoad() {
-    if (this.platform.is('cordova')) {
-      // this.diagnostic.getLocationAuthorizationStatus().then((DATA) => {
-      //   console.log('DATA ---->>> Autoroization' + JSON.stringify(DATA));
-      //   this.bitacoraProvider.strTatusLocation = JSON.stringify(DATA);
-      // });
-      // this.diagnostic.getLocationMode().then((DATA) => {
-      //   console.log(
-      //     'DATA getLocationMode----------->>>' + JSON.stringify(DATA)
-      //   );
-      //   console.log('DATA----------->>>------>>>crudo' + DATA);
-      //   if (String(DATA) !== 'location_off') {
-      //     this.bitacoraProvider.strTatusLocationMode =
-      //       'Activated <-> --->>' + DATA;
-      //   } else {
-      //     this.bitacoraProvider.strTatusLocationMode =
-      //       'Disabled <-> -->>' + DATA;
-      //   }
-      // });
-      // this.diagnostic.isLocationEnabled().then((Respuesta) => {
-      //   if (Respuesta) {
-      //     this.bitacoraProvider.strTatusLocation = 'Location Activated';
-      //   } else {
-      //     this.bitacoraProvider.strTatusLocation = 'Location Desactivated';
-      //   }
-      //   console.log('Diagnostic-----promesa OK>>>>');
-      // });
-    } else {
-      this.bitacoraProvider.strTatusLocation = 'Desktop';
-      this.bitacoraProvider.strTatusLocationMode = 'Desktop';
-    }
     try {
       if (
         this.bitacoraProvider.BitacoraData !== [] &&
@@ -162,12 +132,25 @@ export class ActividadesPage {
     this.syncUpProvider
       .checkServiceToSend()
       .then(() => {
-        loading.dismiss();
+        this.syncUpProvider
+          .checkActivitysToSend()
+          .then(DataRequest => {
+            console.log('DataRequest from Actividades: ', DataRequest);
+            this.bitacoraProvider.changeGuardadoServer(DataRequest);
+            loading.dismiss();
+          })
+          .catch(() => {
+            console.log('Reject -->> from Actividades:');
+            loading.dismiss();
+          });
       })
       .catch(Err => {
+        console.log('checkServiceToSend catch error-> :', Err);
         loading.dismiss();
       });
+    //
   }
+
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
     console.log('Validando si hay que guardar como teminado la actividad...');
@@ -189,17 +172,6 @@ export class ActividadesPage {
         this.bitacoraProvider.dsDescanso = true;
       }
     }
-    // if (ActividadParam === 'ET') {
-    //   this.bitacoraProvider.actividadActual = 'ET';
-    //   this.bitacoraProvider.actividaActualTtl = 'ET';
-    //   this.bitacoraProvider.ExcepcionTemporal = true;
-    //   this.bitacoraProvider.dsConduciendo = true;
-    //   this.bitacoraProvider.dsDescanso = true;
-    //   if (!this.bitacoraProvider.boolReinicio) {
-    //     this.bitacoraProvider.dsExcepcionTemporal = true;
-    //   }
-    // }
-
     if (!this.bitacoraProvider.stInProgress) {
       this.bitacoraProvider.stInProgress = true;
       this.bitacoraProvider.strSegundos = ':00';
@@ -207,54 +179,6 @@ export class ActividadesPage {
       this.bitacoraProvider.strHoras = '00';
       let dtSart: Date;
       if (!this.bitacoraProvider.boolReinicio) {
-        // dtSart = new Date();
-        // Obteniendo las coordenadas
-        // this.geolocation
-        //   .getCurrentPosition()
-        //   .then((resp) => {
-        //     // resp.coords.latitude
-        //     // resp.coords.longitude
-        //     // console.log(resp.coords.latitude);
-        //     // console.log(resp.coords.longitude);
-        //     // this.bitacoraProvider.InicioActividadX = Number(
-        //     //   resp.coords.latitude
-        //     // );
-        //     // this.bitacoraProvider.InicioActividadY = Number(
-        //     //   resp.coords.longitude
-        //     // );
-        //     // console.log(
-        //     //   'LOCATION this.InicioActividadX: ---------->>>',
-        //     //   this.bitacoraProvider.InicioActividadX
-        //     // );
-        //     // console.log(
-        //     //   'LOCATION this.InicioActividadY: ------------>>',
-        //     //   this.bitacoraProvider.InicioActividadY
-        //     // );
-
-        //     // si se obtiene la ubicación actual habilitar boton parar actividad
-
-        //   })
-        //   .catch((error) => {
-        //     console.log(
-        //       'Error getting location------------->>>>' + JSON.stringify(error)
-        //     );
-        //     this.bitacoraProvider.InicioActividadX = -2786;
-        //     this.bitacoraProvider.InicioActividadY = -2786;
-        //     this.bitacoraProvider.newItemBitacora(dtSart);
-        //     // si se obtiene la ubicación actual habilitar boton parar actividad
-
-        //     if (ActividadParam === 'C') {
-        //       this.bitacoraProvider.dsConduciendo = false;
-        //     }
-        //     if (ActividadParam === 'D') {
-        //       this.bitacoraProvider.dsDescanso = false;
-        //     }
-        //     if (ActividadParam === 'ET') {
-        //       this.bitacoraProvider.dsExcepcionTemporal = false;
-        //     }
-        //     console.log('Despues de error en location------->>>>');
-        //   });
-
         if (ActividadParam === 'C') {
           this.bitacoraProvider.dsConduciendo = false;
         }
@@ -265,7 +189,6 @@ export class ActividadesPage {
           this.bitacoraProvider.dsExcepcionTemporal = false;
         }
         dtSart = new Date();
-
         this.bitacoraProvider.dtFechaInicio = this.utilidadesProvider.convertLocalDateToUTC(
           dtSart
         );
@@ -281,8 +204,6 @@ export class ActividadesPage {
             .toString()
             .toUpperCase()
         );
-
-        // Eddpoint
         const loading = this.loadingCtrl.create({
           content:
             'Obteniendo posición y sincronizando información, por favor espere...'
@@ -573,34 +494,82 @@ export class ActividadesPage {
               content: 'Sincronizando información, por favor espere...'
             });
             loading.present();
-            this.bitacoraProvider.terminarServicio().then(() => {
-              // redirect configuracion nuevo servicio
-              loading.dismiss();
-              this.bitacoraProvider.strHoras = '00';
-              this.bitacoraProvider.strMinutos = ':00';
-              this.bitacoraProvider.strSegundos = ':00';
-              this.bitacoraProvider.strHorasExcepcion = '00';
-              this.bitacoraProvider.strSegundosExcepcion = ':00';
-              this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
-              this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
-              this.bitacoraProvider.strHorasServicio = '00';
-              this.bitacoraProvider.strMinutosServicio = ':00';
-              this.bitacoraProvider.strSegundosServicio = ':00';
-              this.bitacoraProvider.segundosConduccionStorage = 0;
-              this.bitacoraProvider.segundosDescansoStorage = 0;
-              this.bitacoraProvider.segundosConduccion = 0;
-              this.bitacoraProvider.segundosDescanso = 0;
-              this.bitacoraProvider.haveElements = false;
-              // this.bitacoraProvider.stora
-              this.app.getRootNavs()[0].setRoot(this.configuracionServicioPage);
-              delete this.bitacoraProvider.BitacoraData;
-              delete this.bitacoraProvider.StatusServicio;
-              delete this.bitacoraProvider.objConfServicio;
-              this.bitacoraProvider.stExepcionTemporal = false;
-              this.bitacoraProvider.ExcepcionTemporal = false;
-              this.bitacoraProvider.stInProgress = false;
-              this.unidadProvider.cargarFromStorage = true;
-            });
+            this.bitacoraProvider
+              .terminarServicio()
+              .then(() => {
+                // redirect configuracion nuevo servicio
+                console.log(
+                  'Cerrando loading Actividades: this.bitacoraProvider.terminarServicio().then(() => {'
+                );
+                loading.dismiss();
+                try {
+                  clearInterval(this.bitacoraProvider.ctrlTimerServicio);
+                  clearInterval(this.bitacoraProvider.controlTimerExcepcion);
+                  clearInterval(this.bitacoraProvider.control);
+                } catch (error) {}
+                this.bitacoraProvider.strHoras = '00';
+                this.bitacoraProvider.strMinutos = ':00';
+                this.bitacoraProvider.strSegundos = ':00';
+                this.bitacoraProvider.strHorasExcepcion = '00';
+                this.bitacoraProvider.strSegundosExcepcion = ':00';
+                this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+                this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+                this.bitacoraProvider.strHorasServicio = '00';
+                this.bitacoraProvider.strMinutosServicio = ':00';
+                this.bitacoraProvider.strSegundosServicio = ':00';
+                this.bitacoraProvider.segundosConduccionStorage = 0;
+                this.bitacoraProvider.segundosDescansoStorage = 0;
+                this.bitacoraProvider.segundosConduccion = 0;
+                this.bitacoraProvider.segundosDescanso = 0;
+                this.bitacoraProvider.haveElements = false;
+                // this.bitacoraProvider.stora
+                this.app
+                  .getRootNavs()[0]
+                  .setRoot(this.configuracionServicioPage);
+                delete this.bitacoraProvider.BitacoraData;
+                delete this.bitacoraProvider.StatusServicio;
+                delete this.bitacoraProvider.objConfServicio;
+                this.bitacoraProvider.stExepcionTemporal = false;
+                this.bitacoraProvider.ExcepcionTemporal = false;
+                this.bitacoraProvider.stInProgress = false;
+                this.unidadProvider.cargarFromStorage = true;
+              })
+              .catch(() => {
+                console.log('Cerrando lodng....');
+                loading.dismiss();
+                try {
+                  clearInterval(this.bitacoraProvider.ctrlTimerServicio);
+                  clearInterval(this.bitacoraProvider.controlTimerExcepcion);
+                  clearInterval(this.bitacoraProvider.control);
+                } catch (error) {}
+                this.bitacoraProvider.strHoras = '00';
+                this.bitacoraProvider.strMinutos = ':00';
+                this.bitacoraProvider.strSegundos = ':00';
+                this.bitacoraProvider.strHorasExcepcion = '00';
+                this.bitacoraProvider.strSegundosExcepcion = ':00';
+                this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+                this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+                this.bitacoraProvider.strHorasServicio = '00';
+                this.bitacoraProvider.strMinutosServicio = ':00';
+                this.bitacoraProvider.strSegundosServicio = ':00';
+                this.bitacoraProvider.segundosConduccionStorage = 0;
+                this.bitacoraProvider.segundosDescansoStorage = 0;
+                this.bitacoraProvider.segundosConduccion = 0;
+                this.bitacoraProvider.segundosDescanso = 0;
+                this.bitacoraProvider.haveElements = false;
+                // this.bitacoraProvider.stora
+                this.app
+                  .getRootNavs()[0]
+                  .setRoot(this.configuracionServicioPage);
+                delete this.bitacoraProvider.BitacoraData;
+                delete this.bitacoraProvider.StatusServicio;
+                delete this.bitacoraProvider.objConfServicio;
+                this.bitacoraProvider.sincronizarInformacion();
+                this.bitacoraProvider.stExepcionTemporal = false;
+                this.bitacoraProvider.ExcepcionTemporal = false;
+                this.bitacoraProvider.stInProgress = false;
+                this.unidadProvider.cargarFromStorage = true;
+              });
           }
         }
       ]

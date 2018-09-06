@@ -69,37 +69,92 @@ export class MenuPage {
               content: 'Sincronizando información, por favor espere...'
             });
             loading.present();
-            this.bitacoraProvider.terminarServicio().then(() => {
-              this.LoginProvider.cerrarSesion().then(() => {
-                loading.dismiss();
-                this.app.getRootNavs()[0].setRoot(this.loginPage);
-                delete this.bitacoraProvider.BitacoraData;
-                // delete this.bitacoraProvider.StatusServicio;
-                // delete this.bitacoraProvider.objConfServicio;
-                this.LoginProvider.setActivo(false);
-                this.bitacoraProvider.strHoras = '00';
-                this.bitacoraProvider.strMinutos = ':00';
-                this.bitacoraProvider.strSegundos = ':00';
-                this.bitacoraProvider.strHorasExcepcion = '00';
-                this.bitacoraProvider.strSegundosExcepcion = ':00';
-                this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
-                this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
-                this.bitacoraProvider.strHorasServicio = '00';
-                this.bitacoraProvider.strMinutosServicio = ':00';
-                this.bitacoraProvider.strSegundosServicio = ':00';
-                this.bitacoraProvider.segundosConduccionStorage = 0;
-                this.bitacoraProvider.segundosDescansoStorage = 0;
-                this.bitacoraProvider.segundosConduccion = 0;
-                this.bitacoraProvider.segundosDescanso = 0;
-                this.bitacoraProvider.haveElements = false;
-                // this.bitacoraProvider.stora
-                this.bitacoraProvider.stExepcionTemporal = false;
-                this.bitacoraProvider.ExcepcionTemporal = false;
-                this.bitacoraProvider.stInProgress = false;
-                this.unidadProvider.cargarFromStorage = true;
+            this.bitacoraProvider
+              .terminarServicio()
+              .then(() => {
+                this.LoginProvider.cerrarSesion().then(() => {
+                  loading.dismiss();
+                  this.app.getRootNavs()[0].setRoot(this.loginPage);
+                  delete this.bitacoraProvider.BitacoraData;
+                  // delete this.bitacoraProvider.StatusServicio;
+                  // delete this.bitacoraProvider.objConfServicio;
+                  this.LoginProvider.setActivo(false);
+                  this.bitacoraProvider.strHoras = '00';
+                  this.bitacoraProvider.strMinutos = ':00';
+                  this.bitacoraProvider.strSegundos = ':00';
+                  this.bitacoraProvider.strHorasExcepcion = '00';
+                  this.bitacoraProvider.strSegundosExcepcion = ':00';
+                  this.bitacoraProvider.segundosConduccionHhmmss = '00:00:00';
+                  this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+                  this.bitacoraProvider.strHorasServicio = '00';
+                  this.bitacoraProvider.strMinutosServicio = ':00';
+                  this.bitacoraProvider.strSegundosServicio = ':00';
+                  this.bitacoraProvider.segundosConduccionStorage = 0;
+                  this.bitacoraProvider.segundosDescansoStorage = 0;
+                  this.bitacoraProvider.segundosConduccion = 0;
+                  this.bitacoraProvider.segundosDescanso = 0;
+                  this.bitacoraProvider.haveElements = false;
+                  // this.bitacoraProvider.stora
+                  this.bitacoraProvider.stExepcionTemporal = false;
+                  this.bitacoraProvider.ExcepcionTemporal = false;
+                  this.bitacoraProvider.stInProgress = false;
+                  this.unidadProvider.cargarFromStorage = true;
+                });
+                // redirect configuracion nuevo servicio
+              })
+              .catch(() => {
+                console.log('Erro al cerrar sesion...............catch');
+                this.LoginProvider.cerrarSesion()
+                  .then(() => {
+                    loading.dismiss();
+                    try {
+                      clearInterval(this.bitacoraProvider.ctrlTimerServicio);
+                      clearInterval(
+                        this.bitacoraProvider.controlTimerExcepcion
+                      );
+                      clearInterval(this.bitacoraProvider.control);
+                    } catch (error) {}
+                    // loading.dismiss();
+                    console.log(
+                      'Antes de: this.app.getRootNavs()[0].setRoot(this.loginPage);'
+                    );
+                    this.app.getRootNavs()[0].setRoot(this.loginPage);
+                    delete this.bitacoraProvider.BitacoraData;
+                    this.bitacoraProvider.sincronizarInformacion().then(() => {
+                      console.log(
+                        'Despues de: -> delete this.bitacoraProvider.BitacoraData;'
+                      );
+                      this.LoginProvider.setActivo(false);
+                      this.bitacoraProvider.strHoras = '00';
+                      this.bitacoraProvider.strMinutos = ':00';
+                      this.bitacoraProvider.strSegundos = ':00';
+                      this.bitacoraProvider.strHorasExcepcion = '00';
+                      this.bitacoraProvider.strSegundosExcepcion = ':00';
+                      this.bitacoraProvider.segundosConduccionHhmmss =
+                        '00:00:00';
+                      this.bitacoraProvider.segundosDescansoHhmmss = '00:00:00';
+                      this.bitacoraProvider.strHorasServicio = '00';
+                      this.bitacoraProvider.strMinutosServicio = ':00';
+                      this.bitacoraProvider.strSegundosServicio = ':00';
+                      this.bitacoraProvider.segundosConduccionStorage = 0;
+                      this.bitacoraProvider.segundosDescansoStorage = 0;
+                      this.bitacoraProvider.segundosConduccion = 0;
+                      this.bitacoraProvider.segundosDescanso = 0;
+                      this.bitacoraProvider.haveElements = false;
+                      // this.bitacoraProvider.stora
+                      this.bitacoraProvider.stExepcionTemporal = false;
+                      this.bitacoraProvider.ExcepcionTemporal = false;
+                      this.bitacoraProvider.stInProgress = false;
+                      this.unidadProvider.cargarFromStorage = true;
+                      console.log('Terminando CATCH Cerrar sesión............');
+                    });
+                    // delete this.bitacoraProvider.StatusServicio;
+                    // delete this.bitacoraProvider.objConfServicio;
+                  })
+                  .catch(() => {
+                    console.log('Cerrar sesión.... catch..........');
+                  });
               });
-              // redirect configuracion nuevo servicio
-            });
           }
         }
       ]

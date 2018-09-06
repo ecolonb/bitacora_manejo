@@ -21,6 +21,7 @@ import { AppConfiguracionProvider } from '../../providers/app-configuracion/app-
 import { ConductorProvider } from '../../providers/conductor/conductor';
 import { UnidadProvider } from '../../providers/unidad/unidad';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
+import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 
 @IonicPage()
 @Component({
@@ -49,10 +50,37 @@ export class LoginPage {
     private bitacoraProvider: BitacoraProvider,
     private conductorProvider: ConductorProvider,
     private appConfiguracionProvider: AppConfiguracionProvider,
-    private unidadProvider: UnidadProvider
+    private unidadProvider: UnidadProvider,
+    private syncUpProvider: SyncUpProvider
   ) {
     this.strLoginOkProvider = String(this.LoginProvider.getActivo());
   }
+  public ionViewDidLoad() {
+    const loading = this.loadingCtrl.create({
+      content: 'Sincronizando información del localStorage, por favor espere...'
+    });
+    loading.present();
+    this.syncUpProvider
+      .checkServiceToSend()
+      .then(() => {
+        console.log('Service sync OK');
+        this.syncUpProvider
+          .checkActivitysToSend()
+          .then(() => {
+            console.log('sync activitys and services....');
+            loading.dismiss();
+          })
+          .catch(() => {
+            console.log('Error in syncUpProvider');
+
+            loading.dismiss();
+          });
+      })
+      .catch(() => {
+        loading.dismiss();
+      });
+  }
+
   public ingresar() {
     // Validar que el la propiedad privada Logged=True; si no mostrar login
     if (this.LoginProvider.getActivo()) {
@@ -109,7 +137,7 @@ export class LoginPage {
     }
 
     this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
-      (DATARCV) => {
+      DATARCV => {
         if (DATARCV) {
           ObjMEnsaje = DATARCV;
           if (ObjMEnsaje._error === false) {
@@ -118,7 +146,7 @@ export class LoginPage {
             // Promise cargar y guardar solo el Login Cuando se cargue la bitacora manejar variable boolean para mantener el estado actual de la bitacora (loaded/unload) y luego ingresar -------------------------------------->>>>>>>>>>>>
             this.bitacoraProvider
               .getBitacoraFromStorage()
-              .then((ResultBitacoraStorage) => {
+              .then(ResultBitacoraStorage => {
                 // this.bitacoraProvider.getHHmmss();
                 this.ingresar();
               });
@@ -143,7 +171,7 @@ export class LoginPage {
           this.LoginProvider.setActivo(false);
         }
       },
-      (error) => {
+      error => {
         this.loading.dismiss();
         const alert = this.alertCtrl.create({
           title: 'Error',
@@ -201,7 +229,7 @@ export class LoginPage {
       this.loading.present();
     }
     this.LoginProvider.loginUserAndPaswword(this.usuario, this.contrasenia)
-      .then((RESULT_PROVIDER) => {
+      .then(RESULT_PROVIDER => {
         // Aqui se procesa la información que se recibe desde el Servidor
         if (RESULT_PROVIDER.errorRequest === true) {
           this.loading.dismiss();
@@ -230,7 +258,7 @@ export class LoginPage {
             });
         }
       })
-      .catch((ERROR) => {
+      .catch(ERROR => {
         if (ERROR.ok === false) {
           this.loading.dismiss();
           const alert = this.alertCtrl.create({
