@@ -12,13 +12,13 @@ import {
 import { UnidadRequestModel } from '../../models/unidad-response.model';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { LoginProvider } from '../../providers/login/login';
+import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 import { UnidadProvider } from '../../providers/unidad/unidad';
 import { UtilidadesProvider } from '../../providers/utilidades/utilidades';
 import { ServicioModel } from './../../models/servicio.model';
 import { UnidadModel } from './../../models/unidad.model';
 import { ConductorProvider } from './../../providers/conductor/conductor';
 import { LoginPage, MenuPage } from './../index-paginas';
-import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 
 /**
  * En esta página se configura el servicio los datos que solicita la norma de la SCT.
@@ -82,7 +82,6 @@ export class ConfiguracionServicioPage {
   public setFilteredItems() {
     if (this.searchTerm !== '') {
       this.itemsSr = this.filterItems(this.searchTerm);
-      // Validar cuantos elelementos se encuentran: console.log('this.itemsSr', this.itemsSr.length);
     } else {
       delete this.itemsSr;
     }
@@ -110,23 +109,18 @@ export class ConfiguracionServicioPage {
           ) {
             loading.dismiss();
             loading = this.loadingCtrl.create({
-              content:
-                'Sincronizando información del localStorage, por favor espere...'
+              content: 'Sincronizando información, por favor espere...'
             });
             loading.present();
             this.syncUpProvider
               .checkServiceToSend()
               .then(() => {
-                console.log('Service sync OK');
                 this.syncUpProvider
                   .checkActivitysToSend()
                   .then(() => {
-                    console.log('sync activitys and services....');
                     loading.dismiss();
                   })
                   .catch(() => {
-                    console.log('Error in syncUpProvider');
-
                     loading.dismiss();
                   });
               })
@@ -147,16 +141,12 @@ export class ConfiguracionServicioPage {
                 this.syncUpProvider
                   .checkServiceToSend()
                   .then(() => {
-                    console.log('Service sync OK');
                     this.syncUpProvider
                       .checkActivitysToSend()
                       .then(() => {
-                        console.log('sync activitys and services....');
                         loading.dismiss();
                       })
                       .catch(() => {
-                        console.log('Error in syncUpProvider');
-
                         loading.dismiss();
                       });
                   })
@@ -175,16 +165,12 @@ export class ConfiguracionServicioPage {
                 this.syncUpProvider
                   .checkServiceToSend()
                   .then(() => {
-                    console.log('Service sync OK');
                     this.syncUpProvider
                       .checkActivitysToSend()
                       .then(() => {
-                        console.log('sync activitys and services....');
                         loading.dismiss();
                       })
                       .catch(() => {
-                        console.log('Error in syncUpProvider');
-
                         loading.dismiss();
                       });
                   })
@@ -211,16 +197,12 @@ export class ConfiguracionServicioPage {
           this.syncUpProvider
             .checkServiceToSend()
             .then(() => {
-              console.log('Service sync OK');
               this.syncUpProvider
                 .checkActivitysToSend()
                 .then(() => {
-                  console.log('sync activitys and services....');
                   loading.dismiss();
                 })
                 .catch(() => {
-                  console.log('Error in syncUpProvider');
-
                   loading.dismiss();
                 });
             })
@@ -360,6 +342,37 @@ export class ConfiguracionServicioPage {
     });
     alertOpion.present();
   }
+  public cerrarSesion() {
+    const alert = this.alertCtrl.create({
+      title: 'Cerrar sesión',
+      message: '¿Estas seguro que quieres cerrar sesión?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Si',
+          handler: () => {
+            this.loginProvider
+              .cerrarSesion()
+              .then(() => {
+                // this.navCtrl.setRoot(LoginPage);
+                // use that this.App.getRootNavs()[0].setRoot(LoginPage); for this.App.getRootNav().setRoot(LoginPage)
+                this.app.getRootNavs()[0].setRoot(this.loginPage);
+              })
+              .catch(() => {
+                // Error Here
+              });
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
 
   // Se inicia el servicio : se guarda información en localStorage
   public iniciarServicio() {
@@ -399,21 +412,16 @@ export class ConfiguracionServicioPage {
     this.bitacoraProvider
       .iniciarServicio(objConfServicio)
       .then(() => {
-        console.log('Todo OK>>');
-        console.log('Close loading...');
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
       .catch(Err => {
-        console.log('Error --->>');
-        console.log('Close loading...');
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       });
   }
 
   public filterItems(searchTerm) {
-    console.log(this.unidadProvider.arrObjUnidades);
     if (
       this.unidadProvider.arrObjUnidades &&
       this.unidadProvider.arrObjUnidades !== undefined &&
@@ -422,14 +430,12 @@ export class ConfiguracionServicioPage {
     ) {
       return this.unidadProvider.arrObjUnidades.filter((item: UnidadModel) => {
         return (
-          item.nuid
+          item.noEconomico
             .toString()
             .toLowerCase()
             .indexOf(searchTerm.toLowerCase()) > -1
         );
       });
-    } else {
-      console.log('No hay unidades....');
     }
   }
   public setUnidad(ObjSearch: UnidadModel) {

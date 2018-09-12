@@ -30,16 +30,7 @@ export class SyncUpProvider {
     public http: HttpClient,
     private platform: Platform,
     private storage: Storage
-  ) {
-    // ******* cuando se inicializa el provider se verifica si hay Información para soncronizar Servicio Actividades
-    // this.getActivitysFromStorage()
-    //   .then(() => {
-    //     console.log('Activitys loaded OK');
-    //   })
-    //   .catch(() => {
-    //     console.log('Activitys catch Error');
-    //   });
-  }
+  ) {}
   public setServicesToSend(ObjNewService: ServicioToSendModel) {
     this.ServiciosToSync.push(ObjNewService);
     return true;
@@ -125,14 +116,9 @@ export class SyncUpProvider {
         Index++;
       }
     }
-    console.log('this.ActivitysToSync', this.ActivitysToSync);
     this.setActivitysFromStorage()
-      .then(() => {
-        console.log('Actividades Seteadas al Storage');
-      })
-      .catch(() => {
-        console.log('Eror to set Storage Data');
-      });
+      .then(() => {})
+      .catch(() => {});
   }
   public syncAllServicesPending(): Promise<any> {
     const promiseSyncAllServices = new Promise((resolve, reject) => {
@@ -140,25 +126,16 @@ export class SyncUpProvider {
       const formDataToSend: SyncAllServicesToSyncModel = {
         ServiciosToSync: this.ServiciosToSync
       };
-      console.log('Form Data to send: ', formDataToSend);
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
       this.http
         .post(this.URL_SyncAllServices, formDataToSend, HEADERS)
         .toPromise()
-        .then(RESULT_DATA => {
-          console.log(
-            'Resolve syncAllServicesPending httpRequest',
-            RESULT_DATA
-          );
+        .then((RESULT_DATA) => {
           resolve(RESULT_DATA);
         })
-        .catch(ErrorPromise => {
-          console.log(
-            'Reject syncAllServicesPending httpRequest: ',
-            ErrorPromise
-          );
+        .catch((ErrorPromise) => {
           reject(ErrorPromise);
         });
     });
@@ -168,15 +145,14 @@ export class SyncUpProvider {
     // Si hay eventos pendientes en storage realizar push de [[objServicioToSync]] y enviar todo en una sola peticion..
     // en caso de error guardar todo el Objeto de servicios pendientes.
     this.syncUpServicioInServer(objServicioToSync)
-      .then(RESULT => {})
-      .catch(Err => {
+      .then((RESULT) => {})
+      .catch((Err) => {
         this.saveServiceToSync(objServicioToSync);
       });
   }
   public syncUpServicioInServer(
     objServicioToSync: ServicioToSendModel
   ): Promise<any> {
-    console.log('Sincronizado un solo evento');
     const promiseNuevoServicio = new Promise((resolve, reject) => {
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
@@ -185,11 +161,11 @@ export class SyncUpProvider {
       this.http
         .post(this.URL_, objServicioToSync, HEADERS)
         .toPromise()
-        .then(RESULT_DATA => {
+        .then((RESULT_DATA) => {
           // this.setUnidadesInStorage();
           resolve(RESULT_DATA);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -221,7 +197,7 @@ export class SyncUpProvider {
         .then(() => {
           resolve();
         })
-        .catch(Err => {
+        .catch((Err) => {
           reject();
         });
     });
@@ -235,7 +211,6 @@ export class SyncUpProvider {
     const promiseChkServiceToSend = new Promise((resolve, reject) => {
       this.getServiciosToSyncStorage()
         .then(() => {
-          console.log('Servicios from Storage: ', this.ServiciosToSync);
           try {
             if (
               this.ServiciosToSync &&
@@ -243,19 +218,11 @@ export class SyncUpProvider {
               this.ServiciosToSync !== undefined &&
               this.ServiciosToSync.length > 0
             ) {
-              console.log(
-                'Si hay eventos que sincronizar: ',
-                this.ServiciosToSync.length
-              );
-              console.log('objServicioToSend', objServicioToSend);
               if (
                 objServicioToSend &&
                 objServicioToSend !== null &&
                 objServicioToSend !== undefined
               ) {
-                console.log(
-                  'Aqui recorrer arreglo de Servicios y cambiar el estado de NewOrSync'
-                );
                 for (const ServiceToSync of this.ServiciosToSync) {
                   ServiceToSync.NewOrSync = 2;
                 }
@@ -268,14 +235,10 @@ export class SyncUpProvider {
                 objServicioToSend !== null &&
                 objServicioToSend !== undefined
               ) {
-                console.log(
-                  'No hay elementos que cambiar se manda un unico evento como nuevo..'
-                );
                 this.ServiciosToSync = [];
                 this.ServiciosToSync.push(objServicioToSend);
                 this.saveServiceToSync();
               }
-              console.log('Else 1');
               // resolve();
             }
             if (
@@ -283,23 +246,19 @@ export class SyncUpProvider {
               objServicioToSend === null ||
               objServicioToSend === undefined
             ) {
-              console.log('Resetando NewOrSynz');
               if (
                 this.ServiciosToSync &&
                 this.ServiciosToSync !== null &&
                 this.ServiciosToSync !== undefined &&
                 this.ServiciosToSync.length > 0
               ) {
-                console.log('Entro al FOR cambiar tipo NewOrSync');
                 for (const ServiceToSync of this.ServiciosToSync) {
                   ServiceToSync.NewOrSync = 2;
                 }
               } else {
-                console.log('No entro al FOR porque objeto vacio...');
                 resolve();
               }
             } else {
-              console.log('Else objServicioToSend');
             }
             // Aqui cambiar los valores de tos los objetos existentes New or Sync = 2 y despues el push con 1
             if (
@@ -309,42 +268,34 @@ export class SyncUpProvider {
               this.ServiciosToSync.length > 0
             ) {
               this.syncAllServicesPending()
-                .then(RESPUESTA => {
-                  console.log('RESPUESTA:', RESPUESTA);
+                .then((RESPUESTA) => {
                   // Llamar funcion eliminar Objeto sincronizados Y cambiar ID
                   this.deleteSynchronizedServices(RESPUESTA)
-                    .then(result => {
+                    .then((result) => {
                       this.setServiciosToSyncInStorage()
                         .then(() => {
-                          console.log('Resolve 1');
                           resolve(RESPUESTA);
                         })
-                        .catch(Err => {
-                          console.log('Reject 1');
+                        .catch((Err) => {
                           reject();
                         });
                     })
-                    .catch(Err => {
-                      console.log('Reject 1');
+                    .catch((Err) => {
                       reject();
                     });
                 })
-                .catch(error => {
-                  console.log('Error al sincronizar eventos al server...');
+                .catch((error) => {
                   reject();
                 });
             }
           } catch (error) {
-            console.log('Normal catch error 1');
             reject();
           }
         })
-        .catch(Err => {
-          console.log('Catch Promise getServiciosToSyncStorage');
+        .catch((Err) => {
           reject();
         });
     });
-    console.log('Retornando promesa.... promiseChkServiceToSend');
     return promiseChkServiceToSend;
   }
   public getServiciosToSyncStorage() {
@@ -352,7 +303,7 @@ export class SyncUpProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjServiciosToSync').then(ObjServiciosToSync => {
+          this.storage.get('ObjServiciosToSync').then((ObjServiciosToSync) => {
             if (ObjServiciosToSync) {
               this.ServiciosToSync = JSON.parse(ObjServiciosToSync);
               resolve(true);
@@ -376,7 +327,7 @@ export class SyncUpProvider {
     const promiseCheckActivitysToSend = new Promise((resolve, reject) => {
       this.getActivitysFromStorage()
         .then(() => {
-          //Sync allactivitys
+          // Sync allactivitys
           if (
             this.ActivitysToSync &&
             this.ActivitysToSync !== null &&
@@ -384,11 +335,7 @@ export class SyncUpProvider {
             this.ActivitysToSync.length > 0
           ) {
             this.syncActivitystoServer()
-              .then(DataRequest => {
-                console.log(
-                  'Eliminando actividad sincronizadas y guardando storae',
-                  DataRequest
-                );
+              .then((DataRequest) => {
                 resolve(DataRequest);
               })
               .catch(() => {
@@ -417,16 +364,9 @@ export class SyncUpProvider {
   ): Promise<any> {
     const promiseChkActivityToSend = new Promise((resolve, reject) => {
       try {
-        console.log('En promesa nuevaActividadToSync: ', Activity);
         if (!Terminado) {
           // Si no terminado: la actividad se sincroniza como Nueva...
-          console.log('Sincronizar actividad como Iniciada...');
           // cargar del storage activitys pending -> y marcar NewOrSync
-
-          console.log(
-            'GUARDANDO en Storage INICIO-> this.ActivitysToSync',
-            this.ActivitysToSync
-          );
           this.getActivitysFromStorage()
             .then(() => {
               // activitys loaded
@@ -442,20 +382,15 @@ export class SyncUpProvider {
                     // ok
                     this.ActivitysToSync.push(Activity);
                     this.prepareActivityToSync()
-                      .then(DataRequest => {
+                      .then((DataRequest) => {
                         // ok
-                        console.log('DataRequest OK_', DataRequest);
                         resolve(DataRequest);
                       })
                       .catch(() => {
                         // err
                         this.setActivitysFromStorage()
-                          .then(() => {
-                            console.log('Set activitys storage...');
-                          })
-                          .catch(() => {
-                            console.log('Error activitys Storage...');
-                          });
+                          .then(() => {})
+                          .catch(() => {});
                         reject();
                       });
                   })
@@ -463,44 +398,37 @@ export class SyncUpProvider {
                     // err
                     this.ActivitysToSync.push(Activity);
                     this.prepareActivityToSync()
-                      .then(DataRequest => {
+                      .then((DataRequest) => {
                         // ok
-                        console.log('Resolve OK');
                         resolve(DataRequest);
                       })
-                      .catch(Error_ => {
+                      .catch((Error_) => {
                         // err
-                        console.log('Reject Eror_', Error_);
                         reject();
                       });
 
                     reject();
                   });
               } else {
-                console.log('In else this.ActivitysToSync = [];');
                 this.ActivitysToSync = [];
                 this.ActivitysToSync.push(Activity);
                 this.prepareActivityToSync()
-                  .then(DataRequest => {
+                  .then((DataRequest) => {
                     // ok
-                    console.log('Resolve OK');
                     resolve(DataRequest);
                   })
-                  .catch(Eror_ => {
+                  .catch((Eror_) => {
                     // err
-                    console.log('Reject Eror_', Eror_);
                     reject();
                   });
               }
               // REALIZAR PETICION POST ENVIAR DATA
             })
-            .catch(Error_ => {
-              console.log('.catch(Error_ => {Reject Eror_', Error_);
+            .catch((Error_) => {
               reject();
             });
         } else {
           // *****************  Si terminado Enviar como Terminado...  **************
-          console.log('Sincronizar actividad como Terminada...');
           resolve();
         }
       } catch (error) {
@@ -513,28 +441,23 @@ export class SyncUpProvider {
   // Cambiando todos los datos cargados del storage como sync : NewOrSync : 2
   public changeNewOrSync(): Promise<any> {
     const promiseChangeNewOrSync = new Promise((resolve, reject) => {
-      console.log('changeNewOrSync.....');
       if (
         this.ActivitysToSync &&
         this.ActivitysToSync !== undefined &&
         this.ActivitysToSync !== null &&
         this.ActivitysToSync.length > 0
       ) {
-        console.log('IF changeNewOrSync.....');
         try {
           for (const Activity of this.ActivitysToSync) {
             try {
               Activity.NewOrSync = 2;
             } catch (error) {}
           }
-          console.log('resolve(); despues de for....');
           resolve();
         } catch (error) {
-          console.log(' } catch (error) { changeNewOrSync.....');
           resolve();
         }
       } else {
-        console.log('Else resolve changeNewOrSync.....');
         resolve();
       }
     });
@@ -543,7 +466,6 @@ export class SyncUpProvider {
 
   // Prepare DataToSync
   public prepareActivityToSync(): Promise<any> {
-    console.log('Preparando actividad to send');
     const promisePrepareActivityToSync = new Promise((resolve, reject) => {
       if (
         this.ActivitysToSync &&
@@ -552,28 +474,17 @@ export class SyncUpProvider {
         this.ActivitysToSync.length > 0
       ) {
         this.syncActivitystoServer()
-          .then(RESPONSE_DATA => {
+          .then((RESPONSE_DATA) => {
             // Aqui eliminar actividades sincronizadas
-            console.log('RESPONSE_DATA', RESPONSE_DATA);
-
             this.setActivitysFromStorage()
               .then(() => {
-                console.log('Se guardaron las actividades en Storage-->');
                 resolve(RESPONSE_DATA);
               })
-              .catch(Error_ => {
-                console.log(
-                  'Reject return public prepareActivityToSync():11',
-                  Error_
-                );
+              .catch((Error_) => {
                 reject();
               });
           })
-          .catch(ErrorCatch => {
-            console.log(
-              'Reject return public prepareActivityToSync():22',
-              ErrorCatch
-            );
+          .catch((ErrorCatch) => {
             this.setActivitysFromStorage()
               .then(() => {
                 reject();
@@ -606,17 +517,14 @@ export class SyncUpProvider {
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
-      console.log('FormDataSend: ', FormDataSend);
       this.http
         .post(this.URL_SyncAllActivitys, FormDataSend, HEADERS)
         .toPromise()
-        .then(RESULT_DATA => {
-          console.log('Resolve Activitys httpRequest', RESULT_DATA);
+        .then((RESULT_DATA) => {
           this.deleteSynchonizedActivitys(RESULT_DATA);
           resolve(RESULT_DATA);
         })
-        .catch(ErrorPromise => {
-          console.log('Reject Activitys httpRequest: ', ErrorPromise);
+        .catch((ErrorPromise) => {
           reject(ErrorPromise);
         });
     });
@@ -628,7 +536,7 @@ export class SyncUpProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('ObjActivitysToSync').then(ObjActivitysToSync => {
+          this.storage.get('ObjActivitysToSync').then((ObjActivitysToSync) => {
             if (ObjActivitysToSync) {
               this.ActivitysToSync = JSON.parse(ObjActivitysToSync);
               resolve(true);

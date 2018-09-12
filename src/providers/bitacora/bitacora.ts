@@ -315,10 +315,6 @@ export class BitacoraProvider {
         .then(LOCATION_DEVICE => {
           this.guardarItemBitacoraXY(LOCATION_DEVICE)
             .then(DataRequest => {
-              console.log(
-                'Aqui en bitácora marcar ItemsComoEnviados',
-                DataRequest
-              );
               this.changeGuardadoServer(DataRequest);
               resolve(DataRequest);
             })
@@ -340,15 +336,34 @@ export class BitacoraProvider {
 
     return promiseGuardarItemBit;
   }
-
+  // Cambiando el estado a las actividades que se sincronizaron. HashId y status > 0
   public changeGuardadoServer(DataRequest: SyncAllActivitysResponseModel) {
-    for (const DataRequestItem of DataRequest.SynchronizedActivitys) {
-      for (let itBitacora of this.BitacoraData) {
-        if (itBitacora.HashIdBitacora === DataRequestItem.HashId) {
-          itBitacora.GuardadoServer = true;
+    try {
+      if (
+        DataRequest &&
+        DataRequest.SynchronizedActivitys !== null &&
+        DataRequest.SynchronizedActivitys !== undefined &&
+        DataRequest.SynchronizedActivitys.length
+      ) {
+        if (
+          this.BitacoraData &&
+          this.BitacoraData.length > 0 &&
+          this.BitacoraData !== null &&
+          this.BitacoraData !== undefined
+        ) {
+          for (const DataRequestItem of DataRequest.SynchronizedActivitys) {
+            for (let itBitacora of this.BitacoraData) {
+              if (
+                itBitacora.HashIdBitacora === DataRequestItem.HashId &&
+                DataRequestItem.Status > 0
+              ) {
+                itBitacora.GuardadoServer = true;
+              }
+            }
+          }
         }
       }
-    }
+    } catch (error) {}
   }
 
   public guardarItemBitacoraXY(LOCATION_DEVICE: any): Promise<any> {
@@ -474,16 +489,13 @@ export class BitacoraProvider {
               LocationDevice.Longitude
             )
               .then(() => {
-                console.log('this.guardarItemBitacora OK');
                 resolve();
               })
               .catch(() => {
-                console.log('this.guardarItemBitacora REJECT');
                 reject();
               });
           })
           .catch(ErrorLocation => {
-            console.log('Error al obtener posicion....');
             this.guardarItemBitacora(
               dtSart,
               actividadActulFn,
@@ -491,16 +503,13 @@ export class BitacoraProvider {
               ErrorLocation.Longitude
             )
               .then(() => {
-                console.log('this.guardarItemBitacora OK');
                 resolve();
               })
               .catch(() => {
-                console.log('this.guardarItemBitacora REJECT');
                 reject();
               });
           });
       } catch (error) {
-        console.log('Error in catch---->>>>>');
         reject();
       }
     });
@@ -536,7 +545,6 @@ export class BitacoraProvider {
     X: number,
     Y: number
   ): Promise<any> {
-    console.log('Guardadno ItemBitacora...');
     const promiseGuardaItemBitacora = new Promise((resolve, reject) => {
       this.dtFechaInicioUTC = this.utilidadesProvider.convertSqlToDate(
         this.utilidadesProvider.isoStringToSQLServerFormat(
@@ -618,7 +626,6 @@ export class BitacoraProvider {
       this.guardarBitacoraInStorage();
       // Boolean para saber si hay elementos en la bitacora
       this.haveElements = true;
-      console.log('Antes del error--->>');
       this.syncUpProvider
         .checkServiceToSend()
         .then(() => {
@@ -626,16 +633,11 @@ export class BitacoraProvider {
             .syncNewActivity(this.currentItemBitacora, false)
             .then(DataRequest => {
               // result ok
-              console.log(
-                'DataRequest Activitys ----->>>> Cambiar status Guardado: ',
-                DataRequest
-              );
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
             .catch(ErrorCatch => {
               // error here
-              console.log('In error catch........', ErrorCatch);
               reject(ErrorCatch);
             });
         })
@@ -644,16 +646,11 @@ export class BitacoraProvider {
             .syncNewActivity(this.currentItemBitacora, false)
             .then(DataRequest => {
               // result ok
-              console.log(
-                'DataRequest Activitys ----->>>> Cambiar status Guardado: ',
-                DataRequest
-              );
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
             .catch(ErrorCatch => {
               // error here
-              console.log('In error catch........', ErrorCatch);
               reject(ErrorCatch);
             });
         });
@@ -662,10 +659,17 @@ export class BitacoraProvider {
   }
   // Public cambia el estado de las acvtividades a guardado...
   public updateGuardadoServer(DataRequest: any) {
-    console.log('Cambiando estado Item bitacora..--------->>>>', DataRequest);
-
-    if (DataRequest.SynchronizedActivitys && DataRequest.SynchronizedActivitys !== undefined && DataRequest.SynchronizedActivitys !== null) {
-      if(this.BitacoraData && this.BitacoraData !== undefined && this.BitacoraData !== null && this.BitacoraData.length > 0 ){
+    if (
+      DataRequest.SynchronizedActivitys &&
+      DataRequest.SynchronizedActivitys !== undefined &&
+      DataRequest.SynchronizedActivitys !== null
+    ) {
+      if (
+        this.BitacoraData &&
+        this.BitacoraData !== undefined &&
+        this.BitacoraData !== null &&
+        this.BitacoraData.length > 0
+      ) {
         for (const itemSynchronized of DataRequest.SynchronizedActivitys) {
           for (const itemBitacoraSend of this.BitacoraData) {
             if (
@@ -715,7 +719,6 @@ export class BitacoraProvider {
     objConfServicio: ServicioModel,
     LocationDevice: any
   ): Promise<any> {
-    console.log('In set servicio----------------->>>');
     const promiseSetNuevoServicio = new Promise((resolve, reject) => {
       const dtSQLIniciaServicio: string = this.utilidadesProvider.isoStringToSQLServerFormat(
         dtStart
@@ -778,22 +781,15 @@ export class BitacoraProvider {
       this.ctrlTimerCurrentDateTiem = setInterval(() => {
         this.getDateTimeNow();
       }, 1000);
-      console.log('Make this.makeObjServicioToSend --> objConfServicio');
       this.makeObjServicioToSend(objConfServicio)
         .then(() => {
-          console.log('Servicio enviado');
           this.syncUpProvider
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
-              console.log(
-                'DataRequest Activitys Cambiar status Guardado: ',
-                DataRequest
-              );
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
             .catch(ErrorCatch => {
-              console.log('DataRequest Activitys: ', ErrorCatch);
               reject();
             });
         })
@@ -801,10 +797,6 @@ export class BitacoraProvider {
           this.syncUpProvider
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
-              console.log(
-                'DataRequest Activitys FROM catch :: Cambiar status Guardado: ',
-                DataRequest
-              );
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
@@ -1051,29 +1043,21 @@ export class BitacoraProvider {
           this.syncUpProvider
             .syncNewActivity(currentItemETBitacora, false)
             .then(DataRequest => {
-              console.log(
-                'DataRequest Activitys FROM catch :: Cambiar status Guardado: ',
-                DataRequest
-              );
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
-            .catch(ErrorCatch => {
+            .catch((ErrorCatch) => {
               reject(ErrorCatch);
             });
         })
         .catch(() => {
           this.syncUpProvider
             .syncNewActivity(currentItemETBitacora, false)
-            .then(DataRequest => {
-              console.log(
-                'DataRequest Activitys FROM catch :: Cambiar status Guardado: ',
-                DataRequest
-              );
+            .then((DataRequest) => {
               this.updateGuardadoServer(DataRequest);
               resolve();
             })
-            .catch(ErrorCatch => {
+            .catch((ErrorCatch) => {
               reject(ErrorCatch);
             });
         });
@@ -1097,9 +1081,6 @@ export class BitacoraProvider {
     const promiseTerminarServicio = new Promise((resolve, reject) => {
       try {
         // Actualiza los datos en ServicioActual y guarda en Storage
-        console.log(
-          'Aqui validar la informacion actual del servicio, guardar datos de fin de servicio'
-        );
         this.syncUpProvider
           .checkServiceToSend()
           .then(() => {
@@ -1181,12 +1162,9 @@ export class BitacoraProvider {
   }
 
   public updateStatusServicio(): Promise<any> {
-    console.log(
-      'Actualizando status del Servicio... Aqui agregar como actividad Por enviar...'
-    );
     const promiseUpdateStausServicio = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(DeviceLocation => {
+        .then((DeviceLocation) => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1195,7 +1173,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch(DeviceLocation => {
+        .catch((DeviceLocation) => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1209,7 +1187,6 @@ export class BitacoraProvider {
   }
 
   public saveWithLatLongServiio(DeviceLocation: any): Promise<any> {
-    console.log('Antes  de guardar el servicio.... saveWithLatLongServiio');
     const promiseSaveWithLatLong = new Promise((resolve, reject) => {
       let dtSQLStartNewItem: string;
       dtSQLStartNewItem = this.utilidadesProvider.isoStringToSQLServerFormat(
@@ -1235,13 +1212,12 @@ export class BitacoraProvider {
       this.StatusServicio.FinActividadX = DeviceLocation.Latitude;
       this.StatusServicio.FinActividadY = DeviceLocation.Longitude;
       this.saveItemToSend(this.StatusServicio, true)
-        .then(DataRequest => {
-          console.log('Datarequest from BitacoraProvider...', DataRequest);
+        .then((DataRequest) => {
           this.guardaServicioActualInStorage()
             .then(() => {
               resolve(DataRequest);
             })
-            .catch(error => {
+            .catch((error) => {
               resolve(DataRequest);
             });
         })
@@ -1250,7 +1226,7 @@ export class BitacoraProvider {
             .then(() => {
               reject();
             })
-            .catch(error => {
+            .catch((error) => {
               reject();
             });
         });
@@ -1422,7 +1398,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
+          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -1431,7 +1407,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
+            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1462,23 +1438,23 @@ export class BitacoraProvider {
   public sincronizarInformacion(): Promise<any> {
     // Borrando servicios actuales..
     const promiseSincronizarInfo = new Promise((resolve, reject) => {
-        // Eliminar el storage
-        if (this.platform.is('cordova')) {
-          // Get items from Storage
-          this.storage.remove('ObjBitacoraDataStorage');
-          this.storage.remove('ObjServicioActual');
-          this.storage.remove('ObjConfServicioActual');
-          // this.storage.remove('ObjUnidades');
-          // this.storage.remove('ObjConductor');
-          resolve();
-        } else {
-          localStorage.removeItem('ObjBitacoraDataStorage');
-          localStorage.removeItem('ObjServicioActual');
-          localStorage.removeItem('ObjConfServicioActual');
-          // localStorage.removeItem('ObjUnidades');
-          // localStorage.removeItem('ObjConductor');
-          resolve();
-        }
+      // Eliminar el storage
+      if (this.platform.is('cordova')) {
+        // Get items from Storage
+        this.storage.remove('ObjBitacoraDataStorage');
+        this.storage.remove('ObjServicioActual');
+        this.storage.remove('ObjConfServicioActual');
+        // this.storage.remove('ObjUnidades');
+        // this.storage.remove('ObjConductor');
+        resolve();
+      } else {
+        localStorage.removeItem('ObjBitacoraDataStorage');
+        localStorage.removeItem('ObjServicioActual');
+        localStorage.removeItem('ObjConfServicioActual');
+        // localStorage.removeItem('ObjUnidades');
+        // localStorage.removeItem('ObjConductor');
+        resolve();
+      }
     });
     return promiseSincronizarInfo;
   }
@@ -1496,7 +1472,6 @@ export class BitacoraProvider {
     const dateDiff = Math.abs(
       (dtFnCurrent.valueOf() - this.fechaInicioServicio.valueOf()) / 1000
     );
-    // console.log('' + this.date1 + ' <-> ' + this.date2 + ' DIFF: ' + dateDiff);
     let horas: any = Math.floor(dateDiff / 3600);
     let minutos: any = Math.floor((dateDiff - horas * 3600) / 60);
     let segundos: any = Math.round(dateDiff - horas * 3600 - minutos * 60);
@@ -1593,20 +1568,20 @@ export class BitacoraProvider {
 
     const promiseExcepcionTemp = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(LOCATION_DEVICE => {
+        .then((LOCATION_DEVICE) => {
           this.guardaItemExcepcion(LOCATION_DEVICE)
             .then(() => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             })
-            .catch(err => {
+            .catch((err) => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             });
         })
-        .catch(error => {
+        .catch((error) => {
           // ERROR HERE
           this.guardaItemExcepcion(error)
             .then(() => {
@@ -1655,13 +1630,13 @@ export class BitacoraProvider {
             .then(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then(DataRequest => {
+                .then((DataRequest) => {
                   this.changeGuardadoServer(DataRequest);
                   this.guardarBitacoraInStorage()
                     .then(() => {
                       resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       reject();
                     });
                 })
@@ -1670,7 +1645,7 @@ export class BitacoraProvider {
                     .then(() => {
                       resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       reject();
                     });
                 });
@@ -1678,13 +1653,13 @@ export class BitacoraProvider {
             .catch(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then(DataRequest => {
+                .then((DataRequest) => {
                   this.changeGuardadoServer(DataRequest);
                   this.guardarBitacoraInStorage()
                     .then(() => {
                       resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       reject();
                     });
                 })
@@ -1693,7 +1668,7 @@ export class BitacoraProvider {
                     .then(() => {
                       resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       reject();
                     });
                 });
@@ -1713,11 +1688,10 @@ export class BitacoraProvider {
     } catch (error) {}
   }
   private terminarActividades(): Promise<any> {
-    console.log('Terminando actividaes......>>>>>>>>>>>>>>>>>>');
     // Guardando actividad en progreso no ET
     const promiseTerminarActividades = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(DeviceLocation => {
+        .then((DeviceLocation) => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1726,7 +1700,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch(DeviceLocation => {
+        .catch((DeviceLocation) => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1837,30 +1811,17 @@ export class BitacoraProvider {
   }
   // Guardar items de las bitacoras pero no enviar hasta terminar For..
   private saveItemToSend(ItemToSave: any, Sincronizar: boolean) {
-    console.log('antes del erro: Sincronizar: ', Sincronizar);
     const promiseSaveItemToSend = new Promise((resolve, reject) => {
       if (Sincronizar) {
-        console.log(
-          'Servicio actual: -------------->>>>>>>>>> SYNC : ',
-          ItemToSave
-        );
         this.syncUpProvider
           .syncNewActivity(ItemToSave, false)
-          .then(DataRequest => {
-            console.log('Validar sincronizacion correcta', DataRequest);
+          .then((DataRequest) => {
             resolve();
           })
           .catch(() => {
-            console.log(
-              'No eliminar Items no sincrnizados para enviar despues'
-            );
             reject();
           });
       } else {
-        console.log(
-          '} else { Agregando ITEMS---------->>>>>>>>>>>>>>',
-          ItemToSave
-        );
         this.syncUpProvider
           .setActivityToSend(ItemToSave, Sincronizar)
           .then(() => {
@@ -1873,6 +1834,4 @@ export class BitacoraProvider {
     });
     return promiseSaveItemToSend;
   }
-
-  
 }

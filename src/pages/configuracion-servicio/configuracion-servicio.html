@@ -1,10 +1,13 @@
 <ion-header>
   <ion-navbar color="copiloto">
-    <ion-buttons *ngIf="confirmacionConfSer" left>
-      <button ion-button icon-only outline (click)="goBackConfiguration()">
+    <ion-buttons left>
+      <button *ngIf="confirmacionConfSer" ion-button icon-only (click)="goBackConfiguration()">
         <ion-icon name='md-arrow-back'></ion-icon>
-        <!-- <ion-icon name='md-skip-backward'></ion-icon> -->
       </button>
+      <!-- <button *ngIf="!confirmacionConfSer" ion-button icon-only (click)="cerrarSesion()">
+        <ion-icon name='md-log-out'></ion-icon>
+        salir &nbsp;
+      </button> -->
     </ion-buttons>
 
     <ion-title text-center>Nuevo servicio</ion-title>
@@ -13,13 +16,19 @@
         <ion-icon style="color:md_tq;" name="md-skip-forward"></ion-icon>
       </button>
     </ion-buttons> -->
+    <ion-buttons end>
+      <button *ngIf="!confirmacionConfSer" ion-button icon-only (click)="cerrarSesion()">
+        <ion-icon name='md-log-out'></ion-icon>
+        <!-- salir &nbsp; -->
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
-
 <ion-content padding>
   <ion-slides pager slider="swiper.data.slider">
     <ion-slide class="ionSlide">
-      <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¡Hola {{ conductorProvider.nombreConductor }}, Bienvenido!</h1>
+      <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¡Hola {{ conductorProvider.nombreConductor }},
+        Bienvenido!</h1>
       <span style="font-size: 0.9em;color:#335D82;margin:0;padding:0;">Porfavor ingresa la siguiente informacion.</span>
       <p style="height: 10px;"></p>
       <span style="width: 100%;font-size: 1.1em; color: #21425F;">
@@ -30,7 +39,7 @@
       </ion-searchbar>
       <ion-list *ngIf="itemsSr" class="listResults">
         <ion-item (click)="setUnidad(search)" *ngFor="let search of itemsSr">
-          {{ search.nuid + ' - ' + search.placas + ' - ' + search.modelo }}
+          {{ search.noEconomico + ' - ' + search.placas + ' - ' + search.modelo }}
         </ion-item>
       </ion-list>
       <ion-item no-lines style="width: 100%;text-align: center;height: 100px;padding:0px;">
@@ -71,17 +80,19 @@
         <ion-input type="text" [(ngModel)]="destinoServicio" placeholder="-"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Descripción de la ruta:</ion-label>
+        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Descripción de la
+          ruta:</ion-label>
         <ion-input type="text" [(ngModel)]="descripcionRutaASeguir" placeholder="-"></ion-input>
       </ion-item>
       <p style="height: 10px;"></p>
-      <button ion-button style="margin:auto; width: 95% !important;margin-bottom:30px;text-transform: initial;background-color: #367DB7;font-size: 20px;"
-        (click)="nextSlideConfirmacion()">Siguiente<ion-icon name="ios-arrow-forward" style="position:absolute; right: 20px;"></ion-icon>
+      <button ion-button style="margin:auto; width: 95% !important;margin-bottom:30px;text-transform: initial;background-color: #367DB7;font-size: 20px;height: 48px;"
+        (click)="nextSlideConfirmacion()">Siguiente<ion-icon name="md-arrow-forward" style="position:absolute; right: 20px;"></ion-icon>
       </button>
     </ion-slide>
     <ion-slide class="ionSlide">
       <h1 style="font-size: 1.5em;color:#21425F;margin:0;padding:0;"> ¿Listo para empezar?</h1>
-      <span style="font-size: 0.9em;color:#335D82;margin:0;padding:0;">¡Si es correcta la información, empecemos! </span>
+      <span style="font-size: 0.9em;color:#335D82;margin:0;padding:0;">¡Si es correcta la información, empecemos!
+      </span>
       <p style="height: 10px;"></p>
 
       <ion-item>
@@ -105,12 +116,13 @@
         <ion-input type="text" [(ngModel)]="destinoServicio" disabled></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Descripción de la ruta:</ion-label>
+        <ion-label style="width: 100%; font-size: 1.2em; color: #21425F;text-align: center;" stacked>Descripción de la
+          ruta:</ion-label>
         <ion-input type="text" [(ngModel)]="descripcionRutaASeguir" disabled></ion-input>
       </ion-item>
       <p style="height: 10px;"></p>
-      <button ion-button style="margin:auto; width: 95% !important;margin-bottom:30px;text-transform: initial;font-size: 22px;height: 60px;"
-        color="copiloto" (click)="iniciarServicio()">Iniciar servicio <ion-icon name="play" style="position:absolute; right: 17px;"></ion-icon>
+      <button ion-button style="margin:auto; width: 95% !important;margin-bottom:30px;text-transform: initial;font-size: 22px;height: 48px;"
+        color="copiloto" (click)="iniciarServicio()">Iniciar servicio <ion-icon name="md-arrow-forward" style="position:absolute; right: 17px;"></ion-icon>
       </button>
     </ion-slide>
   </ion-slides>

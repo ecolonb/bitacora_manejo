@@ -122,30 +122,23 @@ export class ActividadesPage {
     // Sincronizando eventos pendientes -> aqui validar cuando ya se sincronizaron por Nuevo Evento
     // Eddpoint
     const loading = this.loadingCtrl.create({
-      content:
-        'Sincronizando información del LocalStorage al server, por favor espere...'
+      content: 'Sincronizando información, por favor espere...'
     });
     loading.present();
-    console.log(
-      'Antes de [Sincronizando información del LocalStorage al server]'
-    );
     this.syncUpProvider
       .checkServiceToSend()
       .then(() => {
         this.syncUpProvider
           .checkActivitysToSend()
           .then(DataRequest => {
-            console.log('DataRequest from Actividades: ', DataRequest);
             this.bitacoraProvider.changeGuardadoServer(DataRequest);
             loading.dismiss();
           })
           .catch(() => {
-            console.log('Reject -->> from Actividades:');
             loading.dismiss();
           });
       })
       .catch(Err => {
-        console.log('checkServiceToSend catch error-> :', Err);
         loading.dismiss();
       });
     //
@@ -153,7 +146,6 @@ export class ActividadesPage {
 
   // Incia el proceso del cronometro setInterval a 1 segundo
   public inicio(ActividadParam: string) {
-    console.log('Validando si hay que guardar como teminado la actividad...');
     if (ActividadParam === 'C') {
       this.bitacoraProvider.actividadActual = 'C';
       this.bitacoraProvider.actividaActualTtl = 'C';
@@ -253,11 +245,9 @@ export class ActividadesPage {
       this.bitacoraProvider
         .guardar()
         .then(DataRequest => {
-          console.log('DataRequest ok: ', DataRequest);
           loading.dismiss();
         })
         .catch(() => {
-          console.log('Error in catch');
           loading.dismiss();
         });
     }
@@ -311,9 +301,7 @@ export class ActividadesPage {
     confirm.present();
   }
 
-  public confirmarTerminarServicio() {
-    console.log('Confirmando terminar Servicio');
-  }
+  public confirmarTerminarServicio() {}
   public confirmExcepcionTemporal() {
     let titleAlert: string;
     let messageAlert: string;
@@ -347,12 +335,8 @@ export class ActividadesPage {
     confirm.present();
   }
   // Funcion detiene el vento debe guardarse en localStorage
-  public eliminarExcepcion() {
-    console.log('Elimina excepción temporal!');
-  }
-  public editar() {
-    console.log('Se abre el panel para editar el item bitacora');
-  }
+  public eliminarExcepcion() {}
+  public editar() {}
   public eliminar() {
     // Alert desea eliminar
     const alert = this.alertCtrl.create({
@@ -367,7 +351,6 @@ export class ActividadesPage {
         {
           text: 'Eliminar',
           handler: () => {
-            console.log('Eliminar clicked');
             clearInterval(this.bitacoraProvider.control);
 
             this.bitacoraProvider.stInProgress = false;
@@ -394,9 +377,7 @@ export class ActividadesPage {
                   this.bitacoraProvider.haveElements = false;
                 }
               }
-            } catch (error) {
-              console.log('Error in Eliminar');
-            }
+            } catch (error) {}
           }
         }
       ]
@@ -459,9 +440,7 @@ export class ActividadesPage {
           text: 'Eliminar',
           icon: 'trash',
           role: 'destructive',
-          handler: () => {
-            console.log('Delete clicked');
-          }
+          handler: () => {}
         },
         {
           text: 'Editar',
@@ -498,9 +477,6 @@ export class ActividadesPage {
               .terminarServicio()
               .then(() => {
                 // redirect configuracion nuevo servicio
-                console.log(
-                  'Cerrando loading Actividades: this.bitacoraProvider.terminarServicio().then(() => {'
-                );
                 loading.dismiss();
                 try {
                   clearInterval(this.bitacoraProvider.ctrlTimerServicio);
@@ -535,7 +511,6 @@ export class ActividadesPage {
                 this.unidadProvider.cargarFromStorage = true;
               })
               .catch(() => {
-                console.log('Cerrando lodng....');
                 loading.dismiss();
                 try {
                   clearInterval(this.bitacoraProvider.ctrlTimerServicio);
@@ -586,11 +561,9 @@ export class ActividadesPage {
     this.bitacoraProvider
       .iniciarExcepcionTemporal(new Date())
       .then(() => {
-        console.log('Closing loading....');
         loading.dismiss();
       })
       .catch(() => {
-        console.log('Closing loading.....catch(() => {');
         loading.dismiss();
       });
   }
