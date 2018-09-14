@@ -337,33 +337,43 @@ export class BitacoraProvider {
     return promiseGuardarItemBit;
   }
   // Cambiando el estado a las actividades que se sincronizaron. HashId y status > 0
-  public changeGuardadoServer(DataRequest: SyncAllActivitysResponseModel) {
-    try {
-      if (
-        DataRequest &&
-        DataRequest.SynchronizedActivitys !== null &&
-        DataRequest.SynchronizedActivitys !== undefined &&
-        DataRequest.SynchronizedActivitys.length
-      ) {
+  public changeGuardadoServer(
+    DataRequest: SyncAllActivitysResponseModel
+  ): Promise<any> {
+    const promiseChangeGServer = new Promise((resolve, reject) => {
+      try {
         if (
-          this.BitacoraData &&
-          this.BitacoraData.length > 0 &&
-          this.BitacoraData !== null &&
-          this.BitacoraData !== undefined
+          DataRequest &&
+          DataRequest.SynchronizedActivitys !== null &&
+          DataRequest.SynchronizedActivitys !== undefined &&
+          DataRequest.SynchronizedActivitys.length
         ) {
-          for (const DataRequestItem of DataRequest.SynchronizedActivitys) {
-            for (let itBitacora of this.BitacoraData) {
-              if (
-                itBitacora.HashIdBitacora === DataRequestItem.HashId &&
-                DataRequestItem.Status > 0
-              ) {
-                itBitacora.GuardadoServer = true;
+          if (
+            this.BitacoraData &&
+            this.BitacoraData.length > 0 &&
+            this.BitacoraData !== null &&
+            this.BitacoraData !== undefined
+          ) {
+            for (const DataRequestItem of DataRequest.SynchronizedActivitys) {
+              for (let itBitacora of this.BitacoraData) {
+                if (
+                  itBitacora.HashIdBitacora === DataRequestItem.HashId &&
+                  DataRequestItem.Status > 0
+                ) {
+                  itBitacora.GuardadoServer = true;
+                }
               }
             }
+            resolve();
+          } else {
+            resolve();
           }
+        } else {
+          resolve();
         }
-      }
-    } catch (error) {}
+      } catch (error) {}
+    });
+    return promiseChangeGServer;
   }
 
   public guardarItemBitacoraXY(LOCATION_DEVICE: any): Promise<any> {
@@ -420,13 +430,24 @@ export class BitacoraProvider {
                 .syncNewActivity(itBitacoraSave, false)
                 .then(DataRequest => {
                   // ok
-
-                  resolve(DataRequest);
+                  this.changeGuardadoServer(DataRequest)
+                    .then(() => {
+                      this.guardarBitacoraInStorage()
+                        .then(() => {
+                          console.log(
+                            'Se cambio el estado y se guarda en torage....'
+                          );
+                        })
+                        .catch(() => {});
+                    })
+                    .catch(() => {});
+                  // resolve(DataRequest);
                 })
                 .catch(() => {
                   // error
-                  reject();
+                  //reject();
                 });
+              //resolve();
             })
             .catch(() => {
               // this.dsExcepcionTemporal = false;
@@ -434,14 +455,25 @@ export class BitacoraProvider {
                 .syncNewActivity(itBitacoraSave, false)
                 .then(DataRequest => {
                   // ok
-
-                  resolve(DataRequest);
+                  this.changeGuardadoServer(DataRequest)
+                    .then(() => {
+                      this.guardarBitacoraInStorage()
+                        .then(() => {
+                          console.log(
+                            'Se cambio el estado y se guarda en torage....'
+                          );
+                        })
+                        .catch(() => {});
+                    })
+                    .catch(() => {});
+                  // resolve(DataRequest);
                 })
                 .catch(() => {
                   // error
-                  reject();
+                  //reject();
                 });
             });
+          resolve();
           break;
         }
       }
@@ -626,6 +658,7 @@ export class BitacoraProvider {
       this.guardarBitacoraInStorage();
       // Boolean para saber si hay elementos en la bitacora
       this.haveElements = true;
+
       this.syncUpProvider
         .checkServiceToSend()
         .then(() => {
@@ -634,11 +667,11 @@ export class BitacoraProvider {
             .then(DataRequest => {
               // result ok
               this.updateGuardadoServer(DataRequest);
-              resolve();
+              // resolve();
             })
             .catch(ErrorCatch => {
               // error here
-              reject(ErrorCatch);
+              // reject(ErrorCatch);
             });
         })
         .catch(() => {
@@ -646,14 +679,25 @@ export class BitacoraProvider {
             .syncNewActivity(this.currentItemBitacora, false)
             .then(DataRequest => {
               // result ok
-              this.updateGuardadoServer(DataRequest);
-              resolve();
+              this.changeGuardadoServer(DataRequest)
+                .then(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {
+                      console.log(
+                        'Se cambio el estado y se guarda en torage....'
+                      );
+                    })
+                    .catch(() => {});
+                })
+                .catch(() => {});
+              // resolve();
             })
             .catch(ErrorCatch => {
               // error here
-              reject(ErrorCatch);
+              // reject(ErrorCatch);
             });
         });
+      resolve();
     });
     return promiseGuardaItemBitacora;
   }
@@ -764,7 +808,7 @@ export class BitacoraProvider {
       this.guardaServicioActualInStorage()
         .then(() => {})
         .catch(error => {
-          reject(error);
+          // reject(error);
         });
       this.segundosConduccionStorage = 0;
       this.segundosDescansoStorage = 0;
@@ -787,10 +831,10 @@ export class BitacoraProvider {
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
               this.updateGuardadoServer(DataRequest);
-              resolve();
+              // resolve();
             })
             .catch(ErrorCatch => {
-              reject();
+              //reject();
             });
         })
         .catch(() => {
@@ -798,12 +842,13 @@ export class BitacoraProvider {
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
               this.updateGuardadoServer(DataRequest);
-              resolve();
+              //resolve();
             })
             .catch(() => {
-              reject();
+              //reject();
             });
         });
+      resolve();
     });
     return promiseSetNuevoServicio;
   }
@@ -825,7 +870,7 @@ export class BitacoraProvider {
         Terminado: 0,
         NewOrSync: 1
       };
-      //this.syncUpProvider.setServicesToSend(objServicioToSend);
+      // this.syncUpProvider.setServicesToSend(objServicioToSend);
       this.syncUpProvider
         .checkServiceToSend(objServicioToSend)
         .then(DataRequest => {
@@ -1043,24 +1088,43 @@ export class BitacoraProvider {
           this.syncUpProvider
             .syncNewActivity(currentItemETBitacora, false)
             .then(DataRequest => {
-              this.updateGuardadoServer(DataRequest);
-              resolve();
+              this.changeGuardadoServer(DataRequest)
+                .then(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {
+                      console.log(
+                        'Se cambio el estado y se guarda en torage....'
+                      );
+                    })
+                    .catch(() => {});
+                })
+                .catch(() => {});
             })
-            .catch((ErrorCatch) => {
-              reject(ErrorCatch);
+            .catch(ErrorCatch => {
+              //reject(ErrorCatch);
             });
         })
         .catch(() => {
           this.syncUpProvider
             .syncNewActivity(currentItemETBitacora, false)
-            .then((DataRequest) => {
-              this.updateGuardadoServer(DataRequest);
-              resolve();
+            .then(DataRequest => {
+              this.changeGuardadoServer(DataRequest)
+                .then(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {
+                      console.log(
+                        'Se cambio el estado y se guarda en torage....'
+                      );
+                    })
+                    .catch(() => {});
+                })
+                .catch(() => {});
             })
-            .catch((ErrorCatch) => {
-              reject(ErrorCatch);
+            .catch(ErrorCatch => {
+              //reject(ErrorCatch);
             });
         });
+      resolve();
     });
     return promiseGuardaItemExcepcion;
   }
@@ -1164,7 +1228,7 @@ export class BitacoraProvider {
   public updateStatusServicio(): Promise<any> {
     const promiseUpdateStausServicio = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((DeviceLocation) => {
+        .then(DeviceLocation => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1173,7 +1237,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch((DeviceLocation) => {
+        .catch(DeviceLocation => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1212,12 +1276,12 @@ export class BitacoraProvider {
       this.StatusServicio.FinActividadX = DeviceLocation.Latitude;
       this.StatusServicio.FinActividadY = DeviceLocation.Longitude;
       this.saveItemToSend(this.StatusServicio, true)
-        .then((DataRequest) => {
+        .then(DataRequest => {
           this.guardaServicioActualInStorage()
             .then(() => {
               resolve(DataRequest);
             })
-            .catch((error) => {
+            .catch(error => {
               resolve(DataRequest);
             });
         })
@@ -1226,7 +1290,7 @@ export class BitacoraProvider {
             .then(() => {
               reject();
             })
-            .catch((error) => {
+            .catch(error => {
               reject();
             });
         });
@@ -1398,7 +1462,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
+          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -1407,7 +1471,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
+            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1568,20 +1632,20 @@ export class BitacoraProvider {
 
     const promiseExcepcionTemp = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((LOCATION_DEVICE) => {
+        .then(LOCATION_DEVICE => {
           this.guardaItemExcepcion(LOCATION_DEVICE)
             .then(() => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             })
-            .catch((err) => {
+            .catch(err => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             });
         })
-        .catch((error) => {
+        .catch(error => {
           // ERROR HERE
           this.guardaItemExcepcion(error)
             .then(() => {
@@ -1630,50 +1694,58 @@ export class BitacoraProvider {
             .then(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then((DataRequest) => {
-                  this.changeGuardadoServer(DataRequest);
-                  this.guardarBitacoraInStorage()
+                .then(DataRequest => {
+                  this.changeGuardadoServer(DataRequest)
                     .then(() => {
-                      resolve();
+                      this.guardarBitacoraInStorage()
+                        .then(() => {
+                          console.log(
+                            'Se cambio el estado y se guarda en torage....'
+                          );
+                        })
+                        .catch(() => {});
                     })
-                    .catch((Error_) => {
-                      reject();
-                    });
+                    .catch(() => {});
+                  //resolve();
                 })
                 .catch(() => {
                   this.guardarBitacoraInStorage()
                     .then(() => {
-                      resolve();
+                      //resolve();
                     })
-                    .catch((Error_) => {
-                      reject();
+                    .catch(Error_ => {
+                      //reject();
                     });
                 });
             })
             .catch(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then((DataRequest) => {
-                  this.changeGuardadoServer(DataRequest);
-                  this.guardarBitacoraInStorage()
+                .then(DataRequest => {
+                  this.changeGuardadoServer(DataRequest)
                     .then(() => {
-                      resolve();
+                      this.guardarBitacoraInStorage()
+                        .then(() => {
+                          console.log(
+                            'Se cambio el estado y se guarda en torage....'
+                          );
+                        })
+                        .catch(() => {});
                     })
-                    .catch((Error_) => {
-                      reject();
-                    });
+                    .catch(() => {});
+                  // resolve();
                 })
                 .catch(() => {
                   this.guardarBitacoraInStorage()
                     .then(() => {
-                      resolve();
+                      //resolve();
                     })
-                    .catch((Error_) => {
-                      reject();
+                    .catch(Error_ => {
+                      //reject();
                     });
                 });
             });
-
+          resolve();
           break;
         }
       }
@@ -1691,7 +1763,7 @@ export class BitacoraProvider {
     // Guardando actividad en progreso no ET
     const promiseTerminarActividades = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((DeviceLocation) => {
+        .then(DeviceLocation => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1700,7 +1772,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch((DeviceLocation) => {
+        .catch(DeviceLocation => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1815,7 +1887,7 @@ export class BitacoraProvider {
       if (Sincronizar) {
         this.syncUpProvider
           .syncNewActivity(ItemToSave, false)
-          .then((DataRequest) => {
+          .then(DataRequest => {
             resolve();
           })
           .catch(() => {
