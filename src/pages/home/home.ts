@@ -26,15 +26,15 @@ export class HomePage {
   ) {
     this.LoginOkProvider = this.loginProvider.getActivo();
     this.strLoginOkProvider = String(this.LoginOkProvider);
-    try {
-      const now: Date = new Date();
-      const strTime: string = now.toTimeString();
-      this.TimeZone = strTime.substring(8, strTime.length);
-      console.log('Zona horaria: ', this.TimeZone);
-      this.minutosTimeOfSet = now.getTimezoneOffset();
-      console.log('timeOfSet: ', this.minutosTimeOfSet);
-      console.log('timeOfSet Horas: ', this.minutosTimeOfSet / 60);
-    } catch (error) {}
+    // try {
+    //   const now: Date = new Date();
+    //   const strTime: string = now.toTimeString();
+    //   this.TimeZone = strTime.substring(8, strTime.length);
+    //   console.log('Zona horaria: ', this.TimeZone);
+    //   this.minutosTimeOfSet = now.getTimezoneOffset();
+    //   console.log('timeOfSet: ', this.minutosTimeOfSet);
+    //   console.log('timeOfSet Horas: ', this.minutosTimeOfSet / 60);
+    // } catch (error) {}
   }
 
   public goToPage(PageParam: any) {

@@ -655,7 +655,9 @@ export class BitacoraProvider {
         this.BitacoraData.unshift(this.currentItemBitacora);
       }
       // Guardar en LocalStorage ObjBitacora
-      this.guardarBitacoraInStorage();
+      // this.guardarBitacoraInStorage()
+      //   .then(() => {})
+      //   .catch(() => {});
       // Boolean para saber si hay elementos en la bitacora
       this.haveElements = true;
 
@@ -666,7 +668,13 @@ export class BitacoraProvider {
             .syncNewActivity(this.currentItemBitacora, false)
             .then(DataRequest => {
               // result ok
-              this.updateGuardadoServer(DataRequest);
+              this.changeGuardadoServer(DataRequest)
+                .then(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
+                })
+                .catch(() => {});
               // resolve();
             })
             .catch(ErrorCatch => {
@@ -682,11 +690,7 @@ export class BitacoraProvider {
               this.changeGuardadoServer(DataRequest)
                 .then(() => {
                   this.guardarBitacoraInStorage()
-                    .then(() => {
-                      console.log(
-                        'Se cambio el estado y se guarda en torage....'
-                      );
-                    })
+                    .then(() => {})
                     .catch(() => {});
                 })
                 .catch(() => {});
@@ -702,26 +706,26 @@ export class BitacoraProvider {
     return promiseGuardaItemBitacora;
   }
   // Public cambia el estado de las acvtividades a guardado...
-  public updateGuardadoServer(DataRequest: any) {
+  public updateServicioGuardadoServer(DataRequest: any) {
     if (
       DataRequest.SynchronizedActivitys &&
       DataRequest.SynchronizedActivitys !== undefined &&
       DataRequest.SynchronizedActivitys !== null
     ) {
       if (
-        this.BitacoraData &&
-        this.BitacoraData !== undefined &&
-        this.BitacoraData !== null &&
-        this.BitacoraData.length > 0
+        this.StatusServicio &&
+        this.StatusServicio !== undefined &&
+        this.StatusServicio !== null
       ) {
         for (const itemSynchronized of DataRequest.SynchronizedActivitys) {
-          for (const itemBitacoraSend of this.BitacoraData) {
-            if (
-              itemBitacoraSend.HashIdBitacora === itemSynchronized.HashId &&
-              itemSynchronized.Status > 0
-            ) {
-              itemBitacoraSend.GuardadoServer = true;
-            }
+          if (
+            this.StatusServicio.HashIdBitacora === itemSynchronized.HashId &&
+            itemSynchronized.Status > 0
+          ) {
+            this.StatusServicio.GuardadoServer = true;
+            this.guardaServicioActualInStorage()
+              .then(() => {})
+              .catch(() => {});
           }
         }
       }
@@ -830,7 +834,7 @@ export class BitacoraProvider {
           this.syncUpProvider
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
-              this.updateGuardadoServer(DataRequest);
+              this.updateServicioGuardadoServer(DataRequest);
               // resolve();
             })
             .catch(ErrorCatch => {
@@ -841,7 +845,7 @@ export class BitacoraProvider {
           this.syncUpProvider
             .syncNewActivity(objIniciaServicio, false)
             .then(DataRequest => {
-              this.updateGuardadoServer(DataRequest);
+              this.updateServicioGuardadoServer(DataRequest);
               //resolve();
             })
             .catch(() => {

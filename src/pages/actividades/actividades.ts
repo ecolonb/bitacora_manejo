@@ -121,25 +121,33 @@ export class ActividadesPage {
 
     // Sincronizando eventos pendientes -> aqui validar cuando ya se sincronizaron por Nuevo Evento
     // Eddpoint
-    const loading = this.loadingCtrl.create({
-      content: 'Sincronizando información, por favor espere...'
-    });
-    loading.present();
+    // const loading = this.loadingCtrl.create({
+    //   content: 'Sincronizando información, por favor espere...'
+    // });
+    // loading.present();
     this.syncUpProvider
       .checkServiceToSend()
       .then(() => {
         this.syncUpProvider
           .checkActivitysToSend()
-          .then(DataRequest => {
-            this.bitacoraProvider.changeGuardadoServer(DataRequest);
-            loading.dismiss();
+          .then((DataRequest) => {
+            this.bitacoraProvider
+              .changeGuardadoServer(DataRequest)
+              .then(() => {
+                this.bitacoraProvider
+                  .guardarBitacoraInStorage()
+                  .then(() => {})
+                  .catch(() => {});
+              })
+              .catch(() => {});
+            // loading.dismiss();
           })
           .catch(() => {
-            loading.dismiss();
+            // loading.dismiss();
           });
       })
-      .catch(Err => {
-        loading.dismiss();
+      .catch((Err) => {
+        // loading.dismiss();
       });
     //
   }
@@ -244,7 +252,7 @@ export class ActividadesPage {
       loading.present();
       this.bitacoraProvider
         .guardar()
-        .then(DataRequest => {
+        .then((DataRequest) => {
           loading.dismiss();
         })
         .catch(() => {

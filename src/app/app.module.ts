@@ -35,8 +35,10 @@ import { UsuarioProvider } from '../providers/usuario/usuario';
 import { UtilidadesProvider } from '../providers/utilidades/utilidades';
 
 // *********** PLUGINS **********
+import { Device } from '@ionic-native/device';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Geolocation } from '@ionic-native/geolocation';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { IonicStorageModule } from '@ionic/storage';
 
 // Alertas Modals
@@ -46,6 +48,7 @@ import { ActionSheetController } from 'ionic-angular';
 import { App } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { ConductorProvider } from '../providers/conductor/conductor';
+import { LocalTimeActivitysProvider } from '../providers/local-time-activitys/local-time-activitys';
 import { SyncUpProvider } from '../providers/sync-up/sync-up';
 import { UnidadProvider } from '../providers/unidad/unidad';
 
@@ -104,7 +107,10 @@ import { UnidadProvider } from '../providers/unidad/unidad';
     App,
     ConductorProvider,
     UnidadProvider,
-    SyncUpProvider
+    SyncUpProvider,
+    Device,
+    UniqueDeviceID,
+    LocalTimeActivitysProvider
   ]
 })
 export class AppModule {}

@@ -92,10 +92,10 @@ export class ConfiguracionServicioPage {
     this.slides.paginationType = 'progress';
   }
   public ionViewDidLoad() {
-    let loading = this.loadingCtrl.create({
-      content: 'Cargando lista de unidades, por favor espere...'
-    });
-    loading.present();
+    // let loading = this.loadingCtrl.create({
+    //   content: 'Cargando lista de unidades, por favor espere...'
+    // });
+    // loading.present();
     if (this.unidadProvider.cargarFromStorage) {
       this.unidadProvider
         .getUnidadesFromStorage()
@@ -107,107 +107,107 @@ export class ConfiguracionServicioPage {
             this.unidadProvider.arrObjUnidades !== undefined &&
             this.unidadProvider.arrObjUnidades.length > 0
           ) {
-            loading.dismiss();
-            loading = this.loadingCtrl.create({
-              content: 'Sincronizando información, por favor espere...'
-            });
-            loading.present();
+            // loading.dismiss();
+            // loading = this.loadingCtrl.create({
+            //   content: 'Sincronizando información, por favor espere...'
+            // });
+            // loading.present();
             this.syncUpProvider
               .checkServiceToSend()
               .then(() => {
                 this.syncUpProvider
                   .checkActivitysToSend()
                   .then(() => {
-                    loading.dismiss();
+                    // loading.dismiss();
                   })
                   .catch(() => {
-                    loading.dismiss();
+                    // loading.dismiss();
                   });
               })
               .catch(() => {
-                loading.dismiss();
+                // loading.dismiss();
               });
           } else {
             this.unidadProvider
               .getUnidadesPost()
               .then((RESULT_DATA: UnidadRequestModel) => {
                 this.unidadProvider.mappingResult(RESULT_DATA);
-                loading.dismiss();
-                loading = this.loadingCtrl.create({
-                  content:
-                    'Sincronizando información del localStorage, por favor espere...'
-                });
-                loading.present();
+                // loading.dismiss();
+                // loading = this.loadingCtrl.create({
+                //   content:
+                //     'Sincronizando información del localStorage, por favor espere...'
+                // });
+                // loading.present();
                 this.syncUpProvider
                   .checkServiceToSend()
                   .then(() => {
                     this.syncUpProvider
                       .checkActivitysToSend()
                       .then(() => {
-                        loading.dismiss();
+                        // loading.dismiss();
                       })
                       .catch(() => {
-                        loading.dismiss();
+                        // loading.dismiss();
                       });
                   })
                   .catch(() => {
-                    loading.dismiss();
+                    // loading.dismiss();
                   });
               })
               .catch(() => {
                 // error get unidades....
-                loading.dismiss();
-                loading = this.loadingCtrl.create({
-                  content:
-                    'Sincronizando información del localStorage, por favor espere...'
-                });
-                loading.present();
+                // loading.dismiss();
+                // loading = this.loadingCtrl.create({
+                //   content:
+                //     'Sincronizando información del localStorage, por favor espere...'
+                // });
+                // loading.present();
                 this.syncUpProvider
                   .checkServiceToSend()
                   .then(() => {
                     this.syncUpProvider
                       .checkActivitysToSend()
                       .then(() => {
-                        loading.dismiss();
+                        // loading.dismiss();
                       })
                       .catch(() => {
-                        loading.dismiss();
+                        // loading.dismiss();
                       });
                   })
                   .catch(() => {
-                    loading.dismiss();
+                    // loading.dismiss();
                   });
               });
           }
         })
-        .catch(error => {
-          loading.dismiss();
+        .catch((error) => {
+          //  loading.dismiss();
         });
     } else {
       this.unidadProvider
         .getUnidadesPost()
         .then((RESULT_DATA: UnidadRequestModel) => {
           this.unidadProvider.mappingResult(RESULT_DATA);
-          loading.dismiss();
-          loading = this.loadingCtrl.create({
-            content:
-              'Sincronizando información del localStorage, por favor espere...'
-          });
-          loading.present();
+          // loading.dismiss();
+          // loading = this.loadingCtrl.create({
+          //   content:
+          //     'Sincronizando información del localStorage, por favor espere...'
+          // });
+          // loading.present();
           this.syncUpProvider
             .checkServiceToSend()
             .then(() => {
               this.syncUpProvider
                 .checkActivitysToSend()
                 .then(() => {
-                  loading.dismiss();
+                  // loading.dismiss();
                 })
                 .catch(() => {
-                  loading.dismiss();
+                  // loading.dismiss();
                 });
             })
             .catch(() => {
-              loading.dismiss();
+              // loading.dismiss();
             });
         });
     }
@@ -415,7 +415,7 @@ export class ConfiguracionServicioPage {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
-      .catch(Err => {
+      .catch((Err) => {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       });

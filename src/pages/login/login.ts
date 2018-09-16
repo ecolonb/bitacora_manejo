@@ -19,9 +19,14 @@ import {
 // ***** Providers **********
 import { AppConfiguracionProvider } from '../../providers/app-configuracion/app-configuracion';
 import { ConductorProvider } from '../../providers/conductor/conductor';
+import { SyncUpProvider } from '../../providers/sync-up/sync-up';
 import { UnidadProvider } from '../../providers/unidad/unidad';
 import { BitacoraProvider } from './../../providers/bitacora/bitacora';
-import { SyncUpProvider } from '../../providers/sync-up/sync-up';
+
+// Plugins
+import { Device } from '@ionic-native/device';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { App, Platform } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -40,6 +45,11 @@ export class LoginPage {
   public strLoginOkProvider: string = 'false';
   public configuracionServicioPage: any = ConfiguracionServicioPage;
   public menuPage: any = MenuPage;
+  // public uidDevice: string;
+  // public platformDevice: string;
+  // public versionPlatformDevice: string;
+  // public modelDevice: string;
+  public ObjLoginDevice: any;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -51,157 +61,183 @@ export class LoginPage {
     private conductorProvider: ConductorProvider,
     private appConfiguracionProvider: AppConfiguracionProvider,
     private unidadProvider: UnidadProvider,
-    private syncUpProvider: SyncUpProvider
+    private syncUpProvider: SyncUpProvider,
+    private device: Device,
+    private platform: Platform,
+    private uniqueDeviceID: UniqueDeviceID
   ) {
-    this.strLoginOkProvider = String(this.LoginProvider.getActivo());
+    this.strLoginOkProvider = 'false';
+    this.LoginProvider.setActivo(false)
+      .then(() => {})
+      .catch(() => {});
+    if (this.platform.is('cordova')) {
+      this.uniqueDeviceID
+        .get()
+        .then((uuid: any) => {
+          this.ObjLoginDevice = {
+            uid: String(uuid),
+            platform: String(this.device.platform),
+            model: String(this.device.model),
+            versionPlatform: String(this.device.version),
+            user: '',
+            password: ''
+          };
+          // console.log('this.ObjDevice: ' + JSON.stringify(this.ObjLoginDevice));
+          // this.uidDevice = String(uuid);
+          // this.platformDevice = String(this.device.platform);
+          // this.modelDevice = String(this.device.model);
+          // this.versionPlatformDevice = String(this.device.version);
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    } else {
+      this.ObjLoginDevice = {
+        uid: '-',
+        platform: 'desktop',
+        model: '-',
+        versionPlatform: '-',
+        user: '',
+        password: ''
+      };
+    }
   }
   public ionViewDidLoad() {
-    const loading = this.loadingCtrl.create({
-      content: 'Sincronizando información del localStorage, por favor espere...'
-    });
-    loading.present();
+    // Verifica si hay sevicios y actividades pnedientes
     this.syncUpProvider
       .checkServiceToSend()
       .then(() => {
-        console.log('Service sync OK');
         this.syncUpProvider
           .checkActivitysToSend()
-          .then(() => {
-            console.log('sync activitys and services....');
-            loading.dismiss();
-          })
-          .catch(() => {
-            console.log('Error in syncUpProvider');
-
-            loading.dismiss();
-          });
+          .then(() => {})
+          .catch(() => {});
       })
-      .catch(() => {
-        loading.dismiss();
-      });
+      .catch(() => {});
   }
 
   public ingresar() {
     // Validar que el la propiedad privada Logged=True; si no mostrar login
-    if (this.LoginProvider.getActivo()) {
+    if (this.LoginProvider.getActivo() === true) {
       // ****** Validar si esta en Servicio y en alguna actividad
       this.loading.dismiss();
       // Si no esta configurado el servicio solicitar configuracion:
       try {
-        if (
-          this.bitacoraProvider.StatusServicio !== null &&
-          this.bitacoraProvider.StatusServicio !== undefined
-        ) {
-          if (this.bitacoraProvider.StatusServicio.Terminado === false) {
-            this.bitacoraProvider.resetServicicio();
-            this.navCtrl.setRoot(this.menuPage);
-            // this.rootPage = this.configuracionServicioPage;
-          } else {
-            // Aqui cargarLasUnidadesDelaCuenta
-            this.unidadProvider.cargarFromStorage = false;
-            this.navCtrl.setRoot(this.configuracionServicioPage);
-          }
-        } else {
-          // Aqui cargarLasUnidadesDelaCuenta
-          this.unidadProvider.cargarFromStorage = false;
-          this.navCtrl.setRoot(this.configuracionServicioPage);
-        }
+        // if (
+        //   this.bitacoraProvider.StatusServicio !== null &&
+        //   this.bitacoraProvider.StatusServicio !== undefined
+        // ) {
+        //   if (this.bitacoraProvider.StatusServicio.Terminado === false) {
+        //     this.bitacoraProvider.resetServicicio();
+        //     this.navCtrl.setRoot(this.menuPage);
+        //     // this.rootPage = this.configuracionServicioPage;
+        //   } else {
+        //     // Aqui cargarLasUnidadesDelaCuenta
+        //     this.unidadProvider.cargarFromStorage = false;
+        //     this.navCtrl.setRoot(this.configuracionServicioPage);
+        //   }
+        // } else {
+        //   // Aqui cargarLasUnidadesDelaCuenta
+        //   this.unidadProvider.cargarFromStorage = false;
+        //   this.navCtrl.setRoot(this.configuracionServicioPage);
+        // }
+        this.unidadProvider.cargarFromStorage = false;
+        this.navCtrl.setRoot(this.configuracionServicioPage);
       } catch (error) {}
     }
   }
-  public continuar(formData: any) {
-    this.usuario = formData.usuario.value;
-    this.contrasenia = formData.contrasenia.value;
-    let ObjMEnsaje: any;
-    this.loading = this.loadingCtrl.create({
-      content: 'Iniciando la aplicación. Favor de esperar...'
-    });
-    if (this.usuario === '' || this.contrasenia === '') {
-      const alert = this.alertCtrl.create({
-        title: 'Error',
-        subTitle: '¡Favor de ingresar Usuario y Contraseña!',
-        buttons: [
-          {
-            text: 'Ok',
-            role: 'ok',
-            handler: () => {
-              this.LoginProvider.setActivo(false);
-            }
-          }
-        ]
-      });
-      alert.present();
-      return false;
-    } else {
-      this.loading.present();
-    }
+  // public continuar(formData: any) {
+  //   this.usuario = formData.usuario.value;
+  //   this.contrasenia = formData.contrasenia.value;
+  //   let ObjMEnsaje: any;
+  //   this.loading = this.loadingCtrl.create({
+  //     content: 'Iniciando la aplicación. Favor de esperar...'
+  //   });
+  //   if (this.usuario === '' || this.contrasenia === '') {
+  //     const alert = this.alertCtrl.create({
+  //       title: 'Error',
+  //       subTitle: '¡Favor de ingresar Usuario y Contraseña!',
+  //       buttons: [
+  //         {
+  //           text: 'Ok',
+  //           role: 'ok',
+  //           handler: () => {
+  //             this.LoginProvider.setActivo(false);
+  //           }
+  //         }
+  //       ]
+  //     });
+  //     alert.present();
+  //     return false;
+  //   } else {
+  //     this.loading.present();
+  //   }
 
-    this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
-      DATARCV => {
-        if (DATARCV) {
-          ObjMEnsaje = DATARCV;
-          if (ObjMEnsaje._error === false) {
-            this.LoginProvider.guardarServicio(DATARCV);
-            this.LoginProvider.setActivo(true);
-            // Promise cargar y guardar solo el Login Cuando se cargue la bitacora manejar variable boolean para mantener el estado actual de la bitacora (loaded/unload) y luego ingresar -------------------------------------->>>>>>>>>>>>
-            this.bitacoraProvider
-              .getBitacoraFromStorage()
-              .then(ResultBitacoraStorage => {
-                // this.bitacoraProvider.getHHmmss();
-                this.ingresar();
-              });
-          } else {
-            this.loading.dismiss();
-            const alert = this.alertCtrl.create({
-              title: 'Error',
-              subTitle: ObjMEnsaje.mensaje,
-              buttons: [
-                {
-                  text: 'Ok',
-                  role: 'ok',
-                  handler: () => {
-                    this.LoginProvider.setActivo(false);
-                  }
-                }
-              ]
-            });
-            alert.present();
-          }
-        } else {
-          this.LoginProvider.setActivo(false);
-        }
-      },
-      error => {
-        this.loading.dismiss();
-        const alert = this.alertCtrl.create({
-          title: 'Error',
-          subTitle: error.message,
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'ok',
-              handler: () => {
-                // this.LoginProvider.setActivo(false);
-                // Borrar las dos lineas de abajo
-                this.LoginProvider.setActivo(true);
-                this.ingresar();
-                // // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
-                // this.bitacoraProvider
-                //   .getBitacoraFromStorage()
-                //   .then((ResultBitacoraStorage) => {
-                //     // this.bitacoraProvider.getHHmmss();
-                //     console.log('ResultBitacoraStorage', ResultBitacoraStorage);
-                //     this.ingresar();
-                //   });
-              }
-            }
-          ]
-        });
-        alert.present();
-      }
-    );
-    return false;
-  }
+  //   this.LoginProvider.validarSesion(this.usuario, this.contrasenia).subscribe(
+  //     (DATARCV) => {
+  //       if (DATARCV) {
+  //         ObjMEnsaje = DATARCV;
+  //         if (ObjMEnsaje._error === false) {
+  //           this.LoginProvider.guardarServicio(DATARCV);
+  //           this.LoginProvider.setActivo(true);
+  //           // Promise cargar y guardar solo el Login Cuando se cargue la bitacora manejar variable boolean para mantener el estado actual de la bitacora (loaded/unload) y luego ingresar -------------------------------------->>>>>>>>>>>>
+  //           this.bitacoraProvider
+  //             .getBitacoraFromStorage()
+  //             .then((ResultBitacoraStorage) => {
+  //               // this.bitacoraProvider.getHHmmss();
+  //               this.ingresar();
+  //             });
+  //         } else {
+  //           this.loading.dismiss();
+  //           const alert = this.alertCtrl.create({
+  //             title: 'Error',
+  //             subTitle: ObjMEnsaje.mensaje,
+  //             buttons: [
+  //               {
+  //                 text: 'Ok',
+  //                 role: 'ok',
+  //                 handler: () => {
+  //                   this.LoginProvider.setActivo(false);
+  //                 }
+  //               }
+  //             ]
+  //           });
+  //           alert.present();
+  //         }
+  //       } else {
+  //         this.LoginProvider.setActivo(false);
+  //       }
+  //     },
+  //     (error) => {
+  //       this.loading.dismiss();
+  //       const alert = this.alertCtrl.create({
+  //         title: 'Error',
+  //         subTitle: error.message,
+  //         buttons: [
+  //           {
+  //             text: 'Ok',
+  //             role: 'ok',
+  //             handler: () => {
+  //               // this.LoginProvider.setActivo(false);
+  //               // Borrar las dos lineas de abajo
+  //               this.LoginProvider.setActivo(true);
+  //               this.ingresar();
+  //               // // Promise cargar bitacora y luego ingresar -------------------------------------->>>>>>>>>>>>
+  //               // this.bitacoraProvider
+  //               //   .getBitacoraFromStorage()
+  //               //   .then((ResultBitacoraStorage) => {
+  //               //     // this.bitacoraProvider.getHHmmss();
+  //               //     console.log('ResultBitacoraStorage', ResultBitacoraStorage);
+  //               //     this.ingresar();
+  //               //   });
+  //             }
+  //           }
+  //         ]
+  //       });
+  //       alert.present();
+  //     }
+  //   );
+  //   return false;
+  // }
   public loginUserAndPassword(formData: any) {
     this.usuario = formData.usuario.value;
     this.usuario = this.usuario.trim();
@@ -228,8 +264,10 @@ export class LoginPage {
     } else {
       this.loading.present();
     }
-    this.LoginProvider.loginUserAndPaswword(this.usuario, this.contrasenia)
-      .then(RESULT_PROVIDER => {
+    this.ObjLoginDevice.user = this.usuario.trim().toLocaleLowerCase();
+    this.ObjLoginDevice.password = btoa(this.contrasenia.trim());
+    this.LoginProvider.loginUserAndPaswword(this.ObjLoginDevice)
+      .then((RESULT_PROVIDER) => {
         // Aqui se procesa la información que se recibe desde el Servidor
         if (RESULT_PROVIDER.errorRequest === true) {
           this.loading.dismiss();
@@ -258,7 +296,7 @@ export class LoginPage {
             });
         }
       })
-      .catch(ERROR => {
+      .catch((ERROR) => {
         if (ERROR.ok === false) {
           this.loading.dismiss();
           const alert = this.alertCtrl.create({

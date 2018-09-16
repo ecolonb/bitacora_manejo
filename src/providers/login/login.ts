@@ -32,43 +32,33 @@ export class LoginProvider {
   ) {}
 
   // Funcion para validar sesion retorna un Obervable  -> cambiar metodo Implementar una promesa
-  public validarSesion(
-    userToSend: string,
-    passToSend: string
-  ): Observable<any> {
-    userToSend = userToSend.toLowerCase();
-    const HEADERS = {
-      headers: { 'Content-Type': 'application/json; charset=utf-8' }
-    };
-    // Obj datos que recibe el ApiRestFul LoginIbutton
-    const dataSendform = {
-      id_ibutton: '9721371',
-      server_endpoint: 's2'
-    };
-    return this.httpClient.post<Observable<any>>(
-      this.URL_,
-      dataSendform,
-      HEADERS
-    );
-  }
+  // public validarSesion(
+  //   userToSend: string,
+  //   passToSend: string
+  // ): Observable<any> {
+  //   userToSend = userToSend.toLowerCase();
+  //   const HEADERS = {
+  //     headers: { 'Content-Type': 'application/json; charset=utf-8' }
+  //   };
+  //   // Obj datos que recibe el ApiRestFul LoginIbutton
+  //   const dataSendform = {
+  //     id_ibutton: '9721371',
+  //     server_endpoint: 's2'
+  //   };
+  //   return this.httpClient.post<Observable<any>>(
+  //     this.URL_,
+  //     dataSendform,
+  //     HEADERS
+  //   );
+  // }
 
   // LOG IN USER_PASSWORD method POST -> Api RESTFul
-  public loginUserAndPaswword(
-    userToSend: string,
-    passToSend: string
-  ): Promise<any> {
+  public loginUserAndPaswword(ObjLoginDevice: any): Promise<any> {
     const promiseLoginUserAndPaswword = new Promise((resolve, reject) => {
-      userToSend = userToSend.toLowerCase();
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
-      // Obj datos que recibe el ApiRestFul LoginIbutton
-      passToSend = btoa(passToSend);
-      const dataSendform = {
-        user: userToSend,
-        password: passToSend,
-        uuidDispositivo: 'iphone1368'
-      };
+      const dataSendform = ObjLoginDevice;
       this.httpClient
         .post(this.URL_, dataSendform, HEADERS)
         .toPromise()
@@ -88,10 +78,18 @@ export class LoginProvider {
   }
 
   // Cambia el estado de la sesion
-  public setActivo(valor: boolean) {
+  public setActivo(valor: boolean): Promise<any> {
     this.sesionOk = valor;
-    this.guardarStorage();
-    return;
+    const promiseSetActivo = new Promise((resolve, reject) => {
+      this.guardarStorage()
+        .then(() => {
+          resolve();
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+    return promiseSetActivo;
   }
 
   // Guarda los datos de la sesion si el Login es correcto
