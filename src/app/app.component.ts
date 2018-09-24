@@ -7,12 +7,13 @@ import {
   LoginPage,
   MenuPage
 } from '../pages/index-paginas';
+import { LocalTimeActivitysProvider } from '../providers/local-time-activitys/local-time-activitys';
 import { LoginProvider } from '../providers/login/login';
+import { SyncUpProvider } from '../providers/sync-up/sync-up';
 import { BitacoraProvider } from './../providers/bitacora/bitacora';
 import { ConductorProvider } from './../providers/conductor/conductor';
 import { UsuarioProvider } from './../providers/usuario/usuario';
 import { UtilidadesProvider } from './../providers/utilidades/utilidades';
-import { SyncUpProvider } from '../providers/sync-up/sync-up';
 
 @Component({
   templateUrl: 'app.html'
@@ -29,7 +30,8 @@ export class MyApp {
     private bitacoraProvider: BitacoraProvider,
     private utilidadesProvider: UtilidadesProvider,
     private conductorProvider: ConductorProvider,
-    private syncUpProvider: SyncUpProvider
+    private syncUpProvider: SyncUpProvider,
+    private localTimeActivitysProvider: LocalTimeActivitysProvider
   ) {
     // ************ TEST Add TimeZone ((horas en -> muinutos) + or - )***********
     // const dateTest1: Date = new Date('2018-08-21T08:15:25');
@@ -91,26 +93,55 @@ export class MyApp {
                               this.conductorProvider
                                 .getConductorDataStorage()
                                 .then(() => {
-                                  this.bitacoraProvider.resetServicicio();
-                                  this.rootPage = MenuPage;
-                                  statusBar.styleDefault();
-                                  splashScreen.hide();
-                                });
+                                  this.localTimeActivitysProvider
+                                    .activitysSeparator()
+                                    .then(() => {
+                                      // console.log(
+                                      //   'activitysSeparator -------------> OK'
+                                      // );
+                                      this.bitacoraProvider.resetServicicio();
+                                      this.rootPage = MenuPage;
+                                      statusBar.styleDefault();
+                                      splashScreen.hide();
+                                    })
+                                    .catch(() => {});
+                                })
+                                .catch(() => {});
 
                               // this.rootPage = this.configuracionServicioPage;
                             } else {
+                              // console.log(
+                              //   'En este   punto traer información del día actual y día anterior'
+                              // );
+
                               this.conductorProvider
                                 .getConductorDataStorage()
                                 .then(() => {
+                                  this.localTimeActivitysProvider
+                                    .getDataFromServer(false)
+                                    .then((ResposeData) => {})
+                                    .catch((ErrorRequest) => {});
                                   this.rootPage = this.configuracionServicioPage;
                                   statusBar.styleDefault();
                                   splashScreen.hide();
                                 });
                             }
                           } else {
+                            // console.log(
+                            //   'En este   punto traer información del día actual y día anterior'
+                            // );
+
                             this.conductorProvider
                               .getConductorDataStorage()
                               .then(() => {
+                                this.localTimeActivitysProvider
+                                  .getDataFromServer(false)
+                                  .then((ResposeData) => {
+                                    // console.log('ResposeData:', ResposeData);
+                                  })
+                                  .catch((ErrorRequest) => {
+                                    // console.log('ResposeData:', ErrorRequest);
+                                  });
                                 this.rootPage = this.configuracionServicioPage;
                                 statusBar.styleDefault();
                                 splashScreen.hide();
@@ -119,8 +150,9 @@ export class MyApp {
                         } catch (error) {}
                       });
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     // Si hay un error al cargar la bitácora muestra la pagína principal, si la fecha actual es igual a la bitácora almacenada mostrar los datos del localStorage
+                    this.loginProvider.setActivo(false);
                     this.rootPage = LoginPage;
                     statusBar.styleDefault();
                     splashScreen.hide();
@@ -128,6 +160,7 @@ export class MyApp {
                 // Realizar peticion con datos la ultima actualizacion
               });
             } else {
+              this.loginProvider.setActivo(false);
               this.rootPage = LoginPage;
               statusBar.styleDefault();
               splashScreen.hide();

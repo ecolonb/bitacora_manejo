@@ -72,6 +72,10 @@ export class BitacoraProvider {
   public currentItemBitacora: BitacoraModel;
   public StatusServicio: BitacoraModel;
 
+  // Donde se guarda info del server
+  public ServiciosDataServer: ServicioModel[] = [];
+  public BitacoraDataServer: BitacoraModel[] = [];
+
   public haveElements: boolean = false;
 
   // public that = this;
@@ -199,17 +203,31 @@ export class BitacoraProvider {
         // Guardando en LocalStorage y actualizando el status de horas invertidas
         if (this.platform.is('cordova')) {
           // Dispositivo cordova is running
-          this.storage.set(
-            'ObjBitacoraDataStorage',
-            JSON.stringify(this.BitacoraData)
-          );
-          // Actualizando el Status principal
+          if (
+            this.BitacoraData &&
+            this.BitacoraData !== null &&
+            this.BitacoraData !== undefined &&
+            this.BitacoraData.length > 0
+          ) {
+            this.storage.set(
+              'ObjBitacoraDataStorage',
+              JSON.stringify(this.BitacoraData)
+            );
+            // Actualizando el Status principal
+          } else {
+            this.storage.remove('ObjBitacoraDataStorage');
+          }
           this.getStatus();
           resolve(true);
         } else {
           try {
             // Desktop webBrowser
-            if (this.BitacoraData) {
+            if (
+              this.BitacoraData &&
+              this.BitacoraData !== null &&
+              this.BitacoraData !== undefined &&
+              this.BitacoraData.length > 0
+            ) {
               localStorage.setItem(
                 'ObjBitacoraDataStorage',
                 JSON.stringify(this.BitacoraData)
@@ -433,21 +451,13 @@ export class BitacoraProvider {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
-                        .then(() => {
-                          console.log(
-                            'Se cambio el estado y se guarda en torage....'
-                          );
-                        })
+                        .then(() => {})
                         .catch(() => {});
                     })
                     .catch(() => {});
                   // resolve(DataRequest);
                 })
-                .catch(() => {
-                  // error
-                  //reject();
-                });
-              //resolve();
+                .catch(() => {});
             })
             .catch(() => {
               // this.dsExcepcionTemporal = false;
@@ -458,11 +468,7 @@ export class BitacoraProvider {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
-                        .then(() => {
-                          console.log(
-                            'Se cambio el estado y se guarda en torage....'
-                          );
-                        })
+                        .then(() => {})
                         .catch(() => {});
                     })
                     .catch(() => {});
@@ -736,6 +742,18 @@ export class BitacoraProvider {
     const promiseIniciarServicio = new Promise((resolve, reject) => {
       // Guardar configuración del servicio en localStorage
       this.objConfServicio = objConfServicio;
+      if (
+        this.ServiciosDataServer &&
+        this.ServiciosDataServer !== null &&
+        this.ServiciosDataServer !== undefined &&
+        this.ServiciosDataServer.length > 0
+      ) {
+        this.ServiciosDataServer.unshift(objConfServicio);
+      } else {
+        this.ServiciosDataServer = [];
+        this.ServiciosDataServer.unshift(objConfServicio);
+      }
+
       const dtIniciaServicio = new Date();
       // IdViaje se puede bajar del servidor o se genera si el conductor cinfigura el viaje
       // Obtener coordenadas donde se inicia el servicio.
@@ -1095,18 +1113,12 @@ export class BitacoraProvider {
               this.changeGuardadoServer(DataRequest)
                 .then(() => {
                   this.guardarBitacoraInStorage()
-                    .then(() => {
-                      console.log(
-                        'Se cambio el estado y se guarda en torage....'
-                      );
-                    })
+                    .then(() => {})
                     .catch(() => {});
                 })
                 .catch(() => {});
             })
-            .catch(ErrorCatch => {
-              //reject(ErrorCatch);
-            });
+            .catch(ErrorCatch => {});
         })
         .catch(() => {
           this.syncUpProvider
@@ -1115,18 +1127,12 @@ export class BitacoraProvider {
               this.changeGuardadoServer(DataRequest)
                 .then(() => {
                   this.guardarBitacoraInStorage()
-                    .then(() => {
-                      console.log(
-                        'Se cambio el estado y se guarda en torage....'
-                      );
-                    })
+                    .then(() => {})
                     .catch(() => {});
                 })
                 .catch(() => {});
             })
-            .catch(ErrorCatch => {
-              //reject(ErrorCatch);
-            });
+            .catch(ErrorCatch => {});
         });
       resolve();
     });
@@ -1232,7 +1238,7 @@ export class BitacoraProvider {
   public updateStatusServicio(): Promise<any> {
     const promiseUpdateStausServicio = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(DeviceLocation => {
+        .then((DeviceLocation) => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1241,7 +1247,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch(DeviceLocation => {
+        .catch((DeviceLocation) => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1280,12 +1286,12 @@ export class BitacoraProvider {
       this.StatusServicio.FinActividadX = DeviceLocation.Latitude;
       this.StatusServicio.FinActividadY = DeviceLocation.Longitude;
       this.saveItemToSend(this.StatusServicio, true)
-        .then(DataRequest => {
+        .then((DataRequest) => {
           this.guardaServicioActualInStorage()
             .then(() => {
               resolve(DataRequest);
             })
-            .catch(error => {
+            .catch((error) => {
               resolve(DataRequest);
             });
         })
@@ -1294,7 +1300,7 @@ export class BitacoraProvider {
             .then(() => {
               reject();
             })
-            .catch(error => {
+            .catch((error) => {
               reject();
             });
         });
@@ -1466,7 +1472,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
+          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -1475,7 +1481,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
+            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1636,20 +1642,20 @@ export class BitacoraProvider {
 
     const promiseExcepcionTemp = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(LOCATION_DEVICE => {
+        .then((LOCATION_DEVICE) => {
           this.guardaItemExcepcion(LOCATION_DEVICE)
             .then(() => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             })
-            .catch(err => {
+            .catch((err) => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
               resolve();
             });
         })
-        .catch(error => {
+        .catch((error) => {
           // ERROR HERE
           this.guardaItemExcepcion(error)
             .then(() => {
@@ -1698,15 +1704,11 @@ export class BitacoraProvider {
             .then(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then(DataRequest => {
+                .then((DataRequest) => {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
-                        .then(() => {
-                          console.log(
-                            'Se cambio el estado y se guarda en torage....'
-                          );
-                        })
+                        .then(() => {})
                         .catch(() => {});
                     })
                     .catch(() => {});
@@ -1717,7 +1719,7 @@ export class BitacoraProvider {
                     .then(() => {
                       //resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       //reject();
                     });
                 });
@@ -1725,15 +1727,11 @@ export class BitacoraProvider {
             .catch(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then(DataRequest => {
+                .then((DataRequest) => {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
-                        .then(() => {
-                          console.log(
-                            'Se cambio el estado y se guarda en torage....'
-                          );
-                        })
+                        .then(() => {})
                         .catch(() => {});
                     })
                     .catch(() => {});
@@ -1744,7 +1742,7 @@ export class BitacoraProvider {
                     .then(() => {
                       //resolve();
                     })
-                    .catch(Error_ => {
+                    .catch((Error_) => {
                       //reject();
                     });
                 });
@@ -1767,7 +1765,7 @@ export class BitacoraProvider {
     // Guardando actividad en progreso no ET
     const promiseTerminarActividades = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then(DeviceLocation => {
+        .then((DeviceLocation) => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1776,7 +1774,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch(DeviceLocation => {
+        .catch((DeviceLocation) => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1891,7 +1889,7 @@ export class BitacoraProvider {
       if (Sincronizar) {
         this.syncUpProvider
           .syncNewActivity(ItemToSave, false)
-          .then(DataRequest => {
+          .then((DataRequest) => {
             resolve();
           })
           .catch(() => {

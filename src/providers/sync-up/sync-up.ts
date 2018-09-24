@@ -26,6 +26,9 @@ export class SyncUpProvider {
     'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_services';
   private URL_SyncAllActivitys: string =
     'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_activitys';
+
+  private statusRequestActivitys: boolean = false;
+  private statusRequestServices: boolean = false;
   constructor(
     public http: HttpClient,
     private platform: Platform,
@@ -96,10 +99,11 @@ export class SyncUpProvider {
           }
           indexSeriviceToSync = 0;
         }
-
+        this.statusRequestServices = false;
         // cambiar IdServicio
         resolve();
       } catch (error) {
+        this.statusRequestServices = false;
         reject();
       }
     });
@@ -107,37 +111,70 @@ export class SyncUpProvider {
   }
   public deleteSynchonizedActivitys(RequestData: any) {
     let Index: number = 0;
-    for (const ActivtySynchronized of RequestData.SynchronizedActivitys) {
-      Index = 0;
-      for (const ItemActivityToSync of this.ActivitysToSync) {
-        if (ActivtySynchronized.HashId === ItemActivityToSync.HashIdBitacora) {
-          this.ActivitysToSync.splice(Index, 1);
+    try {
+      if (
+        RequestData &&
+        RequestData !== undefined &&
+        RequestData !== null &&
+        RequestData.SynchronizedActivitys.length > 0 &&
+        this.ActivitysToSync &&
+        this.ActivitysToSync !== undefined &&
+        this.ActivitysToSync !== null &&
+        this.ActivitysToSync.length > 0
+      ) {
+        for (const ActivtySynchronized of RequestData.SynchronizedActivitys) {
+          Index = 0;
+          for (const ItemActivityToSync of this.ActivitysToSync) {
+            if (
+              ActivtySynchronized.HashId === ItemActivityToSync.HashIdBitacora
+            ) {
+              this.ActivitysToSync.splice(Index, 1);
+            }
+            Index++;
+          }
         }
-        Index++;
       }
-    }
+    } catch (error) {}
+    this.statusRequestActivitys = false;
     this.setActivitysFromStorage()
       .then(() => {})
       .catch(() => {});
   }
   public syncAllServicesPending(): Promise<any> {
     const promiseSyncAllServices = new Promise((resolve, reject) => {
-      // Se envia todo el objeto completo
-      const formDataToSend: SyncAllServicesToSyncModel = {
-        ServiciosToSync: this.ServiciosToSync
-      };
-      const HEADERS = {
-        headers: { 'Content-Type': 'application/json; charset=utf-8' }
-      };
-      this.http
-        .post(this.URL_SyncAllServices, formDataToSend, HEADERS)
-        .toPromise()
-        .then((RESULT_DATA) => {
-          resolve(RESULT_DATA);
-        })
-        .catch((ErrorPromise) => {
-          reject(ErrorPromise);
-        });
+      if (this.statusRequestServices === false) {
+        this.statusRequestServices = true;
+        if (
+          this.ServiciosToSync &&
+          this.ServiciosToSync !== null &&
+          this.ServiciosToSync !== undefined &&
+          this.ServiciosToSync.length > 0
+        ) {
+          // Se envia todo el objeto completo
+          const formDataToSend: SyncAllServicesToSyncModel = {
+            ServiciosToSync: this.ServiciosToSync
+          };
+          const HEADERS = {
+            headers: { 'Content-Type': 'application/json; charset=utf-8' }
+          };
+          this.http
+            .post(this.URL_SyncAllServices, formDataToSend, HEADERS)
+            .toPromise()
+            .then((RESULT_DATA) => {
+              resolve(RESULT_DATA);
+            })
+            .catch((ErrorPromise) => {
+              this.statusRequestServices = false;
+              reject(ErrorPromise);
+            });
+        } else {
+          this.statusRequestServices = false;
+          reject(true);
+        }
+      } else {
+        this.statusRequestServices = false;
+        reject(true);
+      }
     });
     return promiseSyncAllServices;
   }
@@ -258,7 +295,6 @@ export class SyncUpProvider {
               } else {
                 resolve();
               }
-            } else {
             }
             // Aqui cambiar los valores de tos los objetos existentes New or Sync = 2 y despues el push con 1
             if (
@@ -509,26 +545,43 @@ export class SyncUpProvider {
     //     // this.setUnidadesInStorage();
     //     this.deleteSynchonizedActivitys(REQUEST_DATA);
     //   });
-    const promiseSyncAllServices = new Promise((resolve, reject) => {
-      // Se envia todo el objeto completo
-      const FormDataSend: SyncAllActivitysModel = {
-        Activitys: this.ActivitysToSync
-      };
-      const HEADERS = {
-        headers: { 'Content-Type': 'application/json; charset=utf-8' }
-      };
-      this.http
-        .post(this.URL_SyncAllActivitys, FormDataSend, HEADERS)
-        .toPromise()
-        .then((RESULT_DATA) => {
-          this.deleteSynchonizedActivitys(RESULT_DATA);
-          resolve(RESULT_DATA);
-        })
-        .catch((ErrorPromise) => {
-          reject(ErrorPromise);
-        });
+    const promiseSyncAllActivitys = new Promise((resolve, reject) => {
+      if (this.statusRequestActivitys === false) {
+        this.statusRequestActivitys = true;
+        if (
+          this.ActivitysToSync &&
+          this.ActivitysToSync !== null &&
+          this.ActivitysToSync !== undefined &&
+          this.ActivitysToSync.length > 0
+        ) {
+          // Se envia todo el objeto completo
+          const FormDataSend: SyncAllActivitysModel = {
+            Activitys: this.ActivitysToSync
+          };
+          const HEADERS = {
+            headers: { 'Content-Type': 'application/json; charset=utf-8' }
+          };
+          this.http
+            .post(this.URL_SyncAllActivitys, FormDataSend, HEADERS)
+            .toPromise()
+            .then((RESULT_DATA) => {
+              this.deleteSynchonizedActivitys(RESULT_DATA);
+              resolve(RESULT_DATA);
+            })
+            .catch((ErrorPromise) => {
+              this.statusRequestActivitys = false;
+              reject(ErrorPromise);
+            });
+        } else {
+          this.statusRequestActivitys = false;
+          reject(true);
+        }
+      } else {
+        this.statusRequestActivitys = false;
+        reject(true);
+      }
     });
-    return promiseSyncAllServices;
+    return promiseSyncAllActivitys;
   }
   public getActivitysFromStorage(): Promise<any> {
     const promiseGetActivtyStorage = new Promise((resolve, reject) => {

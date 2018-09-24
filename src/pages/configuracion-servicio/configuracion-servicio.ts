@@ -91,6 +91,21 @@ export class ConfiguracionServicioPage {
     this.slides.freeMode = false;
     this.slides.paginationType = 'progress';
   }
+  public ionViewCanEnter() {
+    if (this.loginProvider.getActivo() === false) {
+      delete this.unidadProvider.arrObjUnidades;
+      this.unidadProvider
+        .setUnidadesInStorage()
+        .then(() => {
+          this.app.getRootNavs()[0].setRoot(this.loginPage);
+        })
+        .catch(() => {
+          this.app.getRootNavs()[0].setRoot(this.loginPage);
+        });
+
+      // return;
+    }
+  }
   public ionViewDidLoad() {
     // let loading = this.loadingCtrl.create({
     //   content: 'Cargando lista de unidades, por favor espere...'
@@ -180,7 +195,7 @@ export class ConfiguracionServicioPage {
               });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           //  loading.dismiss();
         });
     } else {
@@ -350,9 +365,7 @@ export class ConfiguracionServicioPage {
         {
           text: 'Cancelar',
           role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          handler: () => {}
         },
         {
           text: 'Si',
@@ -402,7 +415,14 @@ export class ConfiguracionServicioPage {
       TipoServicio: Number(this.tipoDeServicio),
       ModalidadServicio: Number(this.modalidadDeServicio),
       Permisionario: 'Saul Teja Gonzalez',
-      PermisionarioDomicilio: 'El Yaqui 2050'
+      PermisionarioDomicilio: 'El Yaqui 2050',
+      FechaHoraInicio: this.utilidadesProvider.isoStringToSQLServerFormat(
+        new Date()
+          .toISOString()
+          .toString()
+          .toUpperCase()
+      ),
+      FechaHoraFin: '-'
     };
     const loading = this.loadingCtrl.create({
       content:
@@ -415,7 +435,7 @@ export class ConfiguracionServicioPage {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
-      .catch((Err) => {
+      .catch(Err => {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       });

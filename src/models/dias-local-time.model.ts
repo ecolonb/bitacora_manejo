@@ -1,6 +1,7 @@
-import { BitacoraModel } from './bitacora.model';
+import { DiasLocalItemTimeModel } from './dias-local-item-time.model';
+
 export class DiasLocalTimeModel {
-  public timeZone: string;
-  public minutosOffSet: number;
-  public activitysByDaysLocalTime: BitacoraModel[];
+  public TimeZone: string;
+  public MinutosOffSet: number;
+  public diasLocal: DiasLocalItemTimeModel[];
 }

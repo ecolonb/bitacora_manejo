@@ -13,6 +13,7 @@ import { DetalleItemBitacoraPage } from './../index-paginas';
 // ************* Providers *******
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { ConductorProvider } from '../../providers/conductor/conductor';
+import { LocalTimeActivitysProvider } from '../../providers/local-time-activitys/local-time-activitys';
 import { UsuarioProvider } from './../../providers/usuario/usuario';
 
 // ************* Pipes **********
@@ -41,7 +42,8 @@ export class BitacoraPage {
     public navParams: NavParams,
     public bitacoraProvider: BitacoraProvider,
     public usuarioProvider: UsuarioProvider,
-    public conductorProvider: ConductorProvider
+    public conductorProvider: ConductorProvider,
+    public localTimeActivitysProvider: LocalTimeActivitysProvider
   ) {}
 
   // ionViewWillEnter Aqui separar actividades

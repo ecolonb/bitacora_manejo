@@ -15,6 +15,7 @@ import {
   MenuPage,
   TabsPage
 } from '../index-paginas';
+// import { LoginPage } from './login';
 
 // ***** Providers **********
 import { AppConfiguracionProvider } from '../../providers/app-configuracion/app-configuracion';
@@ -27,6 +28,7 @@ import { BitacoraProvider } from './../../providers/bitacora/bitacora';
 import { Device } from '@ionic-native/device';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { App, Platform } from 'ionic-angular';
+import { LocalTimeActivitysProvider } from '../../providers/local-time-activitys/local-time-activitys';
 
 @IonicPage()
 @Component({
@@ -64,7 +66,8 @@ export class LoginPage {
     private syncUpProvider: SyncUpProvider,
     private device: Device,
     private platform: Platform,
-    private uniqueDeviceID: UniqueDeviceID
+    private uniqueDeviceID: UniqueDeviceID,
+    private localTimeActivitysProvider: LocalTimeActivitysProvider
   ) {
     this.strLoginOkProvider = 'false';
     this.LoginProvider.setActivo(false)
@@ -89,7 +92,7 @@ export class LoginPage {
           // this.versionPlatformDevice = String(this.device.version);
         })
         .catch((error: any) => {
-          console.log(error);
+          // console.log(error);
         });
     } else {
       this.ObjLoginDevice = {
@@ -102,6 +105,31 @@ export class LoginPage {
       };
     }
   }
+
+  public ionViewCanEnter() {
+    if (this.LoginProvider.getActivo() === false) {
+      delete this.unidadProvider.arrObjUnidades;
+      this.unidadProvider
+        .setUnidadesInStorage()
+        .then(() => {
+          delete this.conductorProvider.objConductor;
+          this.conductorProvider
+            .setConductorDataStorage()
+            .then(() => {})
+            .catch(() => {});
+        })
+        .catch(() => {
+          delete this.conductorProvider.objConductor;
+          this.conductorProvider
+            .setConductorDataStorage()
+            .then(() => {})
+            .catch(() => {});
+        });
+
+      // return;
+    }
+  }
+
   public ionViewDidLoad() {
     // Verifica si hay sevicios y actividades pnedientes
     this.syncUpProvider
@@ -140,6 +168,14 @@ export class LoginPage {
         //   this.unidadProvider.cargarFromStorage = false;
         //   this.navCtrl.setRoot(this.configuracionServicioPage);
         // }
+        this.localTimeActivitysProvider
+          .getDataFromServer(false)
+          .then((ResposeData) => {
+            // console.log('ResposeData:', ResposeData);
+          })
+          .catch((ErrorRequest) => {
+            // console.log('ResposeData:', ErrorRequest);
+          });
         this.unidadProvider.cargarFromStorage = false;
         this.navCtrl.setRoot(this.configuracionServicioPage);
       } catch (error) {}
@@ -291,8 +327,13 @@ export class LoginPage {
           this.appConfiguracionProvider
             .setToken(RESULT_PROVIDER.token)
             .then(() => {
-              this.LoginProvider.setActivo(true); // Guardar token LOGIN_PROVIDER
-              this.ingresar();
+              this.LoginProvider.setActivo(true)
+                .then(() => {
+                  this.ingresar();
+                })
+                .catch(() => {
+                  this.ingresar();
+                }); // Guardar token LOGIN_PROVIDER
             });
         }
       })

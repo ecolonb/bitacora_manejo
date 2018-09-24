@@ -11,4 +11,6 @@ export class ServicioModel {
   public ModalidadServicio: number;
   public Permisionario: string;
   public PermisionarioDomicilio: string;
+  public FechaHoraInicio: string;
+  public FechaHoraFin: string;
 }

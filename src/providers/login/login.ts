@@ -108,6 +108,7 @@ export class LoginProvider {
 
   // Carga datos de la sesion desde el LocalStorage
   public cargarStorage() {
+    this.sesionOk = false;
     const storagePromise = new Promise((resolve, reject) => {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
@@ -131,22 +132,24 @@ export class LoginProvider {
       if (this.platform.is('cordova')) {
         // Dispositivo
         try {
+          this.setActivo(false)
+            .then(() => {})
+            .catch(() => {});
           this.storage.remove('sesionOk');
           this.storage.remove('ObjUnidades');
           this.storage.remove('ObjConductor');
-        } catch (error) {
-          console.log(JSON.stringify(error));
-        }
+        } catch (error) {}
         resolve();
       } else {
         // Desktop webBrowser
         try {
+          this.setActivo(false)
+            .then(() => {})
+            .catch(() => {});
           localStorage.removeItem('sesionOk');
           localStorage.removeItem('ObjUnidades');
           localStorage.removeItem('ObjConductor');
-        } catch (error) {
-          console.log(JSON.stringify(error));
-        }
+        } catch (error) {}
         resolve();
       }
     });

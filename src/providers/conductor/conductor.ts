@@ -16,7 +16,7 @@ export class ConductorProvider {
   public numeroLicencia: string = '';
   public tipoLicencia: string = '';
   public vigenciaLicencia: Date;
-  private objConductor: ConductorModel;
+  public objConductor: ConductorModel;
 
   constructor(private platform: Platform, private storage: Storage) {}
 
@@ -47,11 +47,24 @@ export class ConductorProvider {
       // Guardando en LocalStorage y actualizando el status de horas invertidas
       if (this.platform.is('cordova')) {
         // Dispositivo cordova is running
-        this.storage.set('ObjConductor', JSON.stringify(this.objConductor));
+        if (
+          this.objConductor &&
+          this.objConductor !== null &&
+          this.objConductor !== undefined
+        ) {
+          this.storage.set('ObjConductor', JSON.stringify(this.objConductor));
+        } else {
+          this.storage.remove('ObjConductor');
+        }
+
         resolve(true);
       } else {
         // Desktop webBrowser
-        if (this.objConductor) {
+        if (
+          this.objConductor &&
+          this.objConductor !== null &&
+          this.objConductor !== undefined
+        ) {
           localStorage.setItem(
             'ObjConductor',
             JSON.stringify(this.objConductor)
