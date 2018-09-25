@@ -96,14 +96,10 @@ export class ConfiguracionServicioPage {
       delete this.unidadProvider.arrObjUnidades;
       this.unidadProvider
         .setUnidadesInStorage()
-        .then(() => {
-          this.app.getRootNavs()[0].setRoot(this.loginPage);
-        })
-        .catch(() => {
-          this.app.getRootNavs()[0].setRoot(this.loginPage);
-        });
-
-      // return;
+        .then(() => {})
+        .catch(() => {});
+      this.app.getRootNavs()[0].setRoot(this.loginPage);
+      return;
     }
   }
   public ionViewDidLoad() {
@@ -195,7 +191,7 @@ export class ConfiguracionServicioPage {
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           //  loading.dismiss();
         });
     } else {
@@ -435,7 +431,7 @@ export class ConfiguracionServicioPage {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
-      .catch(Err => {
+      .catch((Err) => {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       });

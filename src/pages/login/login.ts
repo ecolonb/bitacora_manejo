@@ -170,10 +170,10 @@ export class LoginPage {
         // }
         this.localTimeActivitysProvider
           .getDataFromServer(false)
-          .then((ResposeData) => {
+          .then(ResposeData => {
             // console.log('ResposeData:', ResposeData);
           })
-          .catch((ErrorRequest) => {
+          .catch(ErrorRequest => {
             // console.log('ResposeData:', ErrorRequest);
           });
         this.unidadProvider.cargarFromStorage = false;
@@ -303,7 +303,7 @@ export class LoginPage {
     this.ObjLoginDevice.user = this.usuario.trim().toLocaleLowerCase();
     this.ObjLoginDevice.password = btoa(this.contrasenia.trim());
     this.LoginProvider.loginUserAndPaswword(this.ObjLoginDevice)
-      .then((RESULT_PROVIDER) => {
+      .then(RESULT_PROVIDER => {
         // Aqui se procesa la información que se recibe desde el Servidor
         if (RESULT_PROVIDER.errorRequest === true) {
           this.loading.dismiss();
@@ -337,7 +337,7 @@ export class LoginPage {
             });
         }
       })
-      .catch((ERROR) => {
+      .catch(ERROR => {
         if (ERROR.ok === false) {
           this.loading.dismiss();
           const alert = this.alertCtrl.create({

@@ -112,11 +112,11 @@ export class LocalTimeActivitysProvider {
         Token
       )
         .then((ResponseData) => {
-          // console.log('resolve ResponseData:', ResponseData);
+          console.log('resolve ResponseData:', ResponseData);
           resolve(true);
         })
         .catch((errorRequest) => {
-          // console.log('resolve ResponseData:' + JSON.stringify(errorRequest));
+          
           reject(errorRequest);
         });
     });

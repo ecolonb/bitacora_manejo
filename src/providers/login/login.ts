@@ -73,8 +73,19 @@ export class LoginProvider {
   }
 
   // Obtiene si está activa la sesion
-  public getActivo(): boolean {
-    return this.sesionOk;
+  public getActivo(): Promise<any> {
+    const promiseGetActivo = new Promise((resolve, reject) => {
+      if (
+        this.sesionOk &&
+        this.sesionOk !== undefined &&
+        this.sesionOk !== null
+      ) {
+        resolve(this.sesionOk);
+      } else {
+        resolve(false);
+      }
+    });
+    return promiseGetActivo;
   }
 
   // Cambia el estado de la sesion
@@ -113,10 +124,15 @@ export class LoginProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('sesionOk').then(sesionOkStorage => {
-            this.sesionOk = Boolean(sesionOkStorage);
-            resolve();
-          });
+          this.storage
+            .get('sesionOk')
+            .then(sesionOkStorage => {
+              this.sesionOk = Boolean(sesionOkStorage);
+              resolve();
+            })
+            .catch(() => {
+              this.sesionOk = false;
+            });
         });
       } else {
         this.sesionOk = Boolean(localStorage.getItem('sesionOk'));
@@ -163,11 +179,15 @@ export class LoginProvider {
     const savePromise = new Promise((resolve, reject) => {
       if (this.platform.is('cordova')) {
         // Dispositivo
-        this.storage.set('sesionOk', String(this.sesionOk));
+        if (this.sesionOk === true) {
+          this.storage.set('sesionOk', String(this.sesionOk));
+        } else {
+          this.storage.remove('sesionOk');
+        }
         resolve();
       } else {
         // Desktop webBrowser
-        if (this.sesionOk) {
+        if (this.sesionOk === true) {
           localStorage.setItem('sesionOk', String(this.sesionOk));
         } else {
           // localStorage.removeItem('sesionOk');

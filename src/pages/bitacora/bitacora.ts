@@ -52,6 +52,10 @@ export class BitacoraPage {
     this.ObjItemsDescansos = [];
     this.ObjItemsExcepcion = [];
     this.separateActivitys();
+    this.localTimeActivitysProvider
+      .getDataFromServer(false)
+      .then((ResposeData) => {})
+      .catch((ErrorRequest) => {});
   }
 
   // Abre otra pagina con parametros
