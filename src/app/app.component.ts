@@ -67,7 +67,7 @@ export class MyApp {
         this.loginProvider
           .cargarStorage()
           .then(() => {
-            if (this.loginProvider.getActivo()) {
+            if (this.loginProvider.getActivo() === true) {
               // Cargar Info Usuario from Storage
               this.usuarioProvider.cargarStorage().then(() => {
                 // Información del usuario cargada Validar Sesion Status -> Redirect

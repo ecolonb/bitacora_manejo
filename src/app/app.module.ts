@@ -22,6 +22,7 @@ import {
 import { ActividadProgressTitlePipe } from './../pipes/actividad-progress-title/actividad-progress-title';
 import { ActividadTitlePipe } from './../pipes/actividad-title/actividad-title';
 import { DateUtcToLocalePipe } from './../pipes/date-utc-to-locale/date-utc-to-locale';
+import { SecondsToHhmmssPipe } from './../pipes/seconds-to-hhmmss/seconds-to-hhmmss';
 import { TipoServicoTranslatePipe } from './../pipes/tipo-servico-translate/tipo-servico-translate';
 
 import { MyApp } from './app.component';
@@ -67,6 +68,7 @@ import { UnidadProvider } from '../providers/unidad/unidad';
     ConfiguracionServicioPage,
     ActividadProgressTitlePipe,
     DateUtcToLocalePipe,
+    SecondsToHhmmssPipe,
     TipoServicoTranslatePipe
   ],
   imports: [

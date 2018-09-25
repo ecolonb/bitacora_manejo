@@ -8,6 +8,8 @@ import { UtilidadesProvider } from '../utilidades/utilidades';
 import { ConductorProvider } from './../conductor/conductor';
 
 // ******** MODELS
+import { DiasLocalItemTimeModel } from '../../models/dias-local-item-time.model';
+import { DiasLocalTimeModel } from '../../models/dias-local-time.model';
 import { InfinityScrollRequestModel } from '../../models/infinity-scroll-request.model';
 
 /*
@@ -29,6 +31,11 @@ import { InfinityScrollRequestModel } from '../../models/infinity-scroll-request
 export class LocalTimeActivitysProvider {
   public URL_: string =
     'http://dev1.copiloto.com.mx/lab/rest/api/infinity_scroll';
+  public AllDaysUTC: DiasLocalTimeModel = {
+    TimeZone: 'GTM 05000',
+    MinutosOffSet: 300,
+    diasLocal: []
+  };
 
   constructor(
     public http: HttpClient,
@@ -84,7 +91,7 @@ export class LocalTimeActivitysProvider {
         if (Number(day) < 10) {
           day = '0' + day;
         }
-        FechaInicio = year + '-' + month + '-' + day;
+        FechaFin = year + '-' + month + '-' + day;
         now.setMinutes(now.getMinutes() - 1440);
         month = now.getMonth() + 1;
         day = now.getDate();
@@ -95,7 +102,7 @@ export class LocalTimeActivitysProvider {
         if (Number(day) < 10) {
           day = '0' + day;
         }
-        FechaFin = year + '-' + month + '-' + day;
+        FechaInicio = year + '-' + month + '-' + day;
       }
 
       IdConductor = this.conductorProvider.IdConductor();
@@ -112,11 +119,37 @@ export class LocalTimeActivitysProvider {
         Token
       )
         .then((ResponseData) => {
+          console.log('AllDaysUTC:', this.AllDaysUTC);
+          // this.AllDaysUTC.diasLocal
           console.log('resolve ResponseData:', ResponseData);
+          const DiaItem: DiasLocalItemTimeModel = {
+            Terminado: false,
+            FechaLocal: new Date(),
+            ServicesByDaysLocalTime: ResponseData.services,
+            ActivitysByDaysLocalTime: ResponseData.activitys
+          };
+          console.log('DiaItem:', DiaItem);
+          if (
+            this.AllDaysUTC.diasLocal &&
+            this.AllDaysUTC.diasLocal !== null &&
+            this.AllDaysUTC.diasLocal !== undefined &&
+            this.AllDaysUTC.diasLocal.length > 0
+          ) {
+            this.AllDaysUTC.diasLocal.push(DiaItem);
+          } else {
+            this.AllDaysUTC = {
+              TimeZone: 'GTM 05000',
+              MinutosOffSet: 300,
+              diasLocal: []
+            };
+            this.AllDaysUTC.diasLocal.push(DiaItem);
+          }
+
+          console.log('AllDaysUTC:', this.AllDaysUTC);
           resolve(true);
         })
         .catch((errorRequest) => {
-          
+          console.log('Error AllDaysUTC:', this.AllDaysUTC);
           reject(errorRequest);
         });
     });

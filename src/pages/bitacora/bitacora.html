@@ -113,9 +113,11 @@
         </ion-row>
         <ion-row *ngFor="let item of ObjItemsConduciendo" class="lineItemBitacoraInfo">
           <ion-col col-4>{{ (item.FechaHoraInicio| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx' }}</ion-col>
-          <ion-col col-4>{{ item.Terminado ? ((item.FechaHoraFinal| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx') :
+          <ion-col col-4>{{ item.Terminado ? ((item.FechaHoraFinal| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx')
+            :
             '--' }}</ion-col>
-          <ion-col col-4>{{ item.Terminado ? item.TiempoHhmmss : bitacoraProvider.strHoras + bitacoraProvider.strMinutos
+          <ion-col col-4>{{ item.Terminado ? item.TiempoHhmmss : bitacoraProvider.strHoras +
+            bitacoraProvider.strMinutos
             + bitacoraProvider.strSegundos }}</ion-col>
         </ion-row>
       </ion-card-content>
@@ -134,9 +136,11 @@
         </ion-row>
         <ion-row *ngFor="let item of ObjItemsDescansos" class="lineItemBitacoraInfo">
           <ion-col col-4>{{ (item.FechaHoraInicio| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx' }}</ion-col>
-          <ion-col col-4>{{ item.Terminado ? ((item.FechaHoraFinal| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx') :
+          <ion-col col-4>{{ item.Terminado ? ((item.FechaHoraFinal| dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx')
+            :
             '--' }}</ion-col>
-          <ion-col col-4>{{ item.Terminado ? item.TiempoHhmmss : bitacoraProvider.strHoras + bitacoraProvider.strMinutos
+          <ion-col col-4>{{ item.Terminado ? item.TiempoHhmmss : bitacoraProvider.strHoras +
+            bitacoraProvider.strMinutos
             + bitacoraProvider.strSegundos }}</ion-col>
         </ion-row>
       </ion-card-content>
@@ -145,7 +149,8 @@
     <ion-card-header text-center class="headerTipoBitacora">
       <span>Tiempo en servicio</span>
       <br>
-      <span> {{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio + bitacoraProvider.strSegundosServicio
+      <span> {{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio +
+        bitacoraProvider.strSegundosServicio
         }} </span>
     </ion-card-header>
     <ion-card-content>
@@ -155,13 +160,32 @@
         <ion-col col-4 class="titleItemBitacoraInfo">Tiempo</ion-col>
       </ion-row>
       <ion-row class="lineItemBitacoraInfo">
-        <ion-col col-4> {{ (bitacoraProvider.StatusServicio.FechaHoraInicio | dateUtcToLocale) | date:'d-MM-yy HH:mm:ss':'es-mx'
+        <ion-col col-4> {{ (bitacoraProvider.StatusServicio.FechaHoraInicio | dateUtcToLocale) | date:'d-MM-yy
+          HH:mm:ss':'es-mx'
           }}
         </ion-col>
         <ion-col col-4>-</ion-col>
-        <ion-col col-4>{{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio + bitacoraProvider.strSegundosServicio
+        <ion-col col-4>{{ bitacoraProvider.strHorasServicio + bitacoraProvider.strMinutosServicio +
+          bitacoraProvider.strSegundosServicio
           }} </ion-col>
       </ion-row>
+    </ion-card-content>
+  </ion-card>
+  <hr>
+  <ion-card *ngIf="this.localTimeActivitysProvider.AllDaysUTC.diasLocal.length > 0 ? true : false">
+    <ion-card-header text-center class="cardHeaderBitacora">
+      Actividades realizadas
+    </ion-card-header>
+    <ion-card-content>
+      <div *ngFor="let DiaLocal of  this.localTimeActivitysProvider.AllDaysUTC.diasLocal">
+        <ion-item *ngFor="let Activity of DiaLocal.ActivitysByDaysLocalTime" class="lineItemBitacoraInfo" class="lineItemBitacoraInfo">
+          <span> {{ Activity.Actividad | actividadTitle }} </span>
+          <span style="float:right;">
+            {{ Activity.SegundosTotal | secondsToHhmmss}}
+          </span>
+        </ion-item>
+      </div>
+
     </ion-card-content>
   </ion-card>
 </ion-content>

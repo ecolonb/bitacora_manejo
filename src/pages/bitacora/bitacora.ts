@@ -17,8 +17,11 @@ import { LocalTimeActivitysProvider } from '../../providers/local-time-activitys
 import { UsuarioProvider } from './../../providers/usuario/usuario';
 
 // ************* Pipes **********
+import { ActividadProgressTitlePipe } from './../../pipes/actividad-progress-title/actividad-progress-title';
+import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
 import { DateUtcToLocalePipe } from './../../pipes/date-utc-to-locale/date-utc-to-locale';
 import { TipoServicoTranslatePipe } from './../../pipes/tipo-servico-translate/tipo-servico-translate';
+import { SecondsToHhmmssPipe } from './../../pipes/seconds-to-hhmmss/seconds-to-hhmmss';
 
 @IonicPage()
 @Component({
@@ -46,16 +49,19 @@ export class BitacoraPage {
     public localTimeActivitysProvider: LocalTimeActivitysProvider
   ) {}
 
+  //
+  public ionViewDidLoad() {
+    this.localTimeActivitysProvider
+      .getDataFromServer(false)
+      .then(ResposeData => {})
+      .catch(ErrorRequest => {});
+  }
   // ionViewWillEnter Aqui separar actividades
   public ionViewWillEnter() {
     this.ObjItemsConduciendo = [];
     this.ObjItemsDescansos = [];
     this.ObjItemsExcepcion = [];
     this.separateActivitys();
-    this.localTimeActivitysProvider
-      .getDataFromServer(false)
-      .then((ResposeData) => {})
-      .catch((ErrorRequest) => {});
   }
 
   // Abre otra pagina con parametros

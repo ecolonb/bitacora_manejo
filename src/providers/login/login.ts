@@ -62,10 +62,10 @@ export class LoginProvider {
       this.httpClient
         .post(this.URL_, dataSendform, HEADERS)
         .toPromise()
-        .then(RESULT_DATA => {
+        .then((RESULT_DATA) => {
           resolve(RESULT_DATA);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -73,19 +73,19 @@ export class LoginProvider {
   }
 
   // Obtiene si está activa la sesion
-  public getActivo(): Promise<any> {
-    const promiseGetActivo = new Promise((resolve, reject) => {
-      if (
-        this.sesionOk &&
-        this.sesionOk !== undefined &&
-        this.sesionOk !== null
-      ) {
-        resolve(this.sesionOk);
-      } else {
-        resolve(false);
-      }
-    });
-    return promiseGetActivo;
+  public getActivo(): Boolean {
+    // const promiseGetActivo = new Promise((resolve, reject) => {
+    if (
+      this.sesionOk &&
+      this.sesionOk !== undefined &&
+      this.sesionOk !== null
+    ) {
+      return this.sesionOk;
+    } else {
+      return false;
+    }
+    // });
+    // return promiseGetActivo;
   }
 
   // Cambia el estado de la sesion
@@ -126,7 +126,7 @@ export class LoginProvider {
           // Get items from Storage
           this.storage
             .get('sesionOk')
-            .then(sesionOkStorage => {
+            .then((sesionOkStorage) => {
               this.sesionOk = Boolean(sesionOkStorage);
               resolve();
             })

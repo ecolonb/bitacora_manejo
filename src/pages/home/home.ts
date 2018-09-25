@@ -24,7 +24,7 @@ export class HomePage {
     private loginProvider: LoginProvider,
     public App: App
   ) {
-    this.LoginOkProvider = this.loginProvider.getActivo();
+    this.LoginOkProvider = Boolean(this.loginProvider.getActivo());
     this.strLoginOkProvider = String(this.LoginOkProvider);
     // try {
     //   const now: Date = new Date();
