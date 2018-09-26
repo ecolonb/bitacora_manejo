@@ -44,7 +44,7 @@
       <span class="actualizadoFooter"> {{ bitacoraProvider.fehoraActualSystem | date:'long':'GMT+00000':'es-mx'}}</span>
     </ion-card>
   </div>
-  <div class="divider">
+  <div class="divider" id="idGraphToCss">
     <ion-slides pager>
       <ion-slide>
         <ion-card>
@@ -64,14 +64,30 @@
           <!-- Conduciendo -->
           <ion-row>
             <ion-col col-2 class="borderTable">C</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c0" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c1" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c2" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c3" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c4" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c5" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c6" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c7" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasConduccionGB }} HRS
               <br>{{ bitacoraProvider.minutosConduccionGB }} M
             </ion-col>
@@ -79,14 +95,30 @@
           <!-- Descansando -->
           <ion-row>
             <ion-col col-2 class="borderTable">D</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d0" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d1" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d2" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d3" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d4" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d5" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d6" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d7" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasDescansoGB }} HRS
               <br>{{ bitacoraProvider.minutosDescansoGB }} M
             </ion-col>
@@ -94,14 +126,30 @@
           <!-- Servicio -->
           <ion-row>
             <ion-col col-2 class="borderTable">S</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s0" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s1" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s2" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s3" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s4" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s5" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s6" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s7" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.strHorasServicio }} HRS
               <br> {{ bitacoraProvider.strMinutosServicio.replace(':','') }} M
             </ion-col>
@@ -127,14 +175,30 @@
           <!-- Conduciendo -->
           <ion-row>
             <ion-col col-2 class="borderTable">C</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c8" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c9" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c10" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c11" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c12" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c13" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c14" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c15" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasConduccionGB }} HRS
               <br>{{ bitacoraProvider.minutosConduccionGB }} M
             </ion-col>
@@ -142,14 +206,30 @@
           <!-- Descansando -->
           <ion-row>
             <ion-col col-2 class="borderTable">D</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d8" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d9" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d10" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d11" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d12" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d13" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d14" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d15" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasDescansoGB }} HRS
               <br>{{ bitacoraProvider.minutosDescansoGB }} M
             </ion-col>
@@ -157,14 +237,30 @@
           <!-- Servicio -->
           <ion-row>
             <ion-col col-2 class="borderTable">S</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s8" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s9" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s10" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s11" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s12" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s13" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s14" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s15" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.strHorasServicio }} HRS
               <br> {{ bitacoraProvider.strMinutosServicio.replace(':','') }} M
             </ion-col>
@@ -189,14 +285,30 @@
           <!-- Conduciendo -->
           <ion-row>
             <ion-col col-2 class="borderTable">C</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c16" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c17" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c18" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c19" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c20" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c21" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c22" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="c23" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasConduccionGB }} HRS
               <br>{{ bitacoraProvider.minutosConduccionGB }} M
             </ion-col>
@@ -204,14 +316,30 @@
           <!-- Descansando -->
           <ion-row>
             <ion-col col-2 class="borderTable">D</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d16" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d17" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d18" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d19" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d20" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d21" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d22" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="d23" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.horasDescansoGB }} HRS
               <br>{{ bitacoraProvider.minutosDescansoGB }} M
             </ion-col>
@@ -219,14 +347,30 @@
           <!-- Servicio -->
           <ion-row>
             <ion-col col-2 class="borderTable">S</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
-            <ion-col col-1 class="borderTable">-</ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s16" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s17" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s18" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s19" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s20" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s21" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s22" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
+            <ion-col col-1 class="borderTable">
+              <div id="s23" class="divGraficaHr">&nbsp;</div>
+            </ion-col>
             <ion-col col-2 class="textTiempo"> {{ bitacoraProvider.strHorasServicio }} HRS
               <br> {{ bitacoraProvider.strMinutosServicio.replace(':','') }} M
             </ion-col>

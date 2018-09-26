@@ -23,7 +23,7 @@ export class TabsPage {
     private app: App,
     public navCtrl: NavController
   ) {
-    this.loginActivo = this.LoginProvider.getActivo();
+    this.loginActivo = Boolean(this.LoginProvider.getActivo());
     // console.log('******** SE CARGARON LOS TABS ***********');
     // const nav = this.app.getRootNav();
     // nav.setRoot(TabsPage, { tabIndex: 2 });
