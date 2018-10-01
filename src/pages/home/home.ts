@@ -18,7 +18,6 @@ export class HomePage {
   public strTiempoServicio: string;
   public TimeZone: string;
   public minutosTimeOfSet: number;
-  public contShowGraph: number = 0;
   // Constructor
   constructor(
     public navCtrl: NavController,
@@ -79,8 +78,18 @@ export class HomePage {
       }
     }
 
+    // Limpiando actividades actividades
+    for (let i = 0; i < 24; i++) {
+      let element: any = document.getElementById('c' + i) as HTMLInputElement;
+      element.innerHTML = '-';
+      element.style.backgroundColor = '#FFFFFF';
+      element.style.display = 'block';
+      element = document.getElementById('d' + i) as HTMLInputElement;
+      element.innerHTML = '-';
+      element.style.backgroundColor = '#FFFFFF';
+      element.style.display = 'block';
+    }
     // Pintando actividades
-
     for (const itBitacora of this.bitacoraProvider.BitacoraData) {
       let dateStartActivity: Date;
       let dateEndActivity: Date;
@@ -91,9 +100,8 @@ export class HomePage {
         dateStartActivity.getMinutes() - dateStartActivity.getTimezoneOffset()
       );
       const hrStartActivity: number = Number(dateStartActivity.getHours());
-
       let hrEndActivity: number = -1;
-
+      // Definiendo hora de fin
       if (itBitacora.FechaHoraFinal !== '-') {
         dateEndActivity = this.utilidadesProvider.convertSqlToDate(
           itBitacora.FechaHoraFinal
@@ -104,39 +112,23 @@ export class HomePage {
       } else {
         dateEndActivity = new Date();
       }
-
+      // Obteniendo la hora final de la actividad
       hrEndActivity = Number(dateEndActivity.getHours());
-
-      for (let i = 0; i < 24; i++) {
-        if (itBitacora.Actividad !== 'ET') {
-          let element: any;
+      if (itBitacora.Actividad !== 'ET') {
+        let element: any;
+        for (let i = hrStartActivity; i <= hrEndActivity; i++) {
           if (itBitacora.Actividad === 'C') {
             element = document.getElementById('c' + i) as HTMLInputElement;
           }
           if (itBitacora.Actividad === 'D') {
             element = document.getElementById('d' + i) as HTMLInputElement;
           }
+
           element.style.backgroundColor = '#4CACDC';
           element.style.display = 'block';
           element.innerHTML = '&nbsp;';
-          if (i >= hrStartActivity) {
-            if (i <= hrEndActivity) {
-              element.style.backgroundColor = '#4CACDC';
-              element.style.display = 'block';
-              element.innerHTML = '&nbsp;';
-            } else {
-              element.innerHTML = '-';
-              element.style.backgroundColor = '#FFFFFF';
-              element.style.display = 'block';
-            }
-          } else {
-            element.innerHTML = '-';
-            element.style.backgroundColor = '#FFFFFF';
-            element.style.display = 'block';
-          }
         }
       }
     }
-    this.contShowGraph++;
   }
 }

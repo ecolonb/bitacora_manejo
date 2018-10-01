@@ -505,6 +505,9 @@ export class BitacoraProvider {
             this.stExepcionTemporal = false;
             this.ExcepcionTemporal = false;
             this.guardarExcepcionTemporal();
+            // this.guardarBitacoraInStorage()
+            //   .then(() => {})
+            //   .catch(() => {});
             resolve();
           }
         }
@@ -680,12 +683,19 @@ export class BitacoraProvider {
                     .then(() => {})
                     .catch(() => {});
                 })
-                .catch(() => {});
+                .catch(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
+                });
               // resolve();
             })
             .catch(ErrorCatch => {
               // error here
               // reject(ErrorCatch);
+              this.guardarBitacoraInStorage()
+                .then(() => {})
+                .catch(() => {});
             });
         })
         .catch(() => {
@@ -699,12 +709,19 @@ export class BitacoraProvider {
                     .then(() => {})
                     .catch(() => {});
                 })
-                .catch(() => {});
+                .catch(() => {
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
+                });
               // resolve();
             })
             .catch(ErrorCatch => {
               // error here
               // reject(ErrorCatch);
+              this.guardarBitacoraInStorage()
+                .then(() => {})
+                .catch(() => {});
             });
         });
       resolve();
@@ -993,12 +1010,18 @@ export class BitacoraProvider {
                   this.stExepcionTemporal = true;
                   this.ExcepcionTemporal = true;
                   this.dsExcepcionTemporal = false;
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
                   resolve();
                 })
                 .catch(() => {
                   this.stExepcionTemporal = true;
                   this.ExcepcionTemporal = true;
                   this.dsExcepcionTemporal = false;
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
                   reject();
                 });
             })
@@ -1008,12 +1031,18 @@ export class BitacoraProvider {
                   this.stExepcionTemporal = true;
                   this.ExcepcionTemporal = true;
                   this.dsExcepcionTemporal = false;
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
                   resolve();
                 })
                 .catch(() => {
                   this.stExepcionTemporal = true;
                   this.ExcepcionTemporal = true;
                   this.dsExcepcionTemporal = false;
+                  this.guardarBitacoraInStorage()
+                    .then(() => {})
+                    .catch(() => {});
                   reject();
                 });
             });
@@ -1238,7 +1267,7 @@ export class BitacoraProvider {
   public updateStatusServicio(): Promise<any> {
     const promiseUpdateStausServicio = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((DeviceLocation) => {
+        .then(DeviceLocation => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1247,7 +1276,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch((DeviceLocation) => {
+        .catch(DeviceLocation => {
           this.saveWithLatLongServiio(DeviceLocation)
             .then(() => {
               resolve();
@@ -1286,12 +1315,12 @@ export class BitacoraProvider {
       this.StatusServicio.FinActividadX = DeviceLocation.Latitude;
       this.StatusServicio.FinActividadY = DeviceLocation.Longitude;
       this.saveItemToSend(this.StatusServicio, true)
-        .then((DataRequest) => {
+        .then(DataRequest => {
           this.guardaServicioActualInStorage()
             .then(() => {
               resolve(DataRequest);
             })
-            .catch((error) => {
+            .catch(error => {
               resolve(DataRequest);
             });
         })
@@ -1300,7 +1329,7 @@ export class BitacoraProvider {
             .then(() => {
               reject();
             })
-            .catch((error) => {
+            .catch(error => {
               reject();
             });
         });
@@ -1472,7 +1501,7 @@ export class BitacoraProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage in Device
-          this.storage.get('ObjServicioActual').then((ObjServicioActual) => {
+          this.storage.get('ObjServicioActual').then(ObjServicioActual => {
             if (ObjServicioActual) {
               this.StatusServicio = JSON.parse(ObjServicioActual);
               this.fechaInicioServicio = this.utilidadesProvider.convertSqlToDate(
@@ -1481,7 +1510,7 @@ export class BitacoraProvider {
             } else {
               this.StatusServicio = null;
             }
-            this.storage.get('ObjConfServicioActual').then((RESULTDATA) => {
+            this.storage.get('ObjConfServicioActual').then(RESULTDATA => {
               if (RESULTDATA) {
                 this.objConfServicio = JSON.parse(RESULTDATA);
               } else {
@@ -1642,20 +1671,26 @@ export class BitacoraProvider {
 
     const promiseExcepcionTemp = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((LOCATION_DEVICE) => {
+        .then(LOCATION_DEVICE => {
           this.guardaItemExcepcion(LOCATION_DEVICE)
             .then(() => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
+              this.guardarBitacoraInStorage()
+                .then(() => {})
+                .catch(() => {});
               resolve();
             })
-            .catch((err) => {
+            .catch(err => {
               this.ExcepcionTemporal = false;
               this.dsExcepcionTemporal = false;
+              this.guardarBitacoraInStorage()
+                .then(() => {})
+                .catch(() => {});
               resolve();
             });
         })
-        .catch((error) => {
+        .catch(error => {
           // ERROR HERE
           this.guardaItemExcepcion(error)
             .then(() => {
@@ -1704,7 +1739,7 @@ export class BitacoraProvider {
             .then(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then((DataRequest) => {
+                .then(DataRequest => {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
@@ -1719,7 +1754,7 @@ export class BitacoraProvider {
                     .then(() => {
                       //resolve();
                     })
-                    .catch((Error_) => {
+                    .catch(Error_ => {
                       //reject();
                     });
                 });
@@ -1727,7 +1762,7 @@ export class BitacoraProvider {
             .catch(() => {
               this.syncUpProvider
                 .syncNewActivity(itBitacora, false)
-                .then((DataRequest) => {
+                .then(DataRequest => {
                   this.changeGuardadoServer(DataRequest)
                     .then(() => {
                       this.guardarBitacoraInStorage()
@@ -1742,7 +1777,7 @@ export class BitacoraProvider {
                     .then(() => {
                       //resolve();
                     })
-                    .catch((Error_) => {
+                    .catch(Error_ => {
                       //reject();
                     });
                 });
@@ -1765,7 +1800,7 @@ export class BitacoraProvider {
     // Guardando actividad en progreso no ET
     const promiseTerminarActividades = new Promise((resolve, reject) => {
       this.getLatLong()
-        .then((DeviceLocation) => {
+        .then(DeviceLocation => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1774,7 +1809,7 @@ export class BitacoraProvider {
               reject();
             });
         })
-        .catch((DeviceLocation) => {
+        .catch(DeviceLocation => {
           this.saveAllActivitysWLatLong(DeviceLocation)
             .then(() => {
               resolve();
@@ -1889,7 +1924,7 @@ export class BitacoraProvider {
       if (Sincronizar) {
         this.syncUpProvider
           .syncNewActivity(ItemToSave, false)
-          .then((DataRequest) => {
+          .then(DataRequest => {
             resolve();
           })
           .catch(() => {

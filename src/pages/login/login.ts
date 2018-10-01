@@ -275,6 +275,7 @@ export class LoginPage {
   //   return false;
   // }
   public loginUserAndPassword(formData: any) {
+    console.log('Validar configuración de endPoint');
     this.usuario = formData.usuario.value;
     this.usuario = this.usuario.trim();
     this.contrasenia = formData.contrasenia.value;
