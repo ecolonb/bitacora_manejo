@@ -19,8 +19,10 @@ export class LoginProvider {
   public objSesionRespuesta: UsuarioModel;
 
   // Propiedades privadas
+  // http://dev1.copiloto.com.mx
   private sesionOk: boolean = false;
-  private URL_ = 'http://dev1.copiloto.com.mx/lab/rest/api/Login';
+  // private URL_: string = 'http://dev1.copiloto.com.mx/lab';
+  private ComplementEndPoint: string = 'rest/api/Login';
 
   // Constructor de clase
   constructor(
@@ -54,18 +56,34 @@ export class LoginProvider {
 
   // LOG IN USER_PASSWORD method POST -> Api RESTFul
   public loginUserAndPaswword(ObjLoginDevice: any): Promise<any> {
+    let urlEndPointComplety: string = '';
     const promiseLoginUserAndPaswword = new Promise((resolve, reject) => {
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
       const dataSendform = ObjLoginDevice;
+      const serverEndPointConfig: string = this.appConfiguracionProvider
+        .getServerEndPoint()
+        .toLowerCase();
+      // validate ServerEndPoint
+      if (
+        serverEndPointConfig.substring(
+          serverEndPointConfig.length - 1,
+          serverEndPointConfig.length
+        ) === '/'
+      ) {
+        urlEndPointComplety = serverEndPointConfig + this.ComplementEndPoint;
+      } else {
+        urlEndPointComplety =
+          serverEndPointConfig + '/' + this.ComplementEndPoint;
+      }
       this.httpClient
-        .post(this.URL_, dataSendform, HEADERS)
+        .post(urlEndPointComplety, dataSendform, HEADERS)
         .toPromise()
-        .then((RESULT_DATA) => {
+        .then(RESULT_DATA => {
           resolve(RESULT_DATA);
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error);
         });
     });
@@ -126,7 +144,7 @@ export class LoginProvider {
           // Get items from Storage
           this.storage
             .get('sesionOk')
-            .then((sesionOkStorage) => {
+            .then(sesionOkStorage => {
               this.sesionOk = Boolean(sesionOkStorage);
               resolve();
             })

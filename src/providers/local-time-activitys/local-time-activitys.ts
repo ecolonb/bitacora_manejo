@@ -29,8 +29,9 @@ import { InfinityScrollRequestModel } from '../../models/infinity-scroll-request
 */
 @Injectable()
 export class LocalTimeActivitysProvider {
-  public URL_: string =
-    'http://dev1.copiloto.com.mx/lab/rest/api/infinity_scroll';
+  // public URL_: string =
+  // public 'http://dev1.copiloto.com.mx/lab/rest/api/infinity_scroll';
+  public ComplementEndPoint = 'rest/api/infinity_scroll';
   public AllDaysUTC: DiasLocalTimeModel = {
     TimeZone: 'GTM 05000',
     MinutosOffSet: 300,
@@ -119,16 +120,13 @@ export class LocalTimeActivitysProvider {
         Token
       )
         .then((ResponseData) => {
-          console.log('AllDaysUTC:', this.AllDaysUTC);
           // this.AllDaysUTC.diasLocal
-          console.log('resolve ResponseData:', ResponseData);
           const DiaItem: DiasLocalItemTimeModel = {
             Terminado: false,
             FechaLocal: new Date(),
             ServicesByDaysLocalTime: ResponseData.services,
             ActivitysByDaysLocalTime: ResponseData.activitys
           };
-          console.log('DiaItem:', DiaItem);
           if (
             this.AllDaysUTC.diasLocal &&
             this.AllDaysUTC.diasLocal !== null &&
@@ -145,11 +143,9 @@ export class LocalTimeActivitysProvider {
             this.AllDaysUTC.diasLocal.push(DiaItem);
           }
 
-          console.log('AllDaysUTC:', this.AllDaysUTC);
           resolve(true);
         })
         .catch((errorRequest) => {
-          console.log('Error AllDaysUTC:', this.AllDaysUTC);
           reject(errorRequest);
         });
     });
@@ -181,10 +177,12 @@ export class LocalTimeActivitysProvider {
         IfinityScroll,
         Token
       };
+      const UrlEndPointCompletly: string =
+        this.appConfiguracionProvider.getServerEndPoint() +
+        this.ComplementEndPoint;
 
-      // console.log('dataSendform IfinityScroll---->>>: ', dataSendform);
       this.http
-        .post(this.URL_, dataSendform, HEADERS)
+        .post(UrlEndPointCompletly, dataSendform, HEADERS)
         .toPromise()
         .then((RESULT_DATA) => {
           resolve(RESULT_DATA);

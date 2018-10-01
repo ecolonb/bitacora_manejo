@@ -51,84 +51,88 @@ export class HomePage {
   public pintarGrafica() {
     // ********** SERVICIO **********
     // Obtener Hora inicio Servicio To Hora actual
-    let dateSql: Date;
-    dateSql = this.utilidadesProvider.convertSqlToDate(
-      this.bitacoraProvider.StatusServicio.FechaHoraInicio
-    );
-    // Ajustando la hora a ZonaHorariaLocal
-    dateSql.setMinutes(dateSql.getMinutes() - dateSql.getTimezoneOffset());
-    const hrInicioServicio: number = Number(dateSql.getHours());
-    const hrFinServicio: number = Number(new Date().getHours());
-    for (let i = 0; i < 24; i++) {
-      const element: any = document.getElementById('s' + i) as HTMLInputElement;
-      if (i >= hrInicioServicio) {
-        if (i <= hrFinServicio) {
-          element.style.backgroundColor = '#4CACDC';
-          element.style.display = 'block';
-          element.innerHTML = '&nbsp;';
+    try {
+      let dateSql: Date;
+      dateSql = this.utilidadesProvider.convertSqlToDate(
+        this.bitacoraProvider.StatusServicio.FechaHoraInicio
+      );
+      // Ajustando la hora a ZonaHorariaLocal
+      dateSql.setMinutes(dateSql.getMinutes() - dateSql.getTimezoneOffset());
+      const hrInicioServicio: number = Number(dateSql.getHours());
+      const hrFinServicio: number = Number(new Date().getHours());
+      for (let i = 0; i < 24; i++) {
+        const element: any = document.getElementById(
+          's' + i
+        ) as HTMLInputElement;
+        if (i >= hrInicioServicio) {
+          if (i <= hrFinServicio) {
+            element.style.backgroundColor = '#4CACDC';
+            element.style.display = 'block';
+            element.innerHTML = '&nbsp;';
+          } else {
+            element.innerHTML = '-';
+            element.style.backgroundColor = '#FFFFFF';
+            element.style.display = 'block';
+          }
         } else {
           element.innerHTML = '-';
           element.style.backgroundColor = '#FFFFFF';
           element.style.display = 'block';
         }
-      } else {
+      }
+
+      // Limpiando actividades actividades
+      for (let i = 0; i < 24; i++) {
+        let element: any = document.getElementById('c' + i) as HTMLInputElement;
+        element.innerHTML = '-';
+        element.style.backgroundColor = '#FFFFFF';
+        element.style.display = 'block';
+        element = document.getElementById('d' + i) as HTMLInputElement;
         element.innerHTML = '-';
         element.style.backgroundColor = '#FFFFFF';
         element.style.display = 'block';
       }
-    }
-
-    // Limpiando actividades actividades
-    for (let i = 0; i < 24; i++) {
-      let element: any = document.getElementById('c' + i) as HTMLInputElement;
-      element.innerHTML = '-';
-      element.style.backgroundColor = '#FFFFFF';
-      element.style.display = 'block';
-      element = document.getElementById('d' + i) as HTMLInputElement;
-      element.innerHTML = '-';
-      element.style.backgroundColor = '#FFFFFF';
-      element.style.display = 'block';
-    }
-    // Pintando actividades
-    for (const itBitacora of this.bitacoraProvider.BitacoraData) {
-      let dateStartActivity: Date;
-      let dateEndActivity: Date;
-      dateStartActivity = this.utilidadesProvider.convertSqlToDate(
-        itBitacora.FechaHoraInicio
-      );
-      dateStartActivity.setMinutes(
-        dateStartActivity.getMinutes() - dateStartActivity.getTimezoneOffset()
-      );
-      const hrStartActivity: number = Number(dateStartActivity.getHours());
-      let hrEndActivity: number = -1;
-      // Definiendo hora de fin
-      if (itBitacora.FechaHoraFinal !== '-') {
-        dateEndActivity = this.utilidadesProvider.convertSqlToDate(
-          itBitacora.FechaHoraFinal
+      // Pintando actividades
+      for (const itBitacora of this.bitacoraProvider.BitacoraData) {
+        let dateStartActivity: Date;
+        let dateEndActivity: Date;
+        dateStartActivity = this.utilidadesProvider.convertSqlToDate(
+          itBitacora.FechaHoraInicio
         );
-        dateEndActivity.setMinutes(
-          dateEndActivity.getMinutes() - dateEndActivity.getTimezoneOffset()
+        dateStartActivity.setMinutes(
+          dateStartActivity.getMinutes() - dateStartActivity.getTimezoneOffset()
         );
-      } else {
-        dateEndActivity = new Date();
-      }
-      // Obteniendo la hora final de la actividad
-      hrEndActivity = Number(dateEndActivity.getHours());
-      if (itBitacora.Actividad !== 'ET') {
-        let element: any;
-        for (let i = hrStartActivity; i <= hrEndActivity; i++) {
-          if (itBitacora.Actividad === 'C') {
-            element = document.getElementById('c' + i) as HTMLInputElement;
-          }
-          if (itBitacora.Actividad === 'D') {
-            element = document.getElementById('d' + i) as HTMLInputElement;
-          }
+        const hrStartActivity: number = Number(dateStartActivity.getHours());
+        let hrEndActivity: number = -1;
+        // Definiendo hora de fin
+        if (itBitacora.FechaHoraFinal !== '-') {
+          dateEndActivity = this.utilidadesProvider.convertSqlToDate(
+            itBitacora.FechaHoraFinal
+          );
+          dateEndActivity.setMinutes(
+            dateEndActivity.getMinutes() - dateEndActivity.getTimezoneOffset()
+          );
+        } else {
+          dateEndActivity = new Date();
+        }
+        // Obteniendo la hora final de la actividad
+        hrEndActivity = Number(dateEndActivity.getHours());
+        if (itBitacora.Actividad !== 'ET') {
+          let element: any;
+          for (let i = hrStartActivity; i <= hrEndActivity; i++) {
+            if (itBitacora.Actividad === 'C') {
+              element = document.getElementById('c' + i) as HTMLInputElement;
+            }
+            if (itBitacora.Actividad === 'D') {
+              element = document.getElementById('d' + i) as HTMLInputElement;
+            }
 
-          element.style.backgroundColor = '#4CACDC';
-          element.style.display = 'block';
-          element.innerHTML = '&nbsp;';
+            element.style.backgroundColor = '#4CACDC';
+            element.style.display = 'block';
+            element.innerHTML = '&nbsp;';
+          }
         }
       }
-    }
+    } catch (error) {}
   }
 }

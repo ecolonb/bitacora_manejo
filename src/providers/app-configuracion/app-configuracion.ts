@@ -22,6 +22,9 @@ export class AppConfiguracionProvider {
   // Token de usuario/conductor con el cual realizar peticiones
   private privateToken: string = '---ABCD---';
 
+  // http://dev1.copiloto.com.mx/lab/rest/api/check_server_endpoint/2786
+  private ComplementEndPoint: string = 'rest/api/check_server_endpoint/2786';
+
   // Constructor de clase
   constructor(
     public http: HttpClient,
@@ -36,6 +39,9 @@ export class AppConfiguracionProvider {
     this.cargarConfigServerStorage().then(() => {
       // Aqui se cargó la configuración from LocalStorage
     });
+  }
+  public getServerEndPoint(): string {
+    return this.ServerEndPoint;
   }
 
   public getToken(): string {
@@ -63,10 +69,10 @@ export class AppConfiguracionProvider {
           // info guardada
           resolve();
         })
-        .catch(ErrorCatch => {
+        .catch((ErrorCatch) => {
           reject();
         });
-    }).catch(ErrorCatch => {});
+    }).catch((ErrorCatch) => {});
 
     return promiseSetToken;
   }
@@ -90,7 +96,7 @@ export class AppConfiguracionProvider {
       if (this.platform.is('cordova')) {
         this.storage.ready().then(() => {
           // Get items from Storage
-          this.storage.get('Token').then(Token => {
+          this.storage.get('Token').then((Token) => {
             if (Token) {
               this.privateToken = String(Token);
             } else {
@@ -106,37 +112,113 @@ export class AppConfiguracionProvider {
     });
     return storageInfoPromise;
   }
+  // Validar ServerEndPoint
+  public checkServerEndPoint(URLToCheck: string): Promise<any> {
+    const promiseCheckServerEndPoint = new Promise((resolve, reject) => {
+      URLToCheck = URLToCheck.toLowerCase();
+
+      this.http
+        .get(URLToCheck)
+        .toPromise()
+        .then((ResponseData) => {
+          resolve(ResponseData);
+        })
+        .catch((ErrorRequest) => {
+          reject(ErrorRequest);
+        });
+    });
+    return promiseCheckServerEndPoint;
+  }
+
   // Guarda la configuracion(serverid: 1,ibutton: 0) en LocalStorage retorna promesa
   public guardarConfigServer(ServerEndPoint?: string): Promise<any> {
     const guardaConfigServerPromise = new Promise((resolve, reject) => {
       // Asignacion de nuevos valores al objeto config actual
       if (ServerEndPoint !== null && ServerEndPoint !== undefined) {
-        this.ServerEndPoint = ServerEndPoint;
+        // = ServerEndPoint.trim().toLowerCase();
+        ServerEndPoint = ServerEndPoint.trim().toLowerCase();
+        let URLCompletly: string = '';
+        // format url endPoint
+        // validate ServerEndPoint
         if (
-          this.objConfigApp &&
-          this.objConfigApp !== null &&
-          this.objConfigApp !== undefined
+          ServerEndPoint.substring(
+            ServerEndPoint.length - 1,
+            ServerEndPoint.length
+          ) === '/'
         ) {
-          this.objConfigApp.serverEndPoint = ServerEndPoint;
+          // this.ServerEndPoint = this.ServerEndPoint + this.ComplementEndPoint;
+          URLCompletly = ServerEndPoint + this.ComplementEndPoint;
         } else {
-          const objAppConfiguracion: AppConfiguracionModel = {
-            serverEndPoint: ServerEndPoint,
-            token: ''
-          };
-          this.objConfigApp = objAppConfiguracion;
+          URLCompletly = ServerEndPoint + '/' + this.ComplementEndPoint;
+          ServerEndPoint = ServerEndPoint + '/';
         }
-      }
+        if (ServerEndPoint.substring(0, 4) !== 'http') {
+          if (ServerEndPoint.substring(0, 5) !== 'https') {
+            this.ServerEndPoint = 'https://' + ServerEndPoint;
+            URLCompletly = 'https://' + URLCompletly;
+          } else {
+            this.ServerEndPoint = ServerEndPoint;
+            URLCompletly = URLCompletly;
+          }
+        } else {
+          this.ServerEndPoint = ServerEndPoint;
+          URLCompletly = URLCompletly;
+        }
 
-      if (this.platform.is('cordova')) {
-        // Dispositivo
-        this.platform.ready().then(() => {
-          this.storage.set('ObjConfigApp', JSON.stringify(this.objConfigApp));
-          resolve();
-        });
+        this.checkServerEndPoint(URLCompletly)
+          .then((DataResponse) => {
+            // Validar Server endPoint
+            if (
+              this.objConfigApp &&
+              this.objConfigApp !== null &&
+              this.objConfigApp !== undefined
+            ) {
+              // Solo se actuliza el server endpoiny
+              this.objConfigApp.serverEndPoint = ServerEndPoint;
+            } else {
+              // Se declara nuevo objeto sin TOKEN
+              const objAppConfiguracion: AppConfiguracionModel = {
+                serverEndPoint: ServerEndPoint,
+                token: ''
+              };
+              this.objConfigApp = objAppConfiguracion;
+            }
+            if (this.platform.is('cordova')) {
+              // Dispositivo
+              this.platform.ready().then(() => {
+                this.storage.set(
+                  'ObjConfigApp',
+                  JSON.stringify(this.objConfigApp)
+                );
+                resolve();
+              });
+            } else {
+              // Desktop
+              localStorage.setItem(
+                'ObjConfigApp',
+                JSON.stringify(this.objConfigApp)
+              );
+              resolve();
+            }
+          })
+          .catch(() => {
+            reject();
+          });
       } else {
-        // Desktop
-        localStorage.setItem('ObjConfigApp', JSON.stringify(this.objConfigApp));
-        resolve();
+        if (this.platform.is('cordova')) {
+          // Dispositivo
+          this.platform.ready().then(() => {
+            this.storage.set('ObjConfigApp', JSON.stringify(this.objConfigApp));
+            resolve();
+          });
+        } else {
+          // Desktop
+          localStorage.setItem(
+            'ObjConfigApp',
+            JSON.stringify(this.objConfigApp)
+          );
+          resolve();
+        }
       }
     });
     return guardaConfigServerPromise;
@@ -172,7 +254,7 @@ export class AppConfiguracionProvider {
       if (this.platform.is('cordova')) {
         // Dispositivo
         this.platform.ready().then(() => {
-          this.storage.get('ObjConfigApp').then(ObjConfigApp => {
+          this.storage.get('ObjConfigApp').then((ObjConfigApp) => {
             this.objConfigApp = JSON.parse(ObjConfigApp);
             try {
               this.privateToken = this.objConfigApp.token;

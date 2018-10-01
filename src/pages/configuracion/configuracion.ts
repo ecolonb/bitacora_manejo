@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {
   AlertController,
   IonicPage,
+  LoadingController,
   NavController,
   NavParams,
   ViewController
@@ -23,7 +24,8 @@ export class ConfiguracionPage {
     public navParams: NavParams,
     private viewCtrl: ViewController,
     public alertCtrl: AlertController,
-    private appConfiguracionProvider: AppConfiguracionProvider
+    private appConfiguracionProvider: AppConfiguracionProvider,
+    private loadingCtrl: LoadingController
   ) {
     this.serverEndPoint = this.appConfiguracionProvider.ServerEndPoint;
   }
@@ -37,11 +39,32 @@ export class ConfiguracionPage {
   }
   public guardarConfiguracion() {
     if (this.serverEndPoint !== '') {
+      const loadingChkServerendpoint = this.loadingCtrl.create({
+        content: 'Validando url...'
+      });
+      loadingChkServerendpoint.present();
       // Guardar en Servicio appConfiguracion
       this.appConfiguracionProvider
         .guardarConfigServer(this.serverEndPoint)
         .then(() => {
+          loadingChkServerendpoint.dismiss();
           this.viewCtrl.dismiss();
+        })
+        .catch((ErrorData) => {
+          console.log('Catch:', ErrorData);
+          const alert = this.alertCtrl.create({
+            title: 'Atención',
+            subTitle:
+              '¡La URL que ingresaste no es valida, favor de confirmarla con tu consultor.!',
+            buttons: [
+              {
+                text: 'Ok',
+                role: 'ok'
+              }
+            ]
+          });
+          loadingChkServerendpoint.dismiss();
+          alert.present();
         });
     } else {
       const alert = this.alertCtrl.create({

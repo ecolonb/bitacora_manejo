@@ -92,7 +92,6 @@ export class ConfiguracionServicioPage {
     this.slides.paginationType = 'progress';
   }
   public ionViewCanEnter() {
-    console.log('Aqui se validad si puede entrar a la sección....');
     if (this.loginProvider.getActivo() === false) {
       delete this.unidadProvider.arrObjUnidades;
       this.unidadProvider
@@ -192,7 +191,7 @@ export class ConfiguracionServicioPage {
               });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           //  loading.dismiss();
         });
     } else {
@@ -432,7 +431,7 @@ export class ConfiguracionServicioPage {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       })
-      .catch(Err => {
+      .catch((Err) => {
         loading.dismiss();
         this.app.getRootNavs()[0].setRoot(this.menuPage);
       });

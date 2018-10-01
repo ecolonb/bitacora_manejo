@@ -15,7 +15,8 @@ export class UnidadProvider {
   public arrObjUnidades: UnidadModel[] = [];
   public cargarFromStorage: boolean = true;
   // URL to request
-  public URL_: string = 'http://dev1.copiloto.com.mx/lab/rest/api/Unidad';
+  // public URL_: string = 'http://dev1.copiloto.com.mx/lab/rest/api/Unidad';
+  private ComplementEndPoint: string = 'rest/api/Unidad';
   constructor(
     public http: HttpClient,
     private conductorProvider: ConductorProvider,
@@ -35,8 +36,11 @@ export class UnidadProvider {
         Token: this.appConfiguracionProvider.getToken(),
         IdUsuarioParent: this.conductorProvider.IdUsuarioParent()
       };
+      const UrlEndPointCompletly: string =
+        this.appConfiguracionProvider.getServerEndPoint() +
+        this.ComplementEndPoint;
       this.http
-        .post(this.URL_, dataSendform, HEADERS)
+        .post(UrlEndPointCompletly, dataSendform, HEADERS)
         .toPromise()
         .then(RESULT_DATA => {
           // this.setUnidadesInStorage();

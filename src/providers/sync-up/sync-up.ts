@@ -12,6 +12,7 @@ import { SyncAllActivitysModel } from '../../models/sync-all-activitys';
 
 // *** Providers *****
 import { SyncAllServicesToSyncModel } from '../../models/sync-all-services.model';
+import { AppConfiguracionProvider } from '../app-configuracion/app-configuracion';
 
 /*
   Este provider sincroniza la información al server.
@@ -20,19 +21,24 @@ import { SyncAllServicesToSyncModel } from '../../models/sync-all-services.model
 export class SyncUpProvider {
   private ServiciosToSync: ServicioToSendModel[] = [];
   private ActivitysToSync: BitacoraModel[] = [];
-  private URL_: string =
-    'http://dev1.copiloto.com.mx/lab/rest/api/nuevo_servicio';
-  private URL_SyncAllServices: string =
-    'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_services';
-  private URL_SyncAllActivitys: string =
-    'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_activitys';
+  // private URL_: string =
+  //   'http://dev1.copiloto.com.mx/lab/rest/api/nuevo_servicio';
+  // private URL_SyncAllServices: string =
+  //   'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_services';
+  // private URL_SyncAllActivitys: string =
+  //   'http://dev1.copiloto.com.mx/lab/rest/api/sync_all_activitys';
 
+  private ComplementEndPointService: string = 'rest/api/nuevo_servicio';
+  private ComplementEndPointAllServices: string = 'rest/api/sync_all_services';
+  private ComplementEndPointAllActivitys: string =
+    'rest/api/sync_all_activitys';
   private statusRequestActivitys: boolean = false;
   private statusRequestServices: boolean = false;
   constructor(
     public http: HttpClient,
     private platform: Platform,
-    private storage: Storage
+    private storage: Storage,
+    private appConfiguracionProvider: AppConfiguracionProvider
   ) {}
   public setServicesToSend(ObjNewService: ServicioToSendModel) {
     this.ServiciosToSync.push(ObjNewService);
@@ -157,13 +163,17 @@ export class SyncUpProvider {
           const HEADERS = {
             headers: { 'Content-Type': 'application/json; charset=utf-8' }
           };
+          const UrlEndPointCompletly: string =
+            this.appConfiguracionProvider.getServerEndPoint() +
+            this.ComplementEndPointAllServices;
+
           this.http
-            .post(this.URL_SyncAllServices, formDataToSend, HEADERS)
+            .post(UrlEndPointCompletly, formDataToSend, HEADERS)
             .toPromise()
-            .then((RESULT_DATA) => {
+            .then(RESULT_DATA => {
               resolve(RESULT_DATA);
             })
-            .catch((ErrorPromise) => {
+            .catch(ErrorPromise => {
               this.statusRequestServices = false;
               reject(ErrorPromise);
             });
@@ -182,8 +192,8 @@ export class SyncUpProvider {
     // Si hay eventos pendientes en storage realizar push de [[objServicioToSync]] y enviar todo en una sola peticion..
     // en caso de error guardar todo el Objeto de servicios pendientes.
     this.syncUpServicioInServer(objServicioToSync)
-      .then((RESULT) => {})
-      .catch((Err) => {
+      .then(RESULT => {})
+      .catch(Err => {
         this.saveServiceToSync(objServicioToSync);
       });
   }
@@ -194,15 +204,19 @@ export class SyncUpProvider {
       const HEADERS = {
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       };
+      const UrlEndPointCompletly: string =
+        this.appConfiguracionProvider.getServerEndPoint() +
+        this.ComplementEndPointService;
+      console.log('url nuev servicio:', UrlEndPointCompletly);
       // Obj datos que recibe el ApiRestFul idConductor, token, idUsuarioParent
       this.http
-        .post(this.URL_, objServicioToSync, HEADERS)
+        .post(UrlEndPointCompletly, objServicioToSync, HEADERS)
         .toPromise()
-        .then((RESULT_DATA) => {
+        .then(RESULT_DATA => {
           // this.setUnidadesInStorage();
           resolve(RESULT_DATA);
         })
-        .catch((error) => {
+        .catch(error => {
           reject(error);
         });
     });
@@ -234,7 +248,7 @@ export class SyncUpProvider {
         .then(() => {
           resolve();
         })
-        .catch((Err) => {
+        .catch(Err => {
           reject();
         });
     });
@@ -304,23 +318,23 @@ export class SyncUpProvider {
               this.ServiciosToSync.length > 0
             ) {
               this.syncAllServicesPending()
-                .then((RESPUESTA) => {
+                .then(RESPUESTA => {
                   // Llamar funcion eliminar Objeto sincronizados Y cambiar ID
                   this.deleteSynchronizedServices(RESPUESTA)
-                    .then((result) => {
+                    .then(result => {
                       this.setServiciosToSyncInStorage()
                         .then(() => {
                           resolve(RESPUESTA);
                         })
-                        .catch((Err) => {
+                        .catch(Err => {
                           reject();
                         });
                     })
-                    .catch((Err) => {
+                    .catch(Err => {
                       reject();
                     });
                 })
-                .catch((error) => {
+                .catch(error => {
                   reject();
                 });
             }
@@ -328,7 +342,7 @@ export class SyncUpProvider {
             reject();
           }
         })
-        .catch((Err) => {
+        .catch(Err => {
           reject();
         });
     });
@@ -561,8 +575,12 @@ export class SyncUpProvider {
           const HEADERS = {
             headers: { 'Content-Type': 'application/json; charset=utf-8' }
           };
+          const UrlEndPointCompletly: string =
+            this.appConfiguracionProvider.getServerEndPoint() +
+            this.ComplementEndPointAllActivitys;
+          console.log('All activitys: ', UrlEndPointCompletly);
           this.http
-            .post(this.URL_SyncAllActivitys, FormDataSend, HEADERS)
+            .post(UrlEndPointCompletly, FormDataSend, HEADERS)
             .toPromise()
             .then((RESULT_DATA) => {
               this.deleteSynchonizedActivitys(RESULT_DATA);
