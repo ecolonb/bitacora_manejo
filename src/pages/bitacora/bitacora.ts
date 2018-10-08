@@ -20,8 +20,8 @@ import { UsuarioProvider } from './../../providers/usuario/usuario';
 import { ActividadProgressTitlePipe } from './../../pipes/actividad-progress-title/actividad-progress-title';
 import { ActividadTitlePipe } from './../../pipes/actividad-title/actividad-title';
 import { DateUtcToLocalePipe } from './../../pipes/date-utc-to-locale/date-utc-to-locale';
-import { TipoServicoTranslatePipe } from './../../pipes/tipo-servico-translate/tipo-servico-translate';
 import { SecondsToHhmmssPipe } from './../../pipes/seconds-to-hhmmss/seconds-to-hhmmss';
+import { TipoServicoTranslatePipe } from './../../pipes/tipo-servico-translate/tipo-servico-translate';
 
 @IonicPage()
 @Component({
@@ -53,8 +53,8 @@ export class BitacoraPage {
   public ionViewDidLoad() {
     this.localTimeActivitysProvider
       .getDataFromServer(false)
-      .then(ResposeData => {})
-      .catch(ErrorRequest => {});
+      .then((ResposeData) => {})
+      .catch((ErrorRequest) => {});
   }
   // ionViewWillEnter Aqui separar actividades
   public ionViewWillEnter() {
@@ -89,8 +89,6 @@ export class BitacoraPage {
           }
         }
       }
-    } catch (error) {
-      console.log('In error catch error', error);
-    }
+    } catch (error) {}
   }
 }

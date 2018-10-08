@@ -89,8 +89,6 @@ export class UnidadProvider {
         this.storage.ready().then(() => {
           // Get items from Storage
           this.storage.get('ObjUnidades').then(ObjUnidades => {
-            console.log('ObjUnidades:', ObjUnidades);
-            console.log('TypeOf:', ObjUnidades);
             if (ObjUnidades) {
               this.arrObjUnidades = JSON.parse(ObjUnidades);
               resolve(true);

@@ -50,8 +50,7 @@ export class ConfiguracionPage {
           loadingChkServerendpoint.dismiss();
           this.viewCtrl.dismiss();
         })
-        .catch((ErrorData) => {
-          console.log('Catch:', ErrorData);
+        .catch(ErrorData => {
           const alert = this.alertCtrl.create({
             title: 'Atención',
             subTitle:

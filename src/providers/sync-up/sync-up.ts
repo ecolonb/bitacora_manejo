@@ -207,7 +207,6 @@ export class SyncUpProvider {
       const UrlEndPointCompletly: string =
         this.appConfiguracionProvider.getServerEndPoint() +
         this.ComplementEndPointService;
-      console.log('url nuev servicio:', UrlEndPointCompletly);
       // Obj datos que recibe el ApiRestFul idConductor, token, idUsuarioParent
       this.http
         .post(UrlEndPointCompletly, objServicioToSync, HEADERS)
@@ -578,7 +577,6 @@ export class SyncUpProvider {
           const UrlEndPointCompletly: string =
             this.appConfiguracionProvider.getServerEndPoint() +
             this.ComplementEndPointAllActivitys;
-          console.log('All activitys: ', UrlEndPointCompletly);
           this.http
             .post(UrlEndPointCompletly, FormDataSend, HEADERS)
             .toPromise()

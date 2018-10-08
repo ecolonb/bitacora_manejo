@@ -10,6 +10,7 @@ import {
   ViewController
 } from 'ionic-angular';
 import { UnidadRequestModel } from '../../models/unidad-response.model';
+import { AppConfiguracionProvider } from '../../providers/app-configuracion/app-configuracion';
 import { BitacoraProvider } from '../../providers/bitacora/bitacora';
 import { LoginProvider } from '../../providers/login/login';
 import { SyncUpProvider } from '../../providers/sync-up/sync-up';
@@ -68,7 +69,8 @@ export class ConfiguracionServicioPage {
     private unidadProvider: UnidadProvider,
     private loadingCtrl: LoadingController,
     private utilidadesProvider: UtilidadesProvider,
-    private syncUpProvider: SyncUpProvider
+    private syncUpProvider: SyncUpProvider,
+    private appConfiguracionProvider: AppConfiguracionProvider
   ) {
     /**
      */
@@ -389,8 +391,10 @@ export class ConfiguracionServicioPage {
     // Falta obtener los datos del Permisionario Nombre/Razon social y Dirección
     // Generar HashId y setearIdConductor
     const hashIdServicio: number = this.utilidadesProvider.hashCode(
-      new Date().toISOString().toString() + 'TOKEN'
+      new Date().toISOString().toString() +
+        this.appConfiguracionProvider.getToken()
     );
+    console.log('hashIdServicio:', hashIdServicio);
     const objConfServicio: ServicioModel = {
       IdServicio: 0,
       HashIdServicio: hashIdServicio,
@@ -410,8 +414,8 @@ export class ConfiguracionServicioPage {
           : this.descripcionRutaASeguir,
       TipoServicio: Number(this.tipoDeServicio),
       ModalidadServicio: Number(this.modalidadDeServicio),
-      Permisionario: 'Saul Teja Gonzalez',
-      PermisionarioDomicilio: 'El Yaqui 2050',
+      Permisionario: 'Test - Copiloto Satelital',
+      PermisionarioDomicilio: 'El Yaqui, 05320 Cuajimalpa de Morelos, CDMX',
       FechaHoraInicio: this.utilidadesProvider.isoStringToSQLServerFormat(
         new Date()
           .toISOString()
