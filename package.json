@@ -69,8 +69,8 @@
       "cordova-plugin-uniquedeviceid": {}
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
